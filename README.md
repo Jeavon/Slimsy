@@ -1,0 +1,4 @@
+EasySlimmage
+============
+
+EasySlimmage for Umbraco
