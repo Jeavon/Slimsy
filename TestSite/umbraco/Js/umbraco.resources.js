@@ -1,4 +1,4 @@
-/*! umbraco - v7.1.3 - 2014-05-17
+/*! umbraco - v7 - 2014-05-21
  * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
