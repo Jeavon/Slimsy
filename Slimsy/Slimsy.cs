@@ -35,6 +35,15 @@ namespace Slimsy
         }
 
         // this could be a overload of GetResponsiveImageUrl but then dynamics can't use it, hence a new name
+        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias)
+        {
+            return publishedContent.GetCropUrl(
+                cropAlias: cropAlias,
+                useCropDimensions: true,
+                ratioMode: ImageCropRatioMode.Height,
+                furtherOptions: "&slimmage=true");
+        }
+
         public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string propertyAlias, string cropAlias)
         {
             return publishedContent.GetCropUrl(
@@ -44,5 +53,7 @@ namespace Slimsy
                 ratioMode: ImageCropRatioMode.Height,
                 furtherOptions: "&slimmage=true");
         }
+
+
     }
 }

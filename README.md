@@ -14,6 +14,7 @@ Slimmage for Umbraco
 
 		<img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" />
 		<img src="@featureImage.GetResponsiveImageUrl(270, 161, "Image")" alt="" />
+		<img src="@featureImage.GetResponsiveCropUrl("home")" alt="" />
 		<img src="@featureImage.GetResponsiveCropUrl("umbracoFile", "home")" alt="" />
 
 # Test Site #
