@@ -49,14 +49,11 @@
     <Content Include="css\dummy.txt" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="masterpages\dummy.txt" />
     <Content Include="media\dummy.txt" />
     <Content Include="scripts\dummy.txt" />
-    <Content Include="usercontrols\dummy.txt" />
     <Content Include="web.config" />
     <Content Include="packages.config" />
     <Content Include="Views\Web.config" />
-    <Content Include="macroScripts\Web.config" />
     <Content Include="config\UrlRewriting.config" />
     <Content Include="config\umbracoSettings.config" />
     <Content Include="config\trees.config" />
@@ -75,6 +72,7 @@
     <Content Include="config\applications.config" />
     <Content Include="config\404handlers.config" />
     <Content Include="Views\umbLayout.cshtml" />
+    <Content Include="Views\Partials\umbFeatures.cshtml" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

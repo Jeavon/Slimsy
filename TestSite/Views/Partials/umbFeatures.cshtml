@@ -1,4 +1,5 @@
-﻿@inherits UmbracoTemplatePage
+﻿@using Umbraco.Web.Models
+@inherits UmbracoTemplatePage
 @{
     // Model.Content is the current page that we're on
     // AncestorsOrSelf is all of the ancestors this page has in the tree
@@ -11,19 +12,97 @@
     <h2 class="major"><span>Wonderful featured pages</span></h2>
     <div>
         <div class="row">
+            
+            <h2>How we currently roll Slimmage</h2>
+
             @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
+            {             
                 <div class="3u">
                     <!-- Feature -->
-                    <section class="is-feature">
-                        <a href="@feature.Url" class="image image-full"><img src="@feature.Image" alt="" /></a>
+                    <section class="is-feature">                      
+                        @if (feature.HasValue("Image"))
+                        {
+                            var featureImage = Umbraco.TypedMedia((string)feature.Image);
+                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetCropUrl(270, 161, ratioMode:ImageCropRatioMode.Height, furtherOptions:"&slimmage=true")" alt="" /></a>
+                        }                                            
                         <h3><a href="@feature.Url">@feature.Name</a></h3>
                         @Umbraco.Truncate(feature.BodyText, 100)
                     </section>
                     <!-- /Feature -->
                 </div>
             }
+
         </div>
+
+        <div class="row">
+            
+            <h2>Lets make it simple with Slimsy and work with Dynamics</h2>
+
+            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+            {
+                <div class="3u">
+                    <!-- Feature -->
+                    <section class="is-feature">
+                        @if (feature.HasValue("Image"))
+                        {
+                            var featureImage = Umbraco.Media(feature.Image);
+                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" /></a>
+                        }
+                        <h3><a href="@feature.Url">@feature.Name</a></h3>
+                        @Umbraco.Truncate(feature.BodyText, 100)
+                    </section>
+                    <!-- /Feature -->
+                </div>
+            }
+
+        </div>    
+
+        <div class="row">
+
+            <h2>Lets make it simple with Slimsy and work with Dynamics (overload)</h2>
+
+            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+            {
+                <div class="3u">
+                    <!-- Feature -->
+                    <section class="is-feature">
+                        @if (feature.HasValue("Image"))
+                        {
+                            var featureImage = Umbraco.Media(feature.Image);
+                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161, "umbracoFile")" alt="" /></a>
+                        }
+                        <h3><a href="@feature.Url">@feature.Name</a></h3>
+                        @Umbraco.Truncate(feature.BodyText, 100)
+                    </section>
+                    <!-- /Feature -->
+                </div>
+            }
+
+        </div>            
+        
+        <div class="row">
+
+            <h2>Lets make it simple with Slimsy using Typed model</h2>
+
+            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+            {
+                <div class="3u">
+                    <!-- Feature -->
+                    <section class="is-feature">
+                        @if (feature.HasValue("Image"))
+                        {
+                            var featureImage = Umbraco.TypedMedia((string)feature.Image);
+                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" /></a>
+                        }
+                        <h3><a href="@feature.Url">@feature.Name</a></h3>
+                        @Umbraco.Truncate(feature.BodyText, 100)
+                    </section>
+                    <!-- /Feature -->
+                </div>
+            }
+
+        </div>               
+
     </div>
 </section>
 <!-- /Features -->
