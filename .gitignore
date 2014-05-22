@@ -163,7 +163,7 @@ TestSite/[Bb]in/*
 # Slimsy
 # =========================
 TestSite/Scripts/*.js
-Build/Package/*
+PackageBuild/Package/*
 
 # =========================
 # Umbraco
