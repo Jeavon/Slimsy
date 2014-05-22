@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Package">
+
+	<!-- IMPORTS -->
+	<PropertyGroup>
+		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+		<MSBuildUmbracoTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildUmbracoTasks</MSBuildUmbracoTasksPath>
+	</PropertyGroup>
+
+	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+	<Import Project="$(MSBuildUmbracoTasksPath)\MSBuild.Umbraco.Tasks.Targets" />
+
+	<!-- PROPERTIES -->
+	<PropertyGroup>
+		<VersionMajor>0</VersionMajor>
+		<VersionMinor>1</VersionMinor>
+		<VersionPatch>0</VersionPatch>
+		<VersionSuffix>-beta</VersionSuffix>
+		<UmbracoVersion>7.1.3</UmbracoVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<RootDir>$(MSBuildProjectDirectory)</RootDir>
+		<BuildDir>$(RootDir)\Build</BuildDir>
+		<PackageDir>$(RootDir)\Package</PackageDir>
+		<CoreProjectDir>$(RootDir)\..\Slimsy</CoreProjectDir>
+	</PropertyGroup>
+
+	<!-- TARGETS -->
+
+	<!-- CLEAN -->
+	<Target Name="Clean">
+		<RemoveDir Directories="$(BuildDir)" Condition="Exists('$(BuildDir)')" />
+		<RemoveDir Directories="$(PackageDir)" Condition="Exists('$(PackageDir)')" />
+		<MakeDir Directories="$(BuildDir)" />
+		<MakeDir Directories="$(PackageDir)" />
+	</Target>
+
+	<!-- UPDATE ASSEMBLEY VERSION -->
+	<Target Name="UpdateAssemblyInfo" DependsOnTargets="Clean">
+		<Version Major="$(VersionMajor)" Minor="$(VersionMinor)" BuildType="Automatic" RevisionType="Automatic" StartDate="08/03/2013">
+			<Output TaskParameter="Build" PropertyName="Build" />
+			<Output TaskParameter="Revision" PropertyName="Revision" />
+		</Version>
+		<AssemblyInfo CodeLanguage="CS"
+			OutputFile="$(CoreProjectDir)\Properties\VersionInfo.cs"
+			AssemblyVersion="$(VersionMajor).$(VersionMinor).$(VersionPatch)"
+			AssemblyFileVersion="$(VersionMajor).$(VersionMinor).$(Build).$(Revision)"
+			AssemblyInformationalVersion="$(VersionMajor).$(VersionMinor).$(VersionPatch)$(VersionSuffix)"/>
+	</Target>
+
+	<!-- COMPILE -->
+	<Target Name="Compile" DependsOnTargets="UpdateAssemblyInfo">
+		<MSBuild Projects="$(CoreProjectDir)\Slimsy.csproj" />
+	</Target>
+
+	<!-- PREPARE FILES -->
+	<Target Name="PrepairFiles" DependsOnTargets="Compile">
+		<ItemGroup>
+			<SlimsyAssembly Include="$(CoreProjectDir)\Bin\Debug\Slimsy.dll" />
+      <SlimResponseAssembly Include="$(CoreProjectDir)\Bin\Debug\Imazen.SlimResponse.dll" />
+			<PackageFile Include="$(RootDir)\Package.xml" />
+      <ScriptsFiles Include="$(CoreProjectDir)\Scripts\*.js" />
+		</ItemGroup>
+		<Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildDir)\bin" />
+    <Copy SourceFiles="@(SlimResponseAssembly)" DestinationFolder="$(BuildDir)\bin" />
+		<Copy SourceFiles="@(PackageFile)" DestinationFolder="$(BuildDir)" />
+    <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildDir)\Scripts" />
+  </Target>
+
+	<!-- MANIFEST -->
+	<Target Name="Manifest" DependsOnTargets="PrepairFiles">
+		<ItemGroup>
+			<ManifestFiles Include="$(BuildDir)\**\*" Exclude="$(BuildDir)\Package.xml" />
+		</ItemGroup>
+		<ManifestUpdate ManifestFile="$(BuildDir)\package.xml"
+			WorkingDirectory="$(BuildDir)"
+			MinimumRequiredUmbracoVersion="$(UmbracoVersion)"
+			PackageVersion="$(VersionMajor).$(VersionMinor).$(VersionPatch)$(VersionSuffix)"
+			Files="@(ManifestFiles)" />
+	</Target>
+
+	<!-- PACKAGE -->
+	<Target Name="Package" DependsOnTargets="Manifest">
+		<ItemGroup>
+			<PackageFiles Include="$(BuildDir)\**\*.*" />
+		</ItemGroup>
+		<Package ManifestFile="$(BuildDir)\Package.xml"
+			WorkingDirectory="$(BuildDir)"
+			OutputDirectory="$(PackageDir)"
+			Files="@(PackageFiles)" />
+		<RemoveDir Directories="$(BuildDir)" Condition="Exists('$(BuildDir)')" />
+	</Target>
+
+</Project>

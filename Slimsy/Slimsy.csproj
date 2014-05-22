@@ -193,6 +193,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="Slimsy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
