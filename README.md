@@ -1,4 +1,4 @@
-EasySlimmage
+Slimsy
 ============
 
-EasySlimmage for Umbraco
+Slimmage for Umbraco
