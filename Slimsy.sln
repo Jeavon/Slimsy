@@ -16,9 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3E59C3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2262007F-C1E1-4D10-BAA6-231912EAE9EC}"
 	ProjectSection(SolutionItems) = preProject
-		Build\Package.build.cmd = Build\Package.build.cmd
-		Build\Package.build.xml = Build\Package.build.xml
-		Build\Package.xml = Build\Package.xml
+		PackageBuild\Package.build.cmd = PackageBuild\Package.build.cmd
+		PackageBuild\Package.build.xml = PackageBuild\Package.build.xml
+		PackageBuild\Package.xml = PackageBuild\Package.xml
 	EndProjectSection
 EndProject
 Global
