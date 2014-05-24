@@ -2,7 +2,7 @@ Slimsy
 ============
 **Effortless Responsive Images with Slimmage and Umbraco**
 
-# Implementing post package installation
+## Implementing post package installation
 
 ### 1. Add slimmage.js  to page
 
@@ -17,7 +17,7 @@ In your master template add the Slimmage Javascript file(s) to the top of your h
 	<script src="/scripts/slimmage.min.js"></script>
 ```
 
-**with bundling of your scripts you can fetch the configuration from a seperate file**
+**with bundling of your scripts you can fetch the configuration from a separate file**
 
     	<script src="/scripts/slimmage.settings.js"></script>
     	<script src="/scripts/slimmage.min.js"></script>
@@ -26,14 +26,38 @@ In your master template add the Slimmage Javascript file(s) to the top of your h
 
 Use the GetResponsiveImageUrl or GetResponsiveCropUrl methods on your dynamic or typed content/media items
 
+#### GetResponsiveImageUrl(width, height)
+use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
+
+e.g. An initial image size of 270 x 161
+
 		<img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" />
+
+e.g. If you need only a width dimension (and a flexible height) set height parameter to 0
+
+		<img src="@featureImage.GetResponsiveImageUrl(270, 0)" alt="" />
+
+#### GetResponsiveImageUrl(width, height, propertyAlias)
+Overloaded method, with additional propertyAlias parameter to specify your image cropper property alias.
+
+
+e.g. An initial image size of 270 x 161, Image Cropper property alias of "Image"
+
 		<img src="@featureImage.GetResponsiveImageUrl(270, 161, "Image")" alt="" />
+
+e.g. If you need only a width dimension (and a flexible height) set height parameter to 0
+
+		<img src="@featuredNewsItem.GetResponsiveImageUrl(859, 0, "Image")" alt="" />
+
+#### GetResponsiveCropUrl(cropAlias)
+use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile"
+
 		<img src="@featureImage.GetResponsiveCropUrl("home")" alt="" />
-		<img src="@featureImage.GetResponsiveCropUrl("umbracoFile", "home")" alt="" />
 
+#### GetResponsiveCropUrl(cropAlias, propertyAlias)
+Overloaded method, with additional propertyAlias parameter to specify your image cropper property alias.
 
-
-
+		<img src="@featureImage.GetResponsiveCropUrl("home", "Image")" alt="" />
 
 # Test Site
 
