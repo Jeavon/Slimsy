@@ -2,14 +2,14 @@ Slimsy
 ============
 **Effortless Responsive Images with Slimmage and Umbraco**
 
-Slimmage.js used in conjunction with ImageProcessor (included in Umbraco v7.1) will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
+Slimmage.js used in conjunction with ImageProcessor.Web (included in Umbraco v7.1) and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
 
 Slimsy installs everything you need to use Slimmage.js in Umbraco v7.1. It includes Slimmage.js, SlimResponse and some helper methods that work with both dynamic and typed published content models.
 
 
 ## Implementing post package installation
 
-### 1. Add slimmage.js  to page
+### 1. Add slimmage.js to your pages
 
 In your master template add the Slimmage Javascript file(s) to the top of your head section (Slimmage should be the first js library)
 
@@ -31,7 +31,7 @@ If you don't already have js bundling in place you should take a look at the [Op
 
 ### 2. Adjust your image src attributes
 
-Use the GetResponsiveImageUrl or GetResponsiveCropUrl methods on your dynamic or typed content/media items
+Use the GetResponsiveImageUrl or GetResponsiveCropUrl methods on your dynamic or typed content/media items. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
 #### GetResponsiveImageUrl(width, height)
 use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
@@ -46,7 +46,9 @@ e.g. An initial image size of 270 x 161. This example is looping pages, each pag
                 @if (feature.HasValue("Image"))
                 {
                     var featureImage = Umbraco.Media(feature.Image);
-                    <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" /></a>
+                    <a href="@feature.Url" class="image image-full">
+					<img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" />
+					</a>
                 }
                 <h3><a href="@feature.Url">@feature.Name</a></h3>
                 @Umbraco.Truncate(feature.BodyText, 100)
