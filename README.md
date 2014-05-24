@@ -27,6 +27,8 @@ In your master template add the Slimmage Javascript file(s) to the top of your h
     	<script src="/scripts/slimmage.settings.js"></script>
     	<script src="/scripts/slimmage.min.js"></script>
 
+If you don't already have js bundling in place you should take a look at the [Optimus](http://our.umbraco.org/projects/developer-tools/optimus) package, it will allow you to bundle them together in minutes.
+
 ### 2. Adjust your image src attributes
 
 Use the GetResponsiveImageUrl or GetResponsiveCropUrl methods on your dynamic or typed content/media items
