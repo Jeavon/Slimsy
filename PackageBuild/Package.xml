@@ -13,11 +13,12 @@
 			</requirements>
 		</package>
 		<author>
-			<name>The Umbraco Community</name>
+			<name>Jeavon Leopold and Marc Stöcker</name>
 			<website>http://our.umbraco.org</website>
 		</author>
-		<readme><![CDATA[
-		Something somewhere
+		<readme>
+      <![CDATA[
+		Please follow the instructions on the project page http://our.umbraco.org/projects/website-utilities/slimsy
 		]]></readme>
 	</info>
 

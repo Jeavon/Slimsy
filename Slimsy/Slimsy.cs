@@ -52,7 +52,7 @@ namespace Slimsy
                 furtherOptions: "&slimmage=true");
         }
 
-        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string propertyAlias, string cropAlias)
+        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
             return publishedContent.GetCropUrl(
                 propertyAlias: propertyAlias,
