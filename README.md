@@ -78,3 +78,9 @@ Overloaded method, with additional propertyAlias parameter to specify your image
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.
 By default the test site is configured to use full IIS (due to IIS Express SQL CE persistence issue) on the domain slimsy.local, you can change it to use IIS Express if you prefer.
+
+# Credits and references
+
+This project includes [Slimmage](https://github.com/imazen/slimmage) and [SlimResponse](https://github.com/imazen/slimresponse) Both projects are MIT/Apache dual licensed by Imazen.
+
+Many thanks to Douglas Robar for naming Slimsy.
