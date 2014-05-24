@@ -29,9 +29,24 @@ Use the GetResponsiveImageUrl or GetResponsiveCropUrl methods on your dynamic or
 #### GetResponsiveImageUrl(width, height)
 use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
 
-e.g. An initial image size of 270 x 161
+e.g. An initial image size of 270 x 161. This example is looping pages, each page has a media picker with property alias "Image"
 
-		<img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" />
+    @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+    {
+        <div class="3u">
+            <!-- Feature -->
+            <section class="is-feature">
+                @if (feature.HasValue("Image"))
+                {
+                    var featureImage = Umbraco.Media(feature.Image);
+                    <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" /></a>
+                }
+                <h3><a href="@feature.Url">@feature.Name</a></h3>
+                @Umbraco.Truncate(feature.BodyText, 100)
+            </section>
+            <!-- /Feature -->
+        </div>
+    }
 
 e.g. If you need only a width dimension (and a flexible height) set height parameter to 0
 
