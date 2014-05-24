@@ -2,6 +2,11 @@ Slimsy
 ============
 **Effortless Responsive Images with Slimmage and Umbraco**
 
+Slimmage.js used in conjunction with ImageProcessor (included in Umbraco v7.1) will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
+
+Slimsy installs everything you need to use Slimmage.js in Umbraco v7.1. It includes Slimmage.js, SlimResponse and some helper methods that work with both dynamic and typed published content models.
+
+
 ## Implementing post package installation
 
 ### 1. Add slimmage.js  to page
