@@ -37,4 +37,5 @@ Use the GetResponsiveImageUrl or GetResponsiveCropUrl methods on your dynamic or
 
 # Test Site
 
-A test site is included in the solution, the username and password for Umbraco are admin/password
+A test site is included in the solution, the username and password for Umbraco are admin/password.
+By default the test site is configured to use full IIS (due to IIS Express SQL CE persistence issue) on the domain slimsy.local, you can change it to use IIS Express if you prefer.
