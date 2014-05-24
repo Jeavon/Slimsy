@@ -73,6 +73,10 @@
     <Content Include="config\404handlers.config" />
     <Content Include="Views\umbLayout.cshtml" />
     <Content Include="Views\Partials\umbFeatures.cshtml" />
+    <Content Include="Views\umbHomePage.cshtml" />
+    <Content Include="Views\Partials\umbNewsOverviewWidget.cshtml">
+      <SubType>Code</SubType>
+    </Content>
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

@@ -55,9 +55,9 @@
                             </ul>
                         </header>
 
-                        @if (string.IsNullOrWhiteSpace(featuredNewsItem.Image) == false)
+                        @if (featuredNewsItem.HasValue("Image"))
                         {
-                            <a href="@featuredNewsItem.Url" class="image image-full"><img src="@featuredNewsItem.Image" alt="" /></a>
+                            <a href="@featuredNewsItem.Url" class="image image-full"><img src="@featuredNewsItem.GetResponsiveImageUrl(859, 0, "Image")" alt="" /></a>
                         }
 
                         @Umbraco.Truncate(featuredNewsItem.BodyText, 200, true, false)

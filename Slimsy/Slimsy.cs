@@ -7,6 +7,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Umbraco.Core;
+
 namespace Slimsy
 {
     using Umbraco.Core.Models;
@@ -17,21 +19,27 @@ namespace Slimsy
     {
         public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height)
         {
-            return publishedContent.GetCropUrl(
-                width,
-                height,
-                ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: "&slimmage=true");
+            return publishedContent.GetResponsiveImageUrl(width, height, Constants.Conventions.Media.File);
         }
 
         public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
+            if (height == 0)
+            {
+                return publishedContent.GetCropUrl(
+                       width, 
+                       null, 
+                       propertyAlias, 
+                       furtherOptions: 
+                       "&slimmage=true");
+  
+            }
             return publishedContent.GetCropUrl(
-                width,
-                height,
-                propertyAlias,
-                ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: "&slimmage=true");
+                   width,
+                   height,
+                   propertyAlias,
+                   ratioMode: ImageCropRatioMode.Height,
+                   furtherOptions: "&slimmage=true");
         }
 
         // this could be a overload of GetResponsiveImageUrl but then dynamics can't use it, hence a new name
