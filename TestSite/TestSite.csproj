@@ -125,8 +125,9 @@
     <Reference Include="ImageProcessor.Web">
       <HintPath>..\packages\ImageProcessor.Web.3.2.4.0\lib\net45\ImageProcessor.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Imazen.SlimResponse">
-      <HintPath>..\packages\Imazen.SlimResponse.0.2.4936.26457\lib\net40\Imazen.SlimResponse.dll</HintPath>
+    <Reference Include="Imazen.SlimResponse, Version=0.2.4936.26457, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ReferenceDLLs\Imazen.SlimResponse.dll</HintPath>
     </Reference>
     <Reference Include="interfaces">
       <HintPath>..\packages\UmbracoCms.Core.7.1.3\lib\interfaces.dll</HintPath>
