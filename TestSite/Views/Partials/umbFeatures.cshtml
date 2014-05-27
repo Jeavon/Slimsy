@@ -23,7 +23,7 @@
                         @if (feature.HasValue("Image"))
                         {
                             var featureImage = Umbraco.TypedMedia((string)feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetCropUrl(270, 161, ratioMode:ImageCropRatioMode.Height, furtherOptions:"&slimmage=true")" alt="" /></a>
+                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetCropUrl(270, 161, ratioMode:ImageCropRatioMode.Height, quality:90, furtherOptions:"&slimmage=true")" alt="" /></a>
                         }                                            
                         <h3><a href="@feature.Url">@feature.Name</a></h3>
                         @Umbraco.Truncate(feature.BodyText, 100)

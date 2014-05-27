@@ -30,14 +30,15 @@ namespace Slimsy
                        width, 
                        null, 
                        propertyAlias, 
-                       furtherOptions: 
-                       "&slimmage=true");
+                       quality: 90,
+                       furtherOptions: "&slimmage=true");
   
             }
             return publishedContent.GetCropUrl(
                    width,
                    height,
                    propertyAlias,
+                   quality: 90,
                    ratioMode: ImageCropRatioMode.Height,
                    furtherOptions: "&slimmage=true");
         }
@@ -48,6 +49,7 @@ namespace Slimsy
             return publishedContent.GetCropUrl(
                 cropAlias: cropAlias,
                 useCropDimensions: true,
+                quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
                 furtherOptions: "&slimmage=true");
         }
@@ -58,6 +60,7 @@ namespace Slimsy
                 propertyAlias: propertyAlias,
                 cropAlias: cropAlias,
                 useCropDimensions: true,
+                quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
                 furtherOptions: "&slimmage=true");
         }

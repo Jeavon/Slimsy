@@ -95,3 +95,7 @@ By default the test site is configured to use full IIS (due to IIS Express SQL C
 This project includes [Slimmage](https://github.com/imazen/slimmage) and [SlimResponse](https://github.com/imazen/slimresponse) Both projects are MIT/Apache dual licensed by Imazen.
 
 Many thanks to Douglas Robar for naming Slimsy.
+
+# Change log
+
+[Here](Changelog.md)
