@@ -31,7 +31,7 @@ namespace Slimsy
                        null, 
                        propertyAlias, 
                        quality: 90,
-                       furtherOptions: "&slimmage=true");
+                       furtherOptions: "&slimmage=true").ToLowerInvariant();
   
             }
             return publishedContent.GetCropUrl(
@@ -40,7 +40,7 @@ namespace Slimsy
                    propertyAlias,
                    quality: 90,
                    ratioMode: ImageCropRatioMode.Height,
-                   furtherOptions: "&slimmage=true");
+                   furtherOptions: "&slimmage=true").ToLowerInvariant();
         }
 
         // this could be a overload of GetResponsiveImageUrl but then dynamics can't use it, hence a new name
@@ -51,7 +51,7 @@ namespace Slimsy
                 useCropDimensions: true,
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: "&slimmage=true");
+                furtherOptions: "&slimmage=true").ToLowerInvariant();
         }
 
         public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias, string propertyAlias)
@@ -62,7 +62,7 @@ namespace Slimsy
                 useCropDimensions: true,
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: "&slimmage=true");
+                furtherOptions: "&slimmage=true").ToLowerInvariant();
         }
 
 
