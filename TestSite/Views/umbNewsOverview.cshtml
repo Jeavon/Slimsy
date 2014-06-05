@@ -59,9 +59,9 @@
                                     <li class="timestamp">@dateTime.ToString("f")</li>
                                 </ul>
 
-                                @if (string.IsNullOrWhiteSpace(item.Image) == false)
+                                @if (item.HasValue("Image"))
                                 {
-                                    <a href="@item.Url" class="image image-full"><img src="@item.Image" alt="" /></a>
+                                    <a href="@item.Url" class="image image-full"><img src="@item.GetResponsiveImageUrl(500, 0, "Image")" alt="" /></a>
                                 }
 
                                 @Umbraco.Truncate(item.BodyText, 200)

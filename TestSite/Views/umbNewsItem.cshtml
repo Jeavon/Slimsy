@@ -19,9 +19,9 @@
                             <h2>@pageTitle</h2>
                         </header>
                         <section>
-                            @if (string.IsNullOrWhiteSpace(CurrentPage.Image) == false)
+                            @if (CurrentPage.HasValue("Image"))
                             {
-                                <span class="image image-full"><img src="@CurrentPage.Image" alt="" /></span>
+                                <span class="image image-full"><img src="@CurrentPage.GetResponsiveImageUrl(500,0,"Image")" alt="" /></span>
                             }
 
                             @CurrentPage.BodyText
