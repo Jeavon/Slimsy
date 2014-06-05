@@ -24,47 +24,55 @@ namespace Slimsy
 
         public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
+            string returnUrl;
+
             if (height == 0)
             {
-                return publishedContent.GetCropUrl(
-                       width, 
-                       null, 
-                       propertyAlias, 
-                       quality: 90,
-                       furtherOptions: "&slimmage=true").ToLowerInvariant();
-  
+                returnUrl = publishedContent.GetCropUrl(
+                    width,
+                    null,
+                    propertyAlias,
+                    quality: 90,
+                    furtherOptions: "&slimmage=true");
             }
-            return publishedContent.GetCropUrl(
-                   width,
-                   height,
-                   propertyAlias,
-                   quality: 90,
-                   ratioMode: ImageCropRatioMode.Height,
-                   furtherOptions: "&slimmage=true").ToLowerInvariant();
+            else
+            {
+                returnUrl = publishedContent.GetCropUrl(
+                    width,
+                    height,
+                    propertyAlias,
+                    quality: 90,
+                    ratioMode: ImageCropRatioMode.Height,
+                    furtherOptions: "&slimmage=true");
+            }
+
+            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
 
         // this could be a overload of GetResponsiveImageUrl but then dynamics can't use it, hence a new name
         public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias)
         {
-            return publishedContent.GetCropUrl(
+            var returnUrl = publishedContent.GetCropUrl(
                 cropAlias: cropAlias,
                 useCropDimensions: true,
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: "&slimmage=true").ToLowerInvariant();
+                furtherOptions: "&slimmage=true");
+
+            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
 
         public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
-            return publishedContent.GetCropUrl(
+            var returnUrl = publishedContent.GetCropUrl(
                 propertyAlias: propertyAlias,
                 cropAlias: cropAlias,
                 useCropDimensions: true,
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: "&slimmage=true").ToLowerInvariant();
+                furtherOptions: "&slimmage=true");
+
+            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
-
-
     }
 }

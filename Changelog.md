@@ -4,3 +4,4 @@ Slimsy Change log
 - 0.1.1-beta - switched to build of SlimResponse so the Umbraco installer doesn't display a warning
 - 0.1.2-beta - added quality parameter for Slimmage to adjust
 - 0.1.3-beta - all URLs will now be lowercase for SEO best practice
+- 0.1.4-beta - add some null checks before converting to lowercase
