@@ -1,4 +1,4 @@
-/*! umbraco - v7 - 2014-05-21
+/*! umbraco - v7.1.4 - 2014-05-28
  * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
@@ -3481,8 +3481,13 @@ angular.module("umbraco").controller("Umbraco.PropertyEditors.CheckboxListContro
     });
 
 function ColorPickerController($scope) {
-    $scope.selectItem = function (color) {
-        $scope.model.value = color;
+    $scope.toggleItem = function (color) {
+        if ($scope.model.value == color) {
+            $scope.model.value = "";
+        }
+        else {
+            $scope.model.value = color;
+        }
     };
     $scope.isConfigured = $scope.model.config && $scope.model.config.items && _.keys($scope.model.config.items).length > 0;
 }
@@ -3917,6 +3922,9 @@ function fileUploadController($scope, $element, $compile, imageHelper, fileManag
 
     /** this method is used to initialize the data and to re-initialize it if the server value is changed */
     function initialize(index) {
+
+        clearFiles();
+
         if (!index) {
             index = 1;
         }
@@ -4008,9 +4016,6 @@ function fileUploadController($scope, $element, $compile, imageHelper, fileManag
                 initialize($scope.rebuildInput.index + 1);
             }
 
-            //if (newVal !== "{clearFiles: true}" && newVal !== $scope.originalValue && !newVal.startsWith("{selectedFiles:")) {
-            //    initialize($scope.rebuildInput.index + 1);
-            //}
         }
     });
 };
@@ -4352,6 +4357,13 @@ angular.module('umbraco')
                 reader.readAsDataURL(args.files[0]);
             }
         });
+
+
+        //here we declare a special method which will be called whenever the value has changed from the server
+        $scope.model.onValueChanged = function (newVal, oldVal) {
+            //clear current uploaded files
+            fileManager.setFiles($scope.model.alias, []);
+        };
 
         var unsubscribe = $scope.$on("formSubmitting", function () {
             $scope.done();
@@ -5753,6 +5765,12 @@ function sliderController($scope, $log, $element, assetsService, angularHelper) 
 
         //initiate slider, add event handler and get the instance reference (stored in data)
         var slider = $element.find('.slider-item').slider({
+            max: $scope.model.config.maxVal,
+            min: $scope.model.config.minVal,
+            orientation: $scope.model.config.orientation,
+            selection: "after",
+            step: $scope.model.config.step,
+            tooltip: "show",
             //set the slider val - we cannot do this with data- attributes when using ranges
             value: sliderVal
         }).on('slideStop', function () {
