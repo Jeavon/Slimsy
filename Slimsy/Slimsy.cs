@@ -33,6 +33,7 @@ namespace Slimsy
                     null,
                     propertyAlias,
                     quality: 90,
+                    upScale: false,
                     furtherOptions: "&slimmage=true");
             }
             else
@@ -42,6 +43,7 @@ namespace Slimsy
                     height,
                     propertyAlias,
                     quality: 90,
+                    upScale: false,
                     ratioMode: ImageCropRatioMode.Height,
                     furtherOptions: "&slimmage=true");
             }
@@ -57,6 +59,7 @@ namespace Slimsy
                 useCropDimensions: true,
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
+                upScale: false,
                 furtherOptions: "&slimmage=true");
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
@@ -70,6 +73,7 @@ namespace Slimsy
                 useCropDimensions: true,
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
+                upScale: false,
                 furtherOptions: "&slimmage=true");
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
