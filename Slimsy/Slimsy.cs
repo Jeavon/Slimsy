@@ -6,11 +6,11 @@
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using Umbraco.Core;
-
 namespace Slimsy
 {
+    using System.Configuration;
+
+    using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Web;
     using Umbraco.Web.Models;
@@ -34,7 +34,7 @@ namespace Slimsy
                     propertyAlias,
                     quality: 90,
                     upScale: false,
-                    furtherOptions: "&slimmage=true");
+                    furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
             }
             else
             {
@@ -45,7 +45,7 @@ namespace Slimsy
                     quality: 90,
                     upScale: false,
                     ratioMode: ImageCropRatioMode.Height,
-                    furtherOptions: "&slimmage=true");
+                    furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
             }
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
@@ -60,7 +60,7 @@ namespace Slimsy
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
                 upScale: false,
-                furtherOptions: "&slimmage=true");
+                furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
@@ -74,9 +74,15 @@ namespace Slimsy
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
                 upScale: false,
-                furtherOptions: "&slimmage=true");
+                furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        }
+
+        private static string Format()
+        {
+            var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
+            return slimsyFormat ?? "jpg";
         }
     }
 }
