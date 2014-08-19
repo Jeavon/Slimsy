@@ -34,7 +34,7 @@ namespace Slimsy
                     propertyAlias,
                     quality: 90,
                     upScale: false,
-                    furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
+                    furtherOptions: string.Format("{0}&slimmage=true", Format()));
             }
             else
             {
@@ -45,7 +45,7 @@ namespace Slimsy
                     quality: 90,
                     upScale: false,
                     ratioMode: ImageCropRatioMode.Height,
-                    furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
+                    furtherOptions: string.Format("{0}&slimmage=true", Format()));
             }
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
@@ -60,7 +60,7 @@ namespace Slimsy
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
                 upScale: false,
-                furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
+                furtherOptions: string.Format("{0}&slimmage=true", Format()));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
@@ -74,7 +74,7 @@ namespace Slimsy
                 quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
                 upScale: false,
-                furtherOptions: string.Format("&format={0}&slimmage=true", Format()));
+                furtherOptions: string.Format("{0}&slimmage=true", Format()));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
@@ -82,7 +82,7 @@ namespace Slimsy
         private static string Format()
         {
             var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
-            return slimsyFormat ?? "jpg";
+            return slimsyFormat != "false" ? string.Format("&format={0}", slimsyFormat ?? "jpg") : string.Empty;
         }
     }
 }
