@@ -141,14 +141,11 @@
 
         public XmlNode SampleXml()
         {
-            string str = "<Action runat=\"install\" undo=\"false\" alias=\"Slimsy.AddAssemblyBinding\">" +
-                            "<dependentAssembly>" +
-                                "<assemblyIdentity name=\"newone\" publicKeyToken=\"608967\" />" +
-                                "<bindingRedirect oldVersion=\"1\" newwVersion=\"2\" />" +
-                            "</dependentAssembly>" +
-                         "</Action>";
+            var str =
+                "<Action runat=\"install\" undo=\"true\" alias=\"Slimsy.AddAssemblyBinding\" name=\"HtmlAgilityPack\" publicKeyToken=\"bd319b19eaf3b43a\" oldVersion=\"0.0.0.0-1.4.6.0\" newVersion=\"1.4.6.0\" />";
             return helper.parseStringToXmlNode(str);
         }
+
 
         public bool Undo(string packageName, XmlNode xmlData)
         {
@@ -901,12 +898,9 @@
         /// <returns>The sample xml as node</returns>
         public XmlNode SampleXml()
         {
-            return helper.parseStringToXmlNode(
-                "<Action runat=\"install\" undo=\"true/false\" alias=\"Umbundle.AddNamespace\" "
-                    + "position=\"beginning/end\" "
-                    + "namespace=\"System.Web.Optimization\""
-                    + "xpath=\"//help\""
-                    + " />");
+            return
+                helper.parseStringToXmlNode(
+                    "<Action runat=\"install\" undo=\"true/false\" alias=\"Slimsy.AddNamespace\" file=\"~/views/web.config\" xpath=\"//configuration/system.web.webPages.razor/pages\" position=\"beginning/end\" namespace=\"Slimsy\" />");
         }
 
         #endregion
