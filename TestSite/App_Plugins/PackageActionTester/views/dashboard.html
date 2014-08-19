@@ -1,0 +1,24 @@
+﻿
+<style type="text/css">.alert-form { }</style>
+<div ng-controller="PackageActionTester.PackageActionTesterController">
+    <h4>Package action tester</h4>
+    <p>Select actions or copy actions from a package xml file to the editor and install or uninstall actiions to see if package actions get executed correctly.</p>
+   <div ng-show="installResult" class="alert alert-block">
+        <h4>Result</h4>
+        <ul>
+            <li ng-repeat="item in installResult">{{item.Alias}} - {{item.Result}}</li>
+        </ul> 
+    </div>
+     <div class="control-group">
+        <select ng-model="selectedPackageAction" ng-options="action.Alias for action in packageActions" ng-change="selectAction()">
+            <option  value="">Select.....</option>
+        </select>
+    </div>
+    <div class="control-group">
+        <textarea id="packageactionsEditor" rows="15" class="umb-editor umb-textarea textstring" ng-model="packageActionsXML" >
+     </textarea>
+    </div>
+    
+    <a class="btn btn-success" ng-click="install()">Install actions</a>&nbsp;&nbsp;<a class="btn btn-danger" ng-click="uninstall()">Uninstall actions</a>
+</div>
+
