@@ -24,6 +24,11 @@ namespace Slimsy
 
         public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
+            return publishedContent.GetResponsiveImageUrl(width, height, propertyAlias, null);
+        }
+
+        public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat)
+        {
             string returnUrl;
 
             if (height == 0)
@@ -34,7 +39,7 @@ namespace Slimsy
                     propertyAlias,
                     quality: 90,
                     upScale: false,
-                    furtherOptions: string.Format("{0}&slimmage=true", Format()));
+                    furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
             }
             else
             {
@@ -45,7 +50,7 @@ namespace Slimsy
                     quality: 90,
                     upScale: false,
                     ratioMode: ImageCropRatioMode.Height,
-                    furtherOptions: string.Format("{0}&slimmage=true", Format()));
+                    furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
             }
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
@@ -79,10 +84,29 @@ namespace Slimsy
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
 
-        private static string Format()
+        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
         {
-            var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
-            return slimsyFormat != "false" ? string.Format("&format={0}", slimsyFormat ?? "jpg") : string.Empty;
+            var returnUrl = publishedContent.GetCropUrl(
+                propertyAlias: propertyAlias,
+                cropAlias: cropAlias,
+                useCropDimensions: true,
+                quality: 90,
+                ratioMode: ImageCropRatioMode.Height,
+                upScale: false,
+                furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
+
+            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        }
+
+        private static string Format(string outputFormat = null)
+        {
+            if (outputFormat == null)
+            {
+                var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
+                outputFormat = slimsyFormat != "false" ? slimsyFormat ?? "jpg" : string.Empty;
+            }
+
+            return !string.IsNullOrEmpty(outputFormat) ? string.Format("&format={0}", outputFormat) : null;
         }
     }
 }

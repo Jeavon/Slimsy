@@ -7,3 +7,4 @@ Slimsy Change log
 - 0.1.4-beta - add some null checks before converting to lowercase
 - 1.0.0 - release
 - 1.1.0 - all ImageProcessor.Web URLs now have upscale=false and by default format=jpg, this can be disabled by adding web.config appsetting. Also fixed package uninstall action 
+- 1.1.1 - added option to overload the output format for a specific image
