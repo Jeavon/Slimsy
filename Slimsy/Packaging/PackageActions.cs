@@ -787,7 +787,7 @@
             document.Load(HttpContext.Current.Server.MapPath(configFileName));
 
             //Select root node in the web.config file for insert new nodes
-            XmlNode rootNode = document.SelectSingleNode(xPath);
+            XmlNode rootNode = document.SelectSingleNode(xPath + "/namespaces");
 
             //Check for rootNode exists
             if (rootNode == null) return result;
@@ -900,7 +900,7 @@
         {
             return
                 helper.parseStringToXmlNode(
-                    "<Action runat=\"install\" undo=\"true/false\" alias=\"Slimsy.AddNamespace\" file=\"~/views/web.config\" xpath=\"//configuration/system.web.webPages.razor/pages\" position=\"beginning/end\" namespace=\"Slimsy\" />");
+                    "<Action runat=\"install\" undo=\"true\" alias=\"Slimsy.AddNamespace\" file=\"~/views/web.config\" xpath=\"//configuration/system.web.webPages.razor/pages\" position=\"end\" namespace=\"Slimsy\" />");
         }
 
         #endregion
