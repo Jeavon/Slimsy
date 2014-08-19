@@ -82,7 +82,6 @@ e.g. If you wanted a image to always be returned as a png
 
 		<img src="@featureImage.GetResponsiveImageUrl(270, 161, "Image", "png")" alt="" />
 
-
 #### GetResponsiveCropUrl(cropAlias)
 use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile".
 
