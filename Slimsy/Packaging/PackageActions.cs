@@ -25,7 +25,6 @@
 
         public bool Execute(string packageName, XmlNode xmlData)
         {
-
             // Set result default to false
             bool result = false;
 
@@ -142,7 +141,7 @@
 
         public XmlNode SampleXml()
         {
-            string str = "<Action runat=\"install\" undo=\"false\" alias=\"Umbundle.AddAssemblyBindin\">" +
+            string str = "<Action runat=\"install\" undo=\"false\" alias=\"Slimsy.AddAssemblyBinding\">" +
                             "<dependentAssembly>" +
                                 "<assemblyIdentity name=\"newone\" publicKeyToken=\"608967\" />" +
                                 "<bindingRedirect oldVersion=\"1\" newwVersion=\"2\" />" +
@@ -153,8 +152,84 @@
 
         public bool Undo(string packageName, XmlNode xmlData)
         {
-            return false;
+            // Set result default to false
+            bool result = false;
+
+            // Set modified document default to false
+            bool modified = false;
+
+            // Get attribute values of xmlData
+            string name, publicKeyToken, oldVersion, newVersion;
+            if (!this.GetAttribute(xmlData, "name", out name) || !this.GetAttribute(xmlData, "publicKeyToken", out publicKeyToken) || !this.GetAttribute(xmlData, "oldVersion", out oldVersion) || !this.GetAttribute(xmlData, "newVersion", out newVersion))
+            {
+                return result;
+            }
+
+            string filename = HttpContext.Current.Server.MapPath("/web.config");
+            XmlDocument document = new XmlDocument();
+            try
+            {
+                document.Load(filename);
+            }
+            catch (FileNotFoundException)
+            {
+            }
+
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(document.NameTable);
+            nsmgr.AddNamespace("bindings", "urn:schemas-microsoft-com:asm.v1");
+
+            XPathNavigator nav = document.CreateNavigator().SelectSingleNode("//bindings:assemblyBinding", nsmgr);
+            if (nav == null)
+            {
+                throw new Exception("Invalid Configuration File");
+            }
+
+            // Look for existing nodes with same path like the new node
+            if (nav.HasChildren)
+            {
+                // Look for existing nodeType nodes
+                var node =
+                    nav.SelectSingleNode(string.Format("./bindings:dependentAssembly/bindings:assemblyIdentity[@publicKeyToken = '{0}' and @name='{1}']", publicKeyToken, name), nsmgr);
+
+                // If path already exists 
+                if (node != null)
+                {
+                    if (node.MoveToParent())
+                    {
+                        node.DeleteSelf();
+                        modified = true;
+                    }
+                    else
+                    {
+                        //Log error message
+                        string message = "Error at AddAssemblyBinding package action: "
+                             + "Deleting \"" + name + "\" assembly binding failed.";
+                        LogHelper.Warn(typeof(AddAssemblyBinding), message);
+                    }
+                }
+            }
+
+
+            if (modified)
+            {
+                try
+                {
+                    document.Save(filename);
+
+                    // No errors so the result is true
+                    result = true;
+                }
+                catch (Exception e)
+                {
+                    // Log error message
+                    string message = "Error at execute AddAssemblyBinding package action: " + e.Message;
+                    LogHelper.Error(typeof(AddAssemblyBinding), message, e);
+                }
+            }
+
+            return result;
         }
+
 
         /// <summary>
         /// Get a named attribute from xmlData root node

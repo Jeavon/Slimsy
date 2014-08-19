@@ -33,7 +33,7 @@
   <Actions>
     <Action runat="install" undo="false" alias="Slimsy.AddAssemblyBinding" name="HtmlAgilityPack" publicKeyToken="bd319b19eaf3b43a" oldVersion="0.0.0.0-1.4.6.0" newVersion="1.4.6.0" />
     <Action runat="install" undo="true" alias="Slimsy.AddHttpModule" name="SlimResponseModule" position="end" type="Imazen.SlimResponse.SlimResponseModule, Imazen.SlimResponse" />
-    <Action runat="install" undo="false" alias="Slimsy.AddNamespace" file="~/views/web.config" xpath="//configuration/system.web.webPages.razor/pages" position="end" namespace="Slimsy" />
+    <Action runat="install" undo="true" alias="Slimsy.AddNamespace" file="~/views/web.config" xpath="//configuration/system.web.webPages.razor/pages" position="end" namespace="Slimsy" />
   </Actions>
 	
 	<control />
