@@ -109,6 +109,10 @@ If you really wanted to have all default URLs return pngs you could also do this
 
     <add key="Slimsy:Format" value="png"/>
 
+Added in Slimsy v1.1.2 - you can now specify the default background color by added another appsetting to web.config. As an exmaple this setting is used if ImageProcessor is converting a png to a jpg and it as some transparency
+
+	<add key="Slimsy:BGColor" value="fff"/>
+
 # Test Site
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.

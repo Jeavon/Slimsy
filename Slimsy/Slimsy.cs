@@ -9,6 +9,7 @@
 namespace Slimsy
 {
     using System.Configuration;
+    using System.Text;
 
     using Umbraco.Core;
     using Umbraco.Core.Models;
@@ -100,13 +101,29 @@ namespace Slimsy
 
         private static string Format(string outputFormat = null)
         {
+            var bgColor = string.Empty;
             if (outputFormat == null)
             {
                 var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
                 outputFormat = slimsyFormat != "false" ? slimsyFormat ?? "jpg" : string.Empty;
+                var slimsyBGColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
+                bgColor = slimsyBGColor != null && slimsyBGColor != "false" ? slimsyBGColor : string.Empty;
             }
 
-            return !string.IsNullOrEmpty(outputFormat) ? string.Format("&format={0}", outputFormat) : null;
+            if (!string.IsNullOrEmpty(outputFormat))
+            {
+                var returnString = new StringBuilder();
+                returnString.Append(string.Format("&format={0}", outputFormat));
+
+                if (!string.IsNullOrEmpty(bgColor))
+                {
+                    returnString.Append(string.Format("&bgcolor={0}", bgColor));
+                }
+
+                return returnString.ToString();
+            }
+
+            return null;
         }
     }
 }
