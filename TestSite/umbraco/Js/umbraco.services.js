@@ -1,4 +1,4 @@
-/*! umbraco - v7.1.4 - 2014-05-28
+/*! umbraco - v7.1.6 - 2014-08-25
  * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
@@ -1245,7 +1245,13 @@ angular.module('umbraco.services')
     function removeAllDialogs(args) {
         for (var i = 0; i < dialogs.length; i++) {
             var dialog = dialogs[i];
-            dialog.close(args);
+
+            //very special flag which means that global events cannot close this dialog - currently only used on the login 
+            // dialog since it's special and cannot be closed without logging in.
+            if (!dialog.manualClose) {
+                dialog.close(args);
+            }
+            
         }
     }
 
@@ -1400,6 +1406,7 @@ angular.module('umbraco.services')
                     };
 
                     scope.swipeHide = function (e) {
+
                         if (appState.getGlobalState("touchDevice")) {
                             var selection = window.getSelection();
                             if (selection.type !== "Range") {
@@ -1430,7 +1437,15 @@ angular.module('umbraco.services')
                     // You CANNOT call show() after you call hide(). hide = close, they are the same thing and once
                     // a dialog is closed it's resources are disposed of.
                     scope.show = function () {
-                        dialog.element.modal('show');
+                        if (dialog.manualClose === true) {
+                            //show and configure that the keyboard events are not enabled on this modal
+                            dialog.element.modal({ keyboard: false });
+                        }
+                        else {
+                            //just show normally
+                            dialog.element.modal('show');
+                        }
+                        
                     };
 
                     scope.select = function (item) {
@@ -1457,12 +1472,13 @@ angular.module('umbraco.services')
                         $('input[autofocus]', dialog.element).first().trigger('focus');
                     });
 
+                    dialog.scope = scope;
+
                     //Autoshow 
                     if (dialog.show) {
-                        dialog.element.modal('show');
+                        scope.show();
                     }
-
-                    dialog.scope = scope;
+                    
                 });
 
             //Return the modal object outside of the promise!
@@ -5122,7 +5138,7 @@ function tinyMceService(dialogService, $log, imageHelper, $http, $timeout, macro
                   $http.get(
                       umbRequestHelper.getApiUrl(
                           "rteApiBaseUrl",
-                          "GetConfiguration")),
+                          "GetConfiguration"), { cache: true }),
                   'Failed to retrieve tinymce configuration');
         },
 
@@ -5139,7 +5155,8 @@ function tinyMceService(dialogService, $log, imageHelper, $http, $timeout, macro
                var cfg = {};
                        cfg.toolbar = ["code", "bold", "italic", "styleselect","alignleft", "aligncenter", "alignright", "bullist","numlist", "outdent", "indent", "link", "image", "umbmediapicker", "umbembeddialog", "umbmacro"];
                        cfg.stylesheets = [];
-                       cfg.dimensions = {height: 500};
+                       cfg.dimensions = { height: 500 };
+                       cfg.maxImageSize = 500;
                 return cfg;
         },
 
@@ -5192,7 +5209,7 @@ function tinyMceService(dialogService, $log, imageHelper, $http, $timeout, macro
                     if(selectedElm.nodeName === 'IMG'){
                         var img = $(selectedElm);
                         currentTarget = {
-                            name: img.attr("alt"),
+                            altText: img.attr("alt"),
                             url: img.attr("src"),
                             id: img.attr("rel")
                         };
@@ -5207,7 +5224,7 @@ function tinyMceService(dialogService, $log, imageHelper, $http, $timeout, macro
                             if (img) {
                                 
                                 var data = {
-                                    alt: img.name,
+                                    alt: img.altText,
                                     src: (img.url) ? img.url : "nothing.jpg",
                                     rel: img.id,
                                     id: '__mcenew'
@@ -5219,17 +5236,18 @@ function tinyMceService(dialogService, $log, imageHelper, $http, $timeout, macro
                                     var imgElm = editor.dom.get('__mcenew');
                                     var size = editor.dom.getSize(imgElm);
 
-                                    var newSize = imageHelper.scaleToMaxSize(500, size.w, size.h);
+                                    if (editor.settings.maxImageSize && editor.settings.maxImageSize !== 0) {
+                                        var newSize = imageHelper.scaleToMaxSize(editor.settings.maxImageSize, size.w, size.h);
 
-                                    var s = "width: " + newSize.width + "px; height:" + newSize.height + "px;";
-                                    editor.dom.setAttrib(imgElm, 'style', s);
-                                    editor.dom.setAttrib(imgElm, 'id', null);
+                                        var s = "width: " + newSize.width + "px; height:" + newSize.height + "px;";
+                                        editor.dom.setAttrib(imgElm, 'style', s);
+                                        editor.dom.setAttrib(imgElm, 'id', null);
 
-                                    if(img.url){
-                                        var src = img.url + "?width=" + newSize.width + "&height=" + newSize.height;
-                                        editor.dom.setAttrib(imgElm, 'data-mce-src', src);
+                                        if (img.url) {
+                                            var src = img.url + "?width=" + newSize.width + "&height=" + newSize.height;
+                                            editor.dom.setAttrib(imgElm, 'data-mce-src', src);
+                                        }
                                     }
-                                 
                                 }, 500);
                             }
                         }
@@ -6678,6 +6696,10 @@ angular.module('umbraco.services')
         function openLoginDialog(isTimedOut) {
             if (!loginDialog) {
                 loginDialog = dialogService.open({
+
+                    //very special flag which means that global events cannot close this dialog
+                    manualClose: true,
+
                     template: 'views/common/dialogs/login.html',
                     modalClass: "login-overlay",
                     animation: "slide",
@@ -7015,7 +7037,7 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
             //this gets the image with the smallest height which equals the maximum we can scale up for this image block
             var maxScaleableHeight = this.getMaxScaleableHeight(idealImages, maxRowHeight);
             //if the max scale height is smaller than the min display height, we'll use the min display height
-            targetHeight = targetHeight ? targetHeight : Math.max(maxScaleableHeight, minDisplayHeight);
+            targetHeight =  targetHeight !== undefined ? targetHeight : Math.max(maxScaleableHeight, minDisplayHeight);
             
             var attemptedRowHeight = this.performGetRowHeight(idealImages, targetRowWidth, minDisplayHeight, targetHeight);
 
@@ -7026,7 +7048,8 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
                 if (attemptedRowHeight < minDisplayHeight) {
 
                     if (idealImages.length > 1) {
-                        //we'll generate a new targetHeight that is halfway between the max and the current and recurse, passing in a new targetHeight
+                        
+                        //we'll generate a new targetHeight that is halfway between the max and the current and recurse, passing in a new targetHeight                        
                         targetHeight += Math.floor((maxRowHeight - targetHeight) / 2);
                         return this.getRowHeightForImages(imgs, maxRowHeight, minDisplayHeight, maxRowWidth, idealImgPerRow - 1, margin, targetHeight);
                     }
@@ -7052,7 +7075,7 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
             }
             else if (idealImages.length === 1) {
                 //this will occur when we only have one image remaining in the row to process but it's not really going to fit ideally
-                // in the row so we'll just return the minDisplayHeight and it will just get centered on the row
+                // in the row. 
                 return { height: minDisplayHeight, imgCount: 1 };
             }
             else if (idealImages.length === idealImgPerRow && targetHeight < maxRowHeight) {
@@ -7073,7 +7096,19 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
                 //Ok, we couldn't actually scale it up with the ideal row count we'll just recurse with a lesser image count.
                 return this.getRowHeightForImages(imgs, maxRowHeight, minDisplayHeight, maxRowWidth, idealImgPerRow - 1, margin);
             }
+            else if (targetHeight === maxRowHeight) {
+
+                //This is going to happen when:
+                // * We can fit a list of images in a row, but they come up too short (based on minDisplayHeight)
+                // * Then we'll try to remove an image, but when we try to scale to fit, the width comes up too narrow but the images are already at their
+                //      maximum height (maxRowHeight)
+                // * So we're stuck, we cannot precicely fit the current list of images, so we'll render a row that will be max height but won't be wide enough
+                //      which is better than rendering a row that is shorter than the minimum since that could be quite small.
+
+                return { height: targetHeight, imgCount: idealImages.length };
+            }
             else {
+
                 //we have additional images so we'll recurse and add 1 to the idealImgPerRow until it fits
                 return this.getRowHeightForImages(imgs, maxRowHeight, minDisplayHeight, maxRowWidth, idealImgPerRow + 1, margin);
             }
@@ -7095,9 +7130,14 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
                 
                 return newHeight;
             }
-
-            //if it's not successful, return false
-            return null;
+            else if (idealImages.length === 1 && (currRowWidth <= targetRowWidth) && !idealImages[0].isFolder) {
+                //if there is only one image, then return the target height
+                return targetHeight;
+            }
+            else {
+                //if it's not successful, return false
+                return null;
+            }
         },
 
         /** builds an image grid row */
@@ -7109,31 +7149,29 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
             var targetWidth = this.getTargetWidth(imageRowHeight.imgCount, maxRowWidth, margin);
 
             var sizes = [];
-            for (var i = 0; i < imgs.length; i++) {
+            //loop through the images we know fit into the height
+            for (var i = 0; i < imageRowHeight.imgCount; i++) {
                 //get the lower width to ensure it always fits
                 var scaledWidth = Math.floor(this.getScaledWidth(imgs[i], imageRowHeight.height));
-
-                //in this case, a single image will not fit into the row so we need to crop/center
-                // width the full width and the min display height
-                if (imageRowHeight.imgCount === 1) {
-                    sizes.push({
-                        width: targetWidth,
-                        //ensure that the height is rounded
-                        height: Math.round(minDisplayHeight)
-                    });
-                    row.images.push(imgs[i]);
-                    break;
-                }
                 
                 if (currRowWidth + scaledWidth <= targetWidth) {
                     currRowWidth += scaledWidth;                    
                     sizes.push({
-                        width: scaledWidth,
+                        width:scaledWidth,
                         //ensure that the height is rounded
                         height: Math.round(imageRowHeight.height)
                     });
                     row.images.push(imgs[i]);
-                }                
+                }
+                else if (imageRowHeight.imgCount === 1 && row.images.length === 0) {
+                    //the image is simply too wide, we'll crop/center it
+                    sizes.push({
+                        width: maxRowWidth,
+                        //ensure that the height is rounded
+                        height: Math.round(imageRowHeight.height)
+                    });
+                    row.images.push(imgs[i]);
+                }
                 else {
                     //the max width has been reached
                     break;
@@ -7150,8 +7188,11 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
                 this.setImageStyle(row.images[j], sizes[j].width, sizes[j].height, margin, bottomMargin);
             }
 
-            ////set the row style
-            //row.style = { "width": maxRowWidth + "px" };
+            if (row.images.length === 1) {
+                //if there's only one image on the row, set the container to max width
+                row.images[0].style.width = maxRowWidth + "px"; 
+            }
+            
 
             return row;
         },
@@ -7198,6 +7239,11 @@ function umbPhotoFolderHelper($compile, $log, $timeout, $filter, imageHelper, me
                     imagesProcessed += row.images.length;
                 }
                 else {
+
+                    if (currImgs.length > 0) {
+                        throw "Could not fill grid with all images, images remaining: " + currImgs.length;
+                    }
+
                     //if there was nothing processed, exit
                     break;
                 }

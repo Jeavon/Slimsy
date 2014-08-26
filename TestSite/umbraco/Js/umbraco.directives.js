@@ -1,4 +1,4 @@
-/*! umbraco - v7.1.4 - 2014-05-28
+/*! umbraco - v7.1.6 - 2014-08-25
  * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
@@ -87,6 +87,41 @@ angular.module("umbraco.directives")
 							scope.placeholder = value;	
 						});
 				}
+			    
+				(function () {
+
+				    var mX, mY, distance;
+
+				    function calculateDistance(elem, mouseX, mouseY) {
+
+				        var cx = Math.max(Math.min(mouseX, elem.offset().left + elem.width()), elem.offset().left);
+				        var cy = Math.max(Math.min(mouseY, elem.offset().top + elem.height()), elem.offset().top);
+				        return Math.sqrt((mouseX - cx) * (mouseX - cx) + (mouseY - cy) * (mouseY - cy));
+				    }
+
+				    var mouseMoveDebounce = _.throttle(function (e) {
+				        mX = e.pageX;
+				        mY = e.pageY;
+				        // not focused and not over element
+				        if (!inputElement.is(":focus") && !inputElement.hasClass("ng-invalid")) {
+				            // on page
+				            if (mX >= inputElement.offset().left) {
+				                distance = calculateDistance(inputElement, mX, mY);
+				                if (distance <= 155) {
+
+				                    distance = 1 - (100 / 150 * distance / 100);
+				                    inputElement.css("border", "1px solid rgba(175,175,175, " + distance + ")");
+				                    inputElement.css("background-color", "rgba(255,255,255, " + distance + ")");
+				                }
+				            }
+
+				        }
+
+				    }, 15);
+
+				    $(document).mousemove(mouseMoveDebounce);
+
+				})();
 
 				$timeout(function(){
 					if(!scope.model){
@@ -1431,7 +1466,7 @@ angular.module("umbraco.directives")
 * @name umbraco.directives.directive:umbSections
 * @restrict E
 **/
-function sectionsDirective($timeout, $window, navigationService, treeService, sectionResource, appState, eventsService) {
+function sectionsDirective($timeout, $window, navigationService, treeService, sectionResource, appState, eventsService, $location) {
     return {
         restrict: "E",    // restrict to an element
         replace: true,   // replace the html element with the template
@@ -1512,7 +1547,8 @@ function sectionsDirective($timeout, $window, navigationService, treeService, se
 
 			scope.sectionClick = function (section) {
 			    navigationService.hideSearch();
-				navigationService.showTree(section.alias);
+			    navigationService.showTree(section.alias);
+			    $location.path("/" + section.alias);
 			};
 
 			scope.sectionDblClick = function(section){
@@ -1665,8 +1701,26 @@ function umbTreeDirective($compile, $log, $q, $rootScope, treeService, notificat
                             //reset current node selection
                             //scope.currentNode = null;
 
-                            //filter the path for root node ids
+                            //Filter the path for root node ids (we don't want to pass in -1 or 'init')
+
                             args.path = _.filter(args.path, function (item) { return (item !== "init" && item !== "-1"); });
+
+                            //Once those are filtered we need to check if the current user has a special start node id, 
+                            // if they do, then we're going to trim the start of the array for anything found from that start node
+                            // and previous so that the tree syncs properly. The tree syncs from the top down and if there are parts
+                            // of the tree's path in there that don't actually exist in the dom/model then syncing will not work.
+
+                            var startNodes = [Umbraco.Sys.ServerVariables.security.startContentId, Umbraco.Sys.ServerVariables.security.startMediaId];
+                            _.each(startNodes, function (i) {
+                                var found = _.find(args.path, function(p) {
+                                    return String(p) === String(i);
+                                });
+                                if (found) {
+                                    args.path = args.path.splice(_.indexOf(args.path, found));
+                                }
+                            });
+                            
+                            
                             loadPath(args.path, args.forceReload, args.activate);
 
                             return deferred.promise;
@@ -1949,7 +2003,7 @@ angular.module("umbraco.directives")
         '<ins ng-hide="node.hasChildren" style="width:18px;"></ins>' +        
         '<ins ng-show="node.hasChildren" ng-class="{\'icon-navigation-right\': !node.expanded, \'icon-navigation-down\': node.expanded}" ng-click="load(node)"></ins>' +
         '<i title="#{{node.routePath}}" class="{{node.cssClass}}"></i>' +
-        '<a href ng-click="select(this, node, $event)" on-right-click="altSelect(this, node, $event)">{{node.name}}</a>' +
+        '<a href ng-click="select(this, node, $event)" on-right-click="altSelect(this, node, $event)" ng-bind-html="node.name"></a>' +
         '<a href class="umb-options" ng-hide="!node.menuUrl" ng-click="options(this, node, $event)"><i></i><i></i><i></i></a>' +
         '<div ng-show="node.loading" class="l"><div></div></div>' +
         '</div>' +
@@ -2439,6 +2493,24 @@ angular.module("umbraco.directives")
   });
 
 /**
+* @ngdoc directive
+* @name umbraco.directives.directive:noDirtyCheck
+* @restrict A
+* @description Can be attached to form inputs to prevent them from setting the form as dirty (http://stackoverflow.com/questions/17089090/prevent-input-from-setting-form-dirty-angularjs)
+**/
+function noDirtyCheck() {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, elm, attrs, ctrl) {
+            elm.focus(function () {
+                ctrl.$pristine = false;
+            });
+        }
+    };
+}
+angular.module('umbraco.directives').directive("noDirtyCheck", noDirtyCheck);
+/**
  * General-purpose validator for ngModel.
  * angular.js comes with several built-in validation mechanism for input fields (ngRequired, ngPattern etc.) but using
  * an arbitrary validation function requires creation of a custom formatters and / or parsers.
@@ -2629,7 +2701,7 @@ angular.module('umbraco.directives.validation')
 * Another thing this directive does is to ensure that any .control-group that contains form elements that are invalid will
 * be marked with the 'error' css class. This ensures that labels included in that control group are styled correctly.
 **/
-function valFormManager(serverValidationManager, $rootScope, $log, $timeout, notificationsService, eventsService) {
+function valFormManager(serverValidationManager, $rootScope, $log, $timeout, notificationsService, eventsService, $routeParams) {
     return {
         require: "form",
         restrict: "A",
@@ -2654,6 +2726,12 @@ function valFormManager(serverValidationManager, $rootScope, $log, $timeout, not
             var savingEventName = attr.savingEvent ? attr.savingEvent : "formSubmitting";
             var savedEvent = attr.savedEvent ? attr.savingEvent : "formSubmitted";
 
+            //This tracks if the user is currently saving a new item, we use this to determine 
+            // if we should display the warning dialog that they are leaving the page - if a new item
+            // is being saved we never want to display that dialog, this will also cause problems when there
+            // are server side validation issues.
+            var isSavingNewItem = false;
+
             //we should show validation if there are any msgs in the server validation collection
             if (serverValidationManager.items.length > 0) {
                 element.addClass(className);
@@ -2662,6 +2740,9 @@ function valFormManager(serverValidationManager, $rootScope, $log, $timeout, not
             //listen for the forms saving event
             scope.$on(savingEventName, function (ev, args) {
                 element.addClass(className);
+
+                //set the flag so we can check to see if we should display the error.
+                isSavingNewItem = $routeParams.create;
             });
 
             //listen for the forms saved event
@@ -2677,7 +2758,7 @@ function valFormManager(serverValidationManager, $rootScope, $log, $timeout, not
             //This handles the 'unsaved changes' dialog which is triggered when a route is attempting to be changed but
             // the form has pending changes
             var locationEvent = $rootScope.$on('$locationChangeStart', function(event, nextLocation, currentLocation) {
-                if (!formCtrl.$dirty) {                   
+                if (!formCtrl.$dirty || isSavingNewItem) {
                     return;
                 }
 
