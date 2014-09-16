@@ -113,6 +113,21 @@ Added in Slimsy v1.1.2 - you can now specify the default background color by add
 
 	<add key="Slimsy:BGColor" value="fff"/>
 
+# Sliders/Carousels
+
+When using a JavaScript slider it is likely that you will need to activate the slider once Slimmage has completed it's slimming. e.g.:
+
+    window.slimmage.readyCallback = function() {
+            $('.bxslider').bxSlider();
+        }
+
+Slimmage is only compatible with Sliders where the image dimensions can be computed at  browser render (not hidden by CSS).
+
+Here are a few that are known to be compatible:
+
+- [bxSlider](http://bxslider.com/) (free WTFPL)
+- [carouFredSel](http://dev7studios.com/plugins/caroufredsel/) (licensed)
+
 # Test Site
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.
