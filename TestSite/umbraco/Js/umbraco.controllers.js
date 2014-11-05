@@ -1,4 +1,4 @@
-/*! umbraco - v7.1.6 - 2014-08-25
+/*! umbraco - v7.1.8 - 2014-10-08
  * https://github.com/umbraco/umbraco-cms/
  * Copyright (c) 2014 Umbraco HQ;
  * Licensed MIT
@@ -444,7 +444,10 @@ function ContentEditDialogController($scope) {
 
 angular.module("umbraco")
 	.controller("Umbraco.Dialogs.Content.EditController", ContentEditDialogController);
-//used for the media picker dialog
+
+//TODO: SD: Pretty sure we don't want this anymore and we should just be using the treepicker.html instead for all tree picking.
+
+//used for the content picker dialog
 angular.module("umbraco").controller("Umbraco.Dialogs.ContentPickerController",
 	function ($scope, eventsService, entityResource, searchService, $log) {	
 	var dialogOptions = $scope.dialogOptions;
