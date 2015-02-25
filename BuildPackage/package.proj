@@ -103,6 +103,8 @@
       <ScriptsFiles Include="$(CoreProjectDir)\Scripts\*.js" />
       <PackageFile Include="$(MSBuildProjectDirectory)\package.xml" />
       <NuSpecFile Include="$(MSBuildProjectDirectory)\package.nuspec" />
+      <ViewsConfigInstallXdt Include ="$(MSBuildProjectDirectory)\views.web.config.install.xdt"/>
+      <ViewsConfigUninstallXdt Include ="$(MSBuildProjectDirectory)\views.web.config.uninstall.xdt"/>
     </ItemGroup>
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildUmbDir)\bin" />
     <Copy SourceFiles="@(SlimResponseAssembly)" DestinationFolder="$(BuildUmbDir)\bin" />
@@ -111,6 +113,8 @@
     <Copy SourceFiles="@(PackageFile)" DestinationFolder="$(BuildUmbDir)" />
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildNuGetDir)\Content\Scripts" />
+    <Copy SourceFiles="@(ViewsConfigInstallXdt)" DestinationFiles="$(BuildNuGetDir)\Content\Views\web.config.install.xdt" />
+    <Copy SourceFiles="@(ViewsConfigUninstallXdt)" DestinationFiles="$(BuildNuGetDir)\Content\Views\web.config.uninstall.xdt" />
     <Copy SourceFiles="@(NuSpecFile)" DestinationFolder="$(BuildNuGetDir)" />
   </Target>
 

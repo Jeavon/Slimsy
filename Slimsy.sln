@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPackage", "BuildPackag
 		BuildPackage\package.nuspec = BuildPackage\package.nuspec
 		BuildPackage\package.proj = BuildPackage\package.proj
 		BuildPackage\package.xml = BuildPackage\package.xml
+		BuildPackage\views.web.config.install.xdt = BuildPackage\views.web.config.install.xdt
+		BuildPackage\views.web.config.uninstall.xdt = BuildPackage\views.web.config.uninstall.xdt
 	EndProjectSection
 EndProject
 Global
