@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3E59C3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPackage", "BuildPackage", "{2B65A62A-CC2F-449E-BB0D-C77D0C20FFFC}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
 		BuildPackage\Build.bat = BuildPackage\Build.bat
 		BuildPackage\LocalBuild.bat = BuildPackage\LocalBuild.bat
 		BuildPackage\package.nuspec = BuildPackage\package.nuspec
