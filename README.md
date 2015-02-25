@@ -2,6 +2,8 @@ Slimsy
 ============
 **Effortless Responsive Images with Slimmage and Umbraco**
 
+![](Slimsy.png)
+
 **Note** This package requires Umbraco v7.1.3+
 
 Slimmage.js used in conjunction with ImageProcessor.Web (included in Umbraco v7.1) and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
