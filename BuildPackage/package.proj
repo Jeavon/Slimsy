@@ -32,6 +32,7 @@
     <PackageId>Our.Umbraco.Slimsy</PackageId>
     <Copyright>Jeavon Leopold and Marc Stöcker</Copyright>
     <Owners>Jeavon Leopold, Marc Stöcker</Owners>
+    <Summary>Effortless Responsive Images with Slimmage and Umbraco using Slimmage.js</Summary>
     <IconUrl>https://raw.githubusercontent.com/Jeavon/Slimsy/master/Slimsy.png</IconUrl>
     <Tags>umbraco</Tags>
     <Language>en-GB</Language>
@@ -148,7 +149,7 @@
 			WorkingDirectory="$(BuildNuGetDir)"
 			Title="$(NugetPackageName)"
 			Description="$(Readme)"
-			Summary="$(Readme)"
+			Summary="$(Summary)"
 			Version="$(ProductVersion)"
 			MinimumRequiredUmbracoVersion ="$(MinUmbracoVersion)"
 			Authors="$(AuthorName)"
