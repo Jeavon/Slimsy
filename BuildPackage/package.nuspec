@@ -17,6 +17,7 @@
     <tags></tags>
     <dependencies>
       <dependency id="UmbracoCms.Core" version="0.0.0" />
+      <dependency id="HtmlAgilityPack" version="1.4.9" />
     </dependencies>
   </metadata>
 </package>
