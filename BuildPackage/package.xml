@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<umbPackage>
+  <info>
+    <package>
+      <name></name>
+      <version>0.0.0</version>
+      <license url=""></license>
+      <url></url>
+      <requirements>
+        <major>0</major>
+        <minor>0</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name></name>
+      <website></website>
+    </author>
+    <readme><![CDATA[]]></readme>
+  </info>
+
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+
+  <Actions>
+    <Action runat="install" undo="false" alias="Slimsy.AddAssemblyBinding" name="HtmlAgilityPack" publicKeyToken="bd319b19eaf3b43a" oldVersion="0.0.0.0-1.4.6.0" newVersion="1.4.6.0" />
+    <Action runat="install" undo="true" alias="Slimsy.AddHttpModule" name="SlimResponseModule" position="end" type="Imazen.SlimResponse.SlimResponseModule, Imazen.SlimResponse" />
+    <Action runat="install" undo="true" alias="Slimsy.AddNamespace" file="~/views/web.config" xpath="//configuration/system.web.webPages.razor/pages" position="end" namespace="Slimsy" />
+  </Actions>
+
+  <control />
+
+  <files />
+
+</umbPackage>
