@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite", "TestSite\TestSite.csproj", "{2945BFFF-AE1F-4232-93AF-60AD84030E52}"
 EndProject
@@ -14,11 +14,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3E59C3
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2262007F-C1E1-4D10-BAA6-231912EAE9EC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPackage", "BuildPackage", "{2B65A62A-CC2F-449E-BB0D-C77D0C20FFFC}"
 	ProjectSection(SolutionItems) = preProject
-		PackageBuild\Package.build.cmd = PackageBuild\Package.build.cmd
-		PackageBuild\Package.build.xml = PackageBuild\Package.build.xml
-		PackageBuild\Package.xml = PackageBuild\Package.xml
+		BuildPackage\Build.bat = BuildPackage\Build.bat
+		BuildPackage\LocalBuild.bat = BuildPackage\LocalBuild.bat
+		BuildPackage\package.nuspec = BuildPackage\package.nuspec
+		BuildPackage\package.proj = BuildPackage\package.proj
+		BuildPackage\package.xml = BuildPackage\package.xml
 	EndProjectSection
 EndProject
 Global
