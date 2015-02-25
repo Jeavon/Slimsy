@@ -110,7 +110,6 @@
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildUmbDir)\Scripts" />
     <Copy SourceFiles="@(PackageFile)" DestinationFolder="$(BuildUmbDir)" />
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
-    <Copy SourceFiles="@(SlimResponseAssembly)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildNuGetDir)\Content\Scripts" />
     <Copy SourceFiles="@(NuSpecFile)" DestinationFolder="$(BuildNuGetDir)" />
   </Target>
