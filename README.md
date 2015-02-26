@@ -6,6 +6,11 @@ Slimsy
 
 [![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/JeavonLeopold/slimsy)
 
+Umbraco Package: [https://our.umbraco.org/projects/website-utilities/slimsy](https://our.umbraco.org/projects/website-utilities/slimsy)
+<br/>Nuget Package: `Install-Package Our.Umbraco.Slimsy`
+<br/>MyGet Latest Build Package: [https://www.myget.org/gallery/slimsy](https://www.myget.org/gallery/slimsy)
+
+
 **Note** This package requires Umbraco v7.1.3+
 
 Slimmage.js used in conjunction with ImageProcessor.Web (included in Umbraco v7.1) and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
