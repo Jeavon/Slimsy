@@ -10,3 +10,4 @@ Slimsy Change log
 - 1.1.1 - added option to overload the output format for a specific image
 - 1.1.2 - added option to set default background color for use with output format
 - 1.1.3 - removed upscale=false as it stops the image being cropped to correct ratio for oversized requests
+- 1.1.4 - updated slimmage.js to v0.4.1 and add NuGet package
