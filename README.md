@@ -132,6 +132,10 @@ Here are a few that are known to be compatible:
 - [bxSlider](http://bxslider.com/) (free WTFPL)
 - [carouFredSel](http://dev7studios.com/plugins/caroufredsel/) (licensed)
 
+# Upgrades
+
+Slimsy v1.1.4 includes the update to Slimmage.js v0.4.1 - for this version of Slimmage you must ensure your images have the `max-width:100%` css property.
+
 # Test Site
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.
