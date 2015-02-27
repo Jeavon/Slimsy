@@ -1,10 +1,10 @@
 # version format
-version: 1.1.5.{build}
+version: 1.2.0.{build}
 
 # UMBRACO_PACKAGE_PRERELEASE_SUFFIX will only be used for Release builds
 # example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
 install:
-  - cmd: set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=
+  - cmd: set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
   - cmd: cd BuildPackage
   - cmd: Build.bat
 

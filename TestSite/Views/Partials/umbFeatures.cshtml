@@ -171,7 +171,7 @@
             }
 
         </div>
-        
+
         <div class="row">
 
             <h2>Lets make it simple with Slimsy using a predefined crop - all PNGs</h2>
@@ -184,11 +184,38 @@
                         @if (feature.HasValue("Image"))
                         {
                             var featureImage = Umbraco.Media(feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveCropUrl("home", "umbracoFile", "png")" alt="" /></a>
+                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveCropUrl("home", "umbracoFile", "png")" alt=""/></a>
+                        }
+                        <h3><a href="@feature.Url">@feature.Name</a>
+                        </h3>
+                        @Umbraco.Truncate(feature.BodyText, 100)
+                    </section>
+                    <!-- /Feature -->
+                </div>
+            }
+
+        </div>
+
+        <div class="row">
+
+            <h2>Using Image Source Set</h2>
+
+            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+            {
+                <div class="3u">
+                    <!-- Feature -->
+                    <section class="is-feature">
+                        @if (feature.HasValue("Image"))
+                        {
+                            var featureImage = Umbraco.TypedMedia((string)feature.Image);
+                            <a href="@feature.Url" class="image image-full">
+                                <img srcset="@featureImage.GetImgSrcSet(270, 161)" src="@featureImage.GetCropUrl(270, 161)" sizes="20vw" />
+                            </a>
                         }
                         <h3><a href="@feature.Url">@feature.Name</a></h3>
                         @Umbraco.Truncate(feature.BodyText, 100)
                     </section>
+
                     <!-- /Feature -->
                 </div>
             }

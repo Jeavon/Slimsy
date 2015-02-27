@@ -8,6 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Slimsy
 {
+    using System;
     using System.Configuration;
     using System.Text;
 
@@ -92,6 +93,38 @@ namespace Slimsy
                 furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height)
+        {
+            return publishedContent.GetImgSrcSet(width, height, Constants.Conventions.Media.File);
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
+        {
+            return publishedContent.GetImgSrcSet(width, height, propertyAlias, null);
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat)
+        {
+            var w = 160;
+            const int MaxWidth = 2048;
+            const int WidthStep = 160;
+
+            var outputStringBuilder = new StringBuilder();
+            var heightRatio = (decimal)height / (decimal)width;
+
+            while (w <= MaxWidth)
+            {
+                var h = (int)Math.Round(w * heightRatio);
+                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, propertyAlias, furtherOptions: Format(outputFormat)), w));
+                w += WidthStep;
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return outputString;
         }
 
         private static string Format(string outputFormat = null)
