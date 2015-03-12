@@ -1,15 +1,14 @@
 # version format
-version: 1.1.5.{build}
+version: 1.1.6.{build}
 
 # UMBRACO_PACKAGE_PRERELEASE_SUFFIX will only be used for Release builds
 # example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
-install:
-  - cmd: set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=
-  - cmd: cd BuildPackage
-  - cmd: Build.bat
+init:
+  - set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=
 
-# to disable automatic builds
-build: off
+build_script:
+  - cd BuildPackage
+  - Build.bat
 
 artifacts:
   - path: BuildPackage\artifacts\*.nupkg
@@ -19,6 +18,7 @@ deploy:
      # MyGet Deployment for builds & releases
   - provider: NuGet
     server: https://www.myget.org/F/slimsy/
+    symbol_server: https://nuget.symbolsource.org/MyGet/slimsy
     api_key:
       secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
     artifact: /.*\.nupkg/
