@@ -99,6 +99,8 @@
 	<Target Name="PrepareFiles" DependsOnTargets="Compile">
 		<ItemGroup>
       <SlimsyAssembly Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Slimsy.dll" />
+      <PdbFiles Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Slimsy.pdb" />
+      <SrcFiles Include="$(CoreProjectDir)\**\*.cs" Exclude="$(CoreProjectDir)\obj\**"/>      
       <SlimResponseAssembly Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Imazen.SlimResponse.dll" />
       <HtmlAgilityPackAssembly Include="$(CoreProjectDir)\Bin\$(BuildConfig)\HtmlAgilityPack.dll" />
       <ScriptsFiles Include="$(CoreProjectDir)\Scripts\*.js" />
@@ -113,10 +115,12 @@
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildUmbDir)\Scripts" />
     <Copy SourceFiles="@(PackageFile)" DestinationFolder="$(BuildUmbDir)" />
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
+    <Copy SourceFiles="@(PdbFiles)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildNuGetDir)\Content\Scripts" />
     <Copy SourceFiles="@(ViewsConfigInstallXdt)" DestinationFiles="$(BuildNuGetDir)\Content\Views\web.config.install.xdt" />
     <Copy SourceFiles="@(ViewsConfigUninstallXdt)" DestinationFiles="$(BuildNuGetDir)\Content\Views\web.config.uninstall.xdt" />
     <Copy SourceFiles="@(NuSpecFile)" DestinationFolder="$(BuildNuGetDir)" />
+    <Copy SourceFiles="@(SrcFiles)" DestinationFiles="@(SrcFiles->'$(BuildNuGetDir)\src\%(RecursiveDir)%(Filename)%(Extension)')" />    
   </Target>
 
   <!-- MANIFEST UMBRACO -->
@@ -180,7 +184,8 @@
           ManifestFile="$(BuildNuGetDir)\package.nuspec"
           BasePath="$(BuildNuGetDir)"
           Version="$(ProductVersion)"
-          OutputDirectory="$(ArtifactsDir)" />
+          OutputDirectory="$(ArtifactsDir)"
+          Symbols="true" />
 
     <RemoveDir Directories="$(BuildUmbDir)" Condition="Exists('$(BuildUmbDir)')" />
     <RemoveDir Directories="$(BuildNuGetDir)" Condition="Exists('$(BuildNuGetDir)')" />
