@@ -8,8 +8,12 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Slimsy
 {
+    using System;
     using System.Configuration;
+    using System.Linq;
     using System.Text;
+
+    using Newtonsoft.Json;
 
     using Umbraco.Core;
     using Umbraco.Core.Models;
@@ -92,6 +96,88 @@ namespace Slimsy
                 furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height)
+        {
+            return publishedContent.GetImgSrcSet(width, height, Constants.Conventions.Media.File);
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
+        {
+            return publishedContent.GetImgSrcSet(width, height, propertyAlias, null);
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat)
+        {
+            var w = 160;
+            const int MaxWidth = 2048;
+            const int WidthStep = 160;
+
+            var outputStringBuilder = new StringBuilder();
+            var heightRatio = (decimal)height / (decimal)width;
+
+            while (w <= MaxWidth)
+            {
+                var h = (int)Math.Round(w * heightRatio);
+                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, propertyAlias, quality: 90, preferFocalPoint :true, furtherOptions: Format(outputFormat)), w));
+                w += WidthStep;
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return outputString;
+        }
+
+        public static string GetCropSrcSet(this IPublishedContent publishedContent, string cropAlias)
+        {
+            return publishedContent.GetCropSrcSet(cropAlias, Constants.Conventions.Media.File);
+        }
+
+        public static string GetCropSrcSet(this IPublishedContent publishedContent, string cropAlias, string propertyAlias)
+        {
+            return publishedContent.GetCropSrcSet(cropAlias, propertyAlias, null);
+        }
+
+        public static string GetCropSrcSet(this IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
+        {
+            var w = 160;
+            const int MaxWidth = 2048;
+            const int WidthStep = 160;
+
+            var outputStringBuilder = new StringBuilder();
+
+            var cropperJson = publishedContent.GetPropertyValue<string>(propertyAlias);
+            var imageCrops = JsonConvert.DeserializeObject<ImageCropDataSet>(cropperJson);
+
+            var crop = imageCrops.Crops.FirstOrDefault(
+                x => x.Alias.ToLowerInvariant() == cropAlias.ToLowerInvariant());
+
+            if (crop != null)
+            {
+                var heightRatio = (decimal)crop.Height / (decimal)crop.Width;
+
+                while (w <= MaxWidth)
+                {
+                    var h = (int)Math.Round(w * heightRatio);
+                    outputStringBuilder.Append(
+                        string.Format(
+                            "{0} {1}w,",
+                            publishedContent.GetCropUrl(w, h, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat)),
+                            w));
+                    w += WidthStep;
+                }
+            }
+            else
+            {
+                // return focal point?
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return outputString;
         }
 
         private static string Format(string outputFormat = null)
