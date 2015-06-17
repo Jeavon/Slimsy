@@ -74,8 +74,10 @@
             <cc1:PropertyPanel runat="server" Text="&nbsp;">
                 <asp:Button ID="ButtonLoadPackage" runat="server" Enabled="false" Text="Load Package"
                     OnClick="uploadFile"></asp:Button>
-                <div id="loadingbar" style="display: none; overflow: hidden; margin-left: -100%; margin-right: -20px;">
-                    <cc1:ProgressBar ID="progbar1" runat="server" Title="Please wait..." />
+                <div id="loadingbar" style="display: none;">
+                    <div class="umb-loader-wrapper">
+                        <cc1:ProgressBar ID="progbar1" runat="server" Title="Please wait..." />
+                    </div>
                 </div>
             </cc1:PropertyPanel>
         </cc1:Pane>
@@ -105,7 +107,7 @@
                     <p>
                         <strong>Please note:</strong> Installing a package containing several items and
                         files can take some time. Do not refresh the page or navigate away before, the installer
-                        notifies you the install is completed.
+                        notifies you once the install is completed.
                     </p>
                 </div>
 
@@ -252,10 +254,12 @@
 
                 <cc1:PropertyPanel runat="server" Text=" ">
                     <br />
-                    <div id="installingMessage" style="display: none; overflow: hidden; margin-left: -100%; margin-right: -20px;">
-                        <cc1:ProgressBar runat="server" ID="_progbar1" />
+                    <div id="installingMessage" style="display: none;">
+                        <div class="umb-loader-wrapper">
+                            <cc1:ProgressBar runat="server" ID="_progbar1" />
+                        </div>
                         <br />
-                        <em>&nbsp; &nbsp;Installing package, please wait...</em><br />
+                        <em>Installing package, please wait...</em><br /><br />
                     </div>
                     <asp:Button ID="ButtonInstall" runat="server" Text="Install Package" CssClass="btn btn-primary" Enabled="False"
                         OnClick="startInstall"></asp:Button>
@@ -276,9 +280,9 @@
             <cc1:PropertyPanel runat="server">
               
                 <p>
-                    All items in the package has been installed</p>
+                    All items in the package have been installed</p>
                 <p>
-                    Overview of what was installed can found under "installed package" in the developer
+                    Overview of what was installed can be found under "installed package" in the developer
                     section.</p>
                 <p>
                     Uninstall is available at the same location.</p>
