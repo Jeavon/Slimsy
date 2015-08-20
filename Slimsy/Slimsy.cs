@@ -6,14 +6,11 @@
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace Slimsy
 {
-    using System;
     using System.Configuration;
-    using System.Linq;
     using System.Text;
-
-    using Newtonsoft.Json;
 
     using Umbraco.Core;
     using Umbraco.Core.Models;
@@ -43,6 +40,7 @@ namespace Slimsy
                     null,
                     propertyAlias,
                     quality: 90,
+                    preferFocalPoint: true, 
                     furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
             }
             else
@@ -53,6 +51,7 @@ namespace Slimsy
                     propertyAlias,
                     quality: 90,
                     ratioMode: ImageCropRatioMode.Height,
+                    preferFocalPoint: true, 
                     furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
             }
 
