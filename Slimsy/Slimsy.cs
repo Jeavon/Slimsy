@@ -97,6 +97,32 @@ namespace Slimsy
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
 
+        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, int? width, int? height, ImageCropMode? imageCropMode)
+        {
+            var returnUrl = publishedContent.GetCropUrl(
+                imageCropMode: imageCropMode,
+                width: width,
+                height: height,
+                quality: 90,
+                ratioMode: ImageCropRatioMode.Height,
+                furtherOptions: string.Format("{0}&slimmage=true", Format()));
+
+            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        }
+
+        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, int? width, int? height, ImageCropMode? imageCropMode, string outputFormat)
+        {
+            var returnUrl = publishedContent.GetCropUrl(
+                imageCropMode: imageCropMode,
+                width: width,
+                height: height,
+                quality: 90,
+                ratioMode: ImageCropRatioMode.Height,
+                furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
+
+            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        }
+
         private static string Format(string outputFormat = null)
         {
             var bgColor = string.Empty;
