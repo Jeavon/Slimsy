@@ -147,10 +147,12 @@ Here are a few that are known to be compatible:
 
 Slimsy v1.1.4 includes the update to Slimmage.js v0.4.1 - for this version of Slimmage you must ensure your images have the `max-width:100%` css property.
 
-# Test Site
+# Test Site & Source Code
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.
 By default the test site is configured to use full IIS (due to IIS Express SQL CE persistence issue) on the domain slimsy.local, you can change it to use IIS Express if you prefer.
+
+Visual Studio 2015 is required for compiling the source code
 
 # Credits and references
 
