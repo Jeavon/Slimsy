@@ -27,15 +27,15 @@ deploy:
     on:
       branch: master
 
-    # MyGet Deployment for builds & releases from feature branches
-  - provider: NuGet
-    server: https://www.myget.org/F/slimsy/
-    symbol_server: https://nuget.symbolsource.org/MyGet/slimsy
-    api_key:
-      secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
-    artifact: /.*\.nupkg/
-    on:
-      branch: /feature\/.*/
+#    # MyGet Deployment for builds & releases from feature branches
+#  - provider: NuGet
+#    server: https://www.myget.org/F/slimsy/
+#    symbol_server: https://nuget.symbolsource.org/MyGet/slimsy
+#    api_key:
+#      secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
+#    artifact: /.*\.nupkg/
+#    on:
+#      branch: /feature\/.*/
 
      # GitHub Deployment for releases
   - provider: GitHub
