@@ -39,9 +39,8 @@ namespace Slimsy
                     width,
                     null,
                     propertyAlias,
-                    quality: 90,
                     preferFocalPoint: true, 
-                    furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
+                    furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format(outputFormat)));
             }
             else
             {
@@ -49,10 +48,9 @@ namespace Slimsy
                     width,
                     height,
                     propertyAlias,
-                    quality: 90,
                     ratioMode: ImageCropRatioMode.Height,
                     preferFocalPoint: true, 
-                    furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
+                    furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format(outputFormat)));
             }
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
@@ -64,9 +62,8 @@ namespace Slimsy
             var returnUrl = publishedContent.GetCropUrl(
                 cropAlias: cropAlias,
                 useCropDimensions: true,
-                quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: string.Format("{0}&slimmage=true", Format()));
+                furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format()));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
@@ -77,9 +74,8 @@ namespace Slimsy
                 propertyAlias: propertyAlias,
                 cropAlias: cropAlias,
                 useCropDimensions: true,
-                quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: string.Format("{0}&slimmage=true", Format()));
+                furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format()));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
@@ -90,9 +86,8 @@ namespace Slimsy
                 propertyAlias: propertyAlias,
                 cropAlias: cropAlias,
                 useCropDimensions: true,
-                quality: 90,
                 ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: string.Format("{0}&slimmage=true", Format(outputFormat)));
+                furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format(outputFormat)));
 
             return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
         }
