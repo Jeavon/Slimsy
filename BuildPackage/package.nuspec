@@ -17,7 +17,6 @@
     <tags></tags>
     <dependencies>
       <dependency id="UmbracoCms.Core" version="0.0.0" />
-      <dependency id="HtmlAgilityPack" version="1.4.9" />
       <dependency id="Imazen.SlimResponse" version="0.2.4936.26457" />
     </dependencies>
   </metadata>

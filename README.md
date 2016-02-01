@@ -4,18 +4,24 @@ Slimsy
 
 ![](Slimsy.png)
 
+__Release Downloads__ 
+
+NuGet Package: [![NuGet release](https://img.shields.io/nuget/v/Our.Umbraco.Slimsy.svg)](https://www.nuget.org/packages/Our.Umbraco.Slimsy/)
+Umbraco Package: [![Our Umbraco project page](https://img.shields.io/badge/our-umbraco-orange.svg)](https://our.umbraco.org/projects/website-utilities/slimsy) 
+
+__Prerelease Downloads__ 
+
+NuGet Package: [![MyGet build](https://img.shields.io/myget/slimsy/vpre/Our.Umbraco.Slimsy.svg)](https://www.myget.org/gallery/slimsy)
+Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/appveyor-umbraco-orange.svg)](https://ci.appveyor.com/project/JeavonLeopold/slimsy/build/artifacts) 
+
 [![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/JeavonLeopold/slimsy)
 
-Umbraco Package: [https://our.umbraco.org/projects/website-utilities/slimsy](https://our.umbraco.org/projects/website-utilities/slimsy)
-<br/>Nuget Package: `Install-Package Our.Umbraco.Slimsy`
-<br/>MyGet Latest Build Package: [https://www.myget.org/gallery/slimsy](https://www.myget.org/gallery/slimsy)
 
+**Note** Slimsy v1.1.6+ requires Umbraco v7.3.0+ (for earler versions of Umbraco use Slimsy v1.1.5 from the archive)
 
-**Note** This package requires Umbraco v7.1.3+
+Slimmage.js used in conjunction with ImageProcessor.Web (included in Umbraco v7.1+) and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
 
-Slimmage.js used in conjunction with ImageProcessor.Web (included in Umbraco v7.1) and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
-
-Slimsy installs everything you need to use Slimmage.js in Umbraco v7.1. It includes Slimmage.js, SlimResponse and some helper methods that work with both dynamic and typed published content models.
+Slimsy installs everything you need to use Slimmage.js in Umbraco v7.1+. It includes Slimmage.js, SlimResponse and some helper methods that work with both dynamic and typed published content models.
 
 
 ## Implementing post package installation
@@ -141,10 +147,12 @@ Here are a few that are known to be compatible:
 
 Slimsy v1.1.4 includes the update to Slimmage.js v0.4.1 - for this version of Slimmage you must ensure your images have the `max-width:100%` css property.
 
-# Test Site
+# Test Site & Source Code
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.
 By default the test site is configured to use full IIS (due to IIS Express SQL CE persistence issue) on the domain slimsy.local, you can change it to use IIS Express if you prefer.
+
+Visual Studio 2015 is required for compiling the source code
 
 # Credits and references
 
