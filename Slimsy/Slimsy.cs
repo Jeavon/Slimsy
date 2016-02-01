@@ -6,11 +6,15 @@
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Slimsy
 {
+    using System;
+    using System.Linq;
+
     using System.Configuration;
     using System.Text;
+
+    using Newtonsoft.Json;
 
     using Umbraco.Core;
     using Umbraco.Core.Models;
