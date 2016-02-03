@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPackage", "BuildPackage", "{2B65A62A-CC2F-449E-BB0D-C77D0C20FFFC}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
 		BuildPackage\Build.bat = BuildPackage\Build.bat
 		BuildPackage\LocalBuild.bat = BuildPackage\LocalBuild.bat
+		NuGet.config = NuGet.config
 		BuildPackage\package.nuspec = BuildPackage\package.nuspec
 		BuildPackage\package.proj = BuildPackage\package.proj
 		BuildPackage\package.xml = BuildPackage\package.xml

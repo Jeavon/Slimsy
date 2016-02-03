@@ -13,3 +13,4 @@ Slimsy Change log
 - 1.1.4 - updated slimmage.js to v0.4.1 and add NuGet package
 - 1.1.5 - Umbraco package only release without HtmlAgilityPack Assembly
 - 1.1.6 - Umbraco v7.3.0 upgrade & focal point preference fix
+- 1.1.7 - Fix to ensure that quality comes before format in ImageProcessor Urls
