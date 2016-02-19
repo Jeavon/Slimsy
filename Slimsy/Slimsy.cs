@@ -169,8 +169,15 @@ namespace Slimsy
                             "{0} {1}w,",
                             publishedContent.GetCropUrl(w, h, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat)),
                             w));
+
+                    outputStringBuilder.Append(
+                       string.Format(
+                           "{0} {1}w 2x,",
+                           publishedContent.GetCropUrl(w * 2, h * 2, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat)),
+                           w));
                     w += WidthStep;
                 }
+
             }
             else
             {
