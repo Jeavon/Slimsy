@@ -21,6 +21,7 @@ namespace Slimsy
     using Umbraco.Web;
     using Umbraco.Web.Models;
 
+    [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
     {
         public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height)
@@ -124,6 +125,50 @@ namespace Slimsy
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, propertyAlias, quality: 90, preferFocalPoint :true, furtherOptions: Format(outputFormat)), w));
+                w += WidthStep;
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return outputString;
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)
+        {
+            var w = 160;
+            const int MaxWidth = 2048;
+            const int WidthStep = 160;
+
+            var outputStringBuilder = new StringBuilder();
+            var heightRatio = (decimal)height / (decimal)width;
+
+            while (w <= MaxWidth)
+            {
+                var h = (int)Math.Round(w * heightRatio);
+                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat)) ));
+                w += WidthStep;
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return outputString;
+        }
+
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode)
+        {
+            var w = 160;
+            const int MaxWidth = 2048;
+            const int WidthStep = 160;
+
+            var outputStringBuilder = new StringBuilder();
+            var heightRatio = (decimal)height / (decimal)width;
+
+            while (w <= MaxWidth)
+            {
+                var h = (int)Math.Round(w * heightRatio);
+                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format()), w));
                 w += WidthStep;
             }
 
