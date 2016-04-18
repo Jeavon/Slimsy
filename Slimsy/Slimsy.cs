@@ -146,7 +146,7 @@ namespace Slimsy
             while (w <= MaxWidth)
             {
                 var h = (int)Math.Round(w * heightRatio);
-                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat)) ));
+                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat)), w ));
                 w += WidthStep;
             }
 
@@ -235,13 +235,14 @@ namespace Slimsy
             return outputString;
         }
 
+
         private static string Format(string outputFormat = null)
         {
             var bgColor = string.Empty;
             if (outputFormat == null)
             {
                 var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
-                outputFormat = slimsyFormat != "false" ? slimsyFormat ?? "jpg" : string.Empty;
+                outputFormat = slimsyFormat != "false" ? (slimsyFormat ?? "jpg") : string.Empty;
                 var slimsyBGColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
                 bgColor = slimsyBGColor != null && slimsyBGColor != "false" ? slimsyBGColor : string.Empty;
             }
@@ -257,6 +258,11 @@ namespace Slimsy
                 }
 
                 return returnString.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(bgColor))
+            {
+                return string.Format("&bgcolor={0}", bgColor);
             }
 
             return null;
