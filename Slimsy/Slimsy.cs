@@ -6,6 +6,9 @@
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Collections.Generic;
+
 namespace Slimsy
 {
     using System;
@@ -156,6 +159,42 @@ namespace Slimsy
             return outputString;
         }
 
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, Dictionary<int, Tuple<int, int>> aspectRatio)
+        {
+
+            var w = 160;
+            const int MaxWidth = 2048;
+            const int WidthStep = 160;
+
+            var outputStringBuilder = new StringBuilder();
+            var heightRatio = (decimal)height / (decimal)width;
+
+            while (w <= MaxWidth)
+            {
+                if (w < aspectRatio.Keys.FirstOrDefault())
+                {
+                    heightRatio = (decimal)aspectRatio.Values.FirstOrDefault().Item1/
+                                  (decimal)aspectRatio.Values.FirstOrDefault().Item2;
+                }
+                else
+                {
+                    heightRatio = (decimal)height / (decimal)width;
+                }
+              
+                var h = (int)Math.Round(w * heightRatio);
+                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, quality: 90, preferFocalPoint: true, furtherOptions: Format()), w));
+                    
+
+                w += WidthStep; 
+                
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return outputString;
+        }
+
         public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode)
         {
             var w = 160;
@@ -267,5 +306,7 @@ namespace Slimsy
 
             return null;
         }
+
+
     }
 }
