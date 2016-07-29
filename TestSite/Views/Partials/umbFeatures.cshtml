@@ -225,18 +225,23 @@
 
         <div class="row">
 
-            <h2>Using Image Source Set with Cropmode</h2>
+            <h2>Using Image Source Set with Cropmode and Breakpoint</h2>
 
             @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
             {
-                <div class="3u">
+                var dictionary = new Dictionary<int, Tuple<int, int>>()
+                {
+                    {360, new Tuple<int, int>(400, 300 ) }
+                };
+
+                 <div class="3u">
                     <!-- Feature -->
                     <section class="is-feature">
                         @if (feature.HasValue("Image"))
                         {
                             var featureImage = Umbraco.TypedMedia((string)feature.Image);
                             <a href="@feature.Url" class="image image-full">
-                                <img srcset="@featureImage.GetImgSrcSet(270, 161, ImageCropMode.Pad)" src="@featureImage.GetCropUrl(270, 161)" sizes="20vw" />
+                                <img srcset="@featureImage.GetImgSrcSet(4400, 0, dictionary)" src="@featureImage.GetCropUrl(270, 161)" sizes="20vw" />
                             </a>
                         }
                         <h3>

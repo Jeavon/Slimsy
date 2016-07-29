@@ -182,6 +182,9 @@ namespace Slimsy
                 }
               
                 var h = (int)Math.Round(w * heightRatio);
+
+                var s = publishedContent.GetCropUrl(w, h, quality: 90, preferFocalPoint: true, furtherOptions: Format());
+
                 outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, quality: 90, preferFocalPoint: true, furtherOptions: Format()), w));
                     
 
