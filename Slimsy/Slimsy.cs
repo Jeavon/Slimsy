@@ -126,13 +126,24 @@ namespace Slimsy
 
             while (w <= MaxWidth)
             {
-                var h = (int)Math.Round(w * heightRatio);
-                outputStringBuilder.Append(string.Format("{0} {1}w,", publishedContent.GetCropUrl(w, h, propertyAlias, quality: 90, preferFocalPoint :true, furtherOptions: Format(outputFormat)), w));
+	            var fixedCropUrl = string.Empty;
+				var h = (int)Math.Round(w * heightRatio);
+	            var cropString = publishedContent.GetCropUrl(w, h, propertyAlias, quality: 90, preferFocalPoint: true,
+		            furtherOptions: Format(outputFormat));
+
+				var strPos = cropString.IndexOf("&quality=90", StringComparison.Ordinal);
+				fixedCropUrl = strPos != -1 ? cropString.Remove(strPos, 11) : cropString;
+
+				outputStringBuilder.Append(string.Format("{0}&quality=90 {1}w,", fixedCropUrl, w));
                 w += WidthStep;
             }
 
             // remove the last comma
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+	        
+
+	        
+
 
             return outputString;
         }
