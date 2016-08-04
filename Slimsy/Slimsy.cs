@@ -110,12 +110,17 @@ namespace Slimsy
             return publishedContent.GetImgSrcSet(width, height, Constants.Conventions.Media.File);
         }
 
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
+		public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, int quality)
+		{
+			return publishedContent.GetImgSrcSet(width, height, Constants.Conventions.Media.File, null, quality);
+		}
+
+		public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
-            return publishedContent.GetImgSrcSet(width, height, propertyAlias, null, 90);
+            return publishedContent.GetImgSrcSet(width, height, propertyAlias, null);
         }
 
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality)
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = 160;
             const int MaxWidth = 2048;

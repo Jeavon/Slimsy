@@ -19,7 +19,7 @@
     <PackageName>Slimsy</PackageName>
     <MinUmbracoVersion>7.3.0</MinUmbracoVersion>
     <Readme>Please follow the instructions on the project page http://our.umbraco.org/projects/website-utilities/slimsy</Readme>
-    <AuthorName>Jeavon Leopold, Marc Stöcker</AuthorName>
+    <AuthorName>Jeavon Leopold, Marc Stöcker, William Phillips</AuthorName>
     <AuthorUrl>http://our.umbraco.org</AuthorUrl>
     <PackageLicenseName>MIT license</PackageLicenseName>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
