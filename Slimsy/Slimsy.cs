@@ -112,10 +112,10 @@ namespace Slimsy
 
         public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
-            return publishedContent.GetImgSrcSet(width, height, propertyAlias, null);
+            return publishedContent.GetImgSrcSet(width, height, propertyAlias, null, 90);
         }
 
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat)
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality)
         {
             var w = 160;
             const int MaxWidth = 2048;
@@ -123,6 +123,8 @@ namespace Slimsy
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / (decimal)width;
+
+
 
             while (w <= MaxWidth)
             {
@@ -134,7 +136,7 @@ namespace Slimsy
 				var strPos = cropString.IndexOf("&quality=90", StringComparison.Ordinal);
 				fixedCropUrl = strPos != -1 ? cropString.Remove(strPos, 11) : cropString;
 
-				outputStringBuilder.Append(string.Format("{0}&quality=90 {1}w,", fixedCropUrl, w));
+				outputStringBuilder.Append(string.Format("{0}&quality={1} {2}w,", fixedCropUrl, quality, w));
                 w += WidthStep;
             }
 
