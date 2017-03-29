@@ -147,10 +147,6 @@ namespace Slimsy
 
             // remove the last comma
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
-	        
-
-	        
-
 
             return outputString;
         }
