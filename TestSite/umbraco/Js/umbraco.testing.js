@@ -1,7 +1,7 @@
 /*! umbraco
  * https://github.com/umbraco/umbraco-cms/
- * Copyright (c) 2015 Umbraco HQ;
- * Licensed MIT
+ * Copyright (c) 2017 Umbraco HQ;
+ * Licensed 
  */
 
 (function() { 
@@ -68,7 +68,7 @@ angular.module('umbraco.mocks').
 						"view": "textstring",
 						"icon": "icon-quote",
 						"config": {
-							"style": "border-left: 3px solid #ccc; padding: 10px; color: #ccc; font-family: serif; font-variant: italic; font-size: 18px",
+							"style": "border-left: 3px solid #ccc; padding: 10px; color: #ccc; font-family: serif; font-style: italic; font-size: 18px",
 							"markup": "<blockquote>#value#</blockquote>"
 						}
 					}
@@ -816,6 +816,15 @@ angular.module('umbraco.mocks').
           return [200, nodes, null];
       }
 
+      function returnEntityUrl() {
+
+          if (!mocksUtils.checkAuth()) {
+              return [401, null, null];
+          }
+
+          return [200, "url", null];
+
+      }
 
       return {
           register: function () {
@@ -831,6 +840,10 @@ angular.module('umbraco.mocks').
               $httpBackend
                   .whenGET(mocksUtils.urlRegex('/umbraco/UmbracoApi/Entity/GetById?'))
                   .respond(returnEntitybyId);
+            
+            $httpBackend
+                  .whenGET(mocksUtils.urlRegex('/umbraco/UmbracoApi/Entity/GetUrl?'))
+                    .respond(returnEntityUrl);
           }
       };
   }]);
@@ -1146,7 +1159,7 @@ angular.module('umbraco.mocks').
                       name: "developer",
                       id: -1,
                       children: [
-                          { name: "Data types", childNodesUrl: dataTypeChildrenUrl, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: dataTypeMenuUrl, metaData: { treeAlias: "datatype" } },
+                          { name: "Data types", childNodesUrl: dataTypeChildrenUrl, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: dataTypeMenuUrl, metaData: { treeAlias: "dataTypes" } },
                           { name: "Macros", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "macros" } },
                           { name: "Packages", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "packager" } },
                           { name: "XSLT Files", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "xslt" } },
@@ -1168,7 +1181,7 @@ angular.module('umbraco.mocks').
                           { name: "Templates", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "templates" } },
                           { name: "Dictionary", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "dictionary" } },
                           { name: "Media types", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "mediaTypes" } },
-                          { name: "Document types", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "nodeTypes" } }
+                          { name: "Document types", childNodesUrl: url, id: -1, icon: "icon-folder-close", children: [], expanded: false, hasChildren: true, level: 1, menuUrl: menuUrl, metaData: { treeAlias: "documentTypes" } }
                       ],
                       expanded: true,
                       hasChildren: true,
@@ -1342,6 +1355,14 @@ angular.module('umbraco.mocks.services')
         }
     };
 });
+angular.module("umbraco.mocks").factory('externalLoginInfo',
+    function () {
+        return {
+            errors: [],
+            providers: []
+        };
+    }
+);
 angular.module('umbraco.mocks').
   factory('localizationMocks', ['$httpBackend', 'mocksUtils', function ($httpBackend, mocksUtils) {
       'use strict';
@@ -1478,7 +1499,7 @@ angular.module('umbraco.mocks').
                   "content_nodeName": "Page Title",
                   "content_otherElements": "Properties",
                   "content_parentNotPublished": "This document is published but is not visible because the parent '%0%' is unpublished",
-                  "content_parentNotPublishedAnomaly": "Oops: this document is published but is not in the cache (internal error)",
+                  "content_parentNotPublishedAnomaly": "This document is published but is not in the cache",
                   "content_publish": "Publish",
                   "content_publishStatus": "Publication Status",
                   "content_releaseDate": "Publish at",
@@ -2060,7 +2081,7 @@ angular.module('umbraco.mocks').
                   "user_administrators": "Administrator",
                   "user_categoryField": "Category field",
                   "user_changePassword": "Change Your Password",
-                  "user_newPassword": "Change Your Password",
+                  "user_newPassword": "New password",
                   "user_confirmNewPassword": "Confirm new password",
                   "user_changePasswordDescription": "You can change your password for accessing the Umbraco Back Office by filling out the form below and click the 'Change Password' button",
                   "user_contentChannel": "Content Channel",
@@ -2074,6 +2095,7 @@ angular.module('umbraco.mocks').
                   "user_mediastartnode": "Start Node in Media Library",
                   "user_modules": "Sections",
                   "user_noConsole": "Disable Umbraco Access",
+                  "user_oldPassword": "Old password",
                   "user_password": "Password",
                   "user_resetPassword": "Reset password",
                   "user_passwordChanged": "Your password has been changed!",
