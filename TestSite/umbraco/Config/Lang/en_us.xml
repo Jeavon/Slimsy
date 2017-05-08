@@ -199,6 +199,13 @@
     <key alias="documentTypeWithoutTemplate">Document Type without a template</key>
     <key alias="newFolder">New folder</key>
     <key alias="newDataType">New data type</key>
+    <key alias="newJavascriptFile">New javascript file</key>
+    <key alias="newEmptyPartialView">New empty partial view</key>
+    <key alias="newPartialViewMacro">New partial view macro</key>
+    <key alias="newPartialViewFromSnippet">New partial view from snippet</key>
+    <key alias="newEmptyPartialViewMacro">New empty partial view macro</key>
+    <key alias="newPartialViewMacroFromSnippet">New partial view macro from snippet</key>
+    <key alias="newPartialViewMacroNoMacro">New partial view macro (without macro)</key>
   </area>
   <area alias="dashboard">
     <key alias="browser">Browse your website</key>
@@ -838,7 +845,7 @@ To manage your website, simply open the Umbraco back office and start adding con
   <area alias="publicAccess">
     <key alias="paAdvanced">Role based protection</key>
     <key alias="paAdvancedHelp"><![CDATA[If you wish to control access to the page using role-based authentication,<br /> using Umbraco's member groups.]]></key>
-    <key alias="paAdvancedNoGroups"><![CDATA[You need to create a membergroup before you can use <br />role-based authentication.]]></key>
+    <key alias="paAdvancedNoGroups">You need to create a membergroup before you can use role-based authentication</key>
     <key alias="paErrorPage">Error Page</key>
     <key alias="paErrorPageHelp">Used when people are logged on, but do not have access</key>
     <key alias="paHowWould">Choose how to restrict access to this page</key>
@@ -982,7 +989,7 @@ To manage your website, simply open the Umbraco back office and start adding con
     <key alias="dictionaryItemSaved">Dictionary item saved</key>
     <key alias="editContentPublishedFailedByParent">Publishing failed because the parent page isn't published</key>
     <key alias="editContentPublishedHeader">Content published</key>
-    <key alias="editContentPublishedText">and visible at the website</key>
+    <key alias="editContentPublishedText">and visible on the website</key>
     <key alias="editContentSavedHeader">Content saved</key>
     <key alias="editContentSavedText">Remember to publish to make changes visible</key>
     <key alias="editContentSendToPublish">Sent For Approval</key>
@@ -1539,5 +1546,8 @@ To manage your website, simply open the Umbraco back office and start adding con
     <key alias="disableError">Error disabling the URL tracker, more information can be found in your log file.</key>
     <key alias="enabledConfirm">URL tracker has now been enabled.</key>
     <key alias="enableError">Error enabling the URL tracker, more information can be found in your log file.</key>
+  </area>
+  <area alias="emptyStates">
+    <key alias="emptyDictionaryTree">No Dictionary items to choose from</key>
   </area>
 </language>

@@ -434,8 +434,13 @@ angular.module('umbraco.mocks').
                 {
                     results.push(decodeURIComponent(match[1].replace(/\+/g, " ")));
                 }
-
+                
                 return results;
+            },
+
+            getObjectPropertyFromJsonString: function(data, name) {
+                var obj = JSON.parse(data);
+                return obj[name];
             }
         };
     }]);
@@ -804,8 +809,27 @@ angular.module('umbraco.mocks').
           if (!mocksUtils.checkAuth()) {
               return [401, null, null];
           }
-
+          
           var ids = mocksUtils.getParametersByName(data, "ids") || [1234, 23324, 2323, 23424];
+          
+          var nodes = [];
+
+          $(ids).each(function (i, id) {
+              var _id = parseInt(id, 10);
+              nodes.push(mocksUtils.getMockEntity(_id));
+          });
+
+          return [200, nodes, null];
+      }
+
+      function returnEntitybyIdsPost(method, url, data, headers) {
+
+          if (!mocksUtils.checkAuth()) {
+              return [401, null, null];
+          }
+
+          var ids = mocksUtils.getObjectPropertyFromJsonString(data, "ids") || [1234, 23324, 2323, 23424];
+          
           var nodes = [];
 
           $(ids).each(function (i, id) {
@@ -832,6 +856,10 @@ angular.module('umbraco.mocks').
               $httpBackend
                   .whenGET(mocksUtils.urlRegex('/umbraco/UmbracoApi/Entity/GetByIds'))
                   .respond(returnEntitybyIds);
+
+              $httpBackend
+                  .whenPOST(mocksUtils.urlRegex('/umbraco/UmbracoApi/Entity/GetByIds'))
+                  .respond(returnEntitybyIdsPost);
 
               $httpBackend
                   .whenGET(mocksUtils.urlRegex('/umbraco/UmbracoApi/Entity/GetAncestors'))

@@ -2640,13 +2640,13 @@ angular.module('umbraco.directives')
                 }
 
                 // ignore clicks on dialog from old dialog service
-                var oldDialog = $(el).parents("#old-dialog-service");
+                var oldDialog = $(event.target).parents("#old-dialog-service");
                 if (oldDialog.length === 1) {
                     return;
                 }
 
                 // ignore clicks in tinyMCE dropdown(floatpanel)
-                var floatpanel = $(el).parents(".mce-floatpanel");
+                var floatpanel = $(event.target).closest(".mce-floatpanel");
                 if (floatpanel.length === 1) {
                     return;
                 }
@@ -4347,8 +4347,10 @@ angular.module("umbraco.directives")
 					$image.load(function(){
 						$timeout(function(){
 							setDimensions();
-							scope.loaded = true;
-							scope.onImageLoaded();
+                            scope.loaded = true;
+                            if (scope.onImageLoaded) {
+                                scope.onImageLoaded();    
+                            }
 						});
 					});
 
@@ -5577,6 +5579,7 @@ function umbTreeDirective($compile, $log, $q, $rootScope, treeService, notificat
             hideheader: '@',
             cachekey: '@',
             isdialog: '@',
+            onlyinitialized: '@',
             //Custom query string arguments to pass in to the tree as a string, example: "startnodeid=123&something=value"
             customtreeparams: '@',
             eventhandler: '=',
@@ -5812,7 +5815,7 @@ function umbTreeDirective($compile, $log, $q, $rootScope, treeService, notificat
                         deleteAnimations = false;
 
                         //default args
-                        var args = { section: scope.section, tree: scope.treealias, cacheKey: scope.cachekey, isDialog: scope.isdialog ? scope.isdialog : false };
+                        var args = { section: scope.section, tree: scope.treealias, cacheKey: scope.cachekey, isDialog: scope.isdialog ? scope.isdialog : false, onlyinitialized: scope.onlyinitialized };
 
                         //add the extra query string params if specified
                         if (scope.customtreeparams) {
@@ -5865,7 +5868,7 @@ function umbTreeDirective($compile, $log, $q, $rootScope, treeService, notificat
                 scope.selectEnabledNodeClass = function (node) {
                     return node ?
                         node.selected ?
-                        'icon umb-tree-icon sprTree icon-check blue temporary' :
+                        'icon umb-tree-icon sprTree icon-check green temporary' :
                         '' :
                         '';
                 };
@@ -7720,7 +7723,8 @@ Use this directive to generate a list of folders presented as a flexbox grid.
 
          scope.clickFolder = function(folder, $event, $index) {
             if(scope.onClick) {
-               scope.onClick(folder, $event, $index);
+                scope.onClick(folder, $event, $index);
+                $event.stopPropagation();
             }
          };
 
@@ -9649,6 +9653,7 @@ Use this directive to generate a thumbnail grid of media items.
             scope.clickItem = function(item, $event, $index) {
                 if (scope.onClick) {
                     scope.onClick(item, $event, $index);
+                    $event.stopPropagation();
                 }
             };
 
@@ -9706,7 +9711,7 @@ Use this directive to generate a thumbnail grid of media items.
 (function () {
     'use strict';
 
-    function MiniListViewDirective(entityResource) {
+    function MiniListViewDirective(entityResource, iconHelper) {
 
         function link(scope, el, attr, ctrl) {
 
@@ -9723,6 +9728,11 @@ Use this directive to generate a thumbnail grid of media items.
             }
 
             function open(node) {
+
+                // convert legacy icon for node
+                if(node && node.icon) {
+                    node.icon = iconHelper.convertFromLegacyIcon(node.icon);
+                }
 
                 goingForward = true;
 
@@ -9763,6 +9773,11 @@ Use this directive to generate a thumbnail grid of media items.
                         // update children
                         miniListView.children = data.items;
                         _.each(miniListView.children, function(c) {
+                            // convert legacy icon for node
+                            if(c.icon) {
+                                c.icon = iconHelper.convertFromLegacyIcon(c.icon);
+                            }
+                            // set published state for content
                             if (c.metaData) {
                                 c.hasChildren = c.metaData.HasChildren;
                                 if(scope.entityType === "Document") {
@@ -10439,7 +10454,7 @@ Use this directive make an element sticky and follow the page when scrolling.
 (function () {
    'use strict';
 
-   function TableDirective() {
+   function TableDirective(iconHelper) {
 
       function link(scope, el, attr, ctrl) {
 
@@ -10479,6 +10494,10 @@ Use this directive make an element sticky and follow the page when scrolling.
             if (scope.onSort) {
                scope.onSort(field, allow, isSystem);
             }
+         };
+
+         scope.getIcon = function (entry) {
+             return iconHelper.convertFromLegacyIcon(entry.icon);
          };
 
       }
@@ -11924,7 +11943,7 @@ function valServerField(serverValidationManager) {
     return {
         require: 'ngModel',
         restrict: "A",
-        link: function (scope, element, attr, ctrl) {
+        link: function (scope, element, attr, ngModel) {
             
             var fieldName = null;
             var eventBindings = [];
@@ -11938,23 +11957,25 @@ function valServerField(serverValidationManager) {
                     // resubmitted. So once a field is changed that has a server error assigned to it
                     // we need to re-validate it for the server side validator so the user can resubmit
                     // the form. Of course normal client-side validators will continue to execute.
-                    eventBindings.push(scope.$watch('ngModel', function(newValue){
-                        if (ctrl.$invalid) {
-                            ctrl.$setValidity('valServerField', true);
+                    eventBindings.push(scope.$watch(function() {
+                        return ngModel.$modelValue;
+                    }, function(newValue){
+                        if (ngModel.$invalid) {
+                            ngModel.$setValidity('valServerField', true);
                         }
                     }));
 
                     //subscribe to the server validation changes
                     serverValidationManager.subscribe(null, fieldName, function (isValid, fieldErrors, allErrors) {
                         if (!isValid) {
-                            ctrl.$setValidity('valServerField', false);
+                            ngModel.$setValidity('valServerField', false);
                             //assign an error msg property to the current validator
-                            ctrl.errorMsg = fieldErrors[0].errorMsg;
+                            ngModel.errorMsg = fieldErrors[0].errorMsg;
                         }
                         else {
-                            ctrl.$setValidity('valServerField', true);
+                            ngModel.$setValidity('valServerField', true);
                             //reset the error message
-                            ctrl.errorMsg = "";
+                            ngModel.errorMsg = "";
                         }
                     });
 
