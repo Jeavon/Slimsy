@@ -82,6 +82,8 @@
     <Content Include="config\Lang\zh-CN.user.xml" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="scripts\lazysizes.min.js" />
+    <Content Include="scripts\picturefill.min.js" />
     <Content Include="web.config" />
     <Content Include="packages.config" />
     <Content Include="Views\Web.config" />
@@ -387,7 +389,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="css\" />
-    <Folder Include="scripts\" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
