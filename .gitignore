@@ -165,7 +165,7 @@ TestSite/[Bb]in/*
 # =========================
 # Slimsy
 # =========================
-TestSite/Scripts/*.js
+#TestSite/Scripts/*.js
 BuildPackage/artifacts*
 
 # =========================
