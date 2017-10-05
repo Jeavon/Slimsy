@@ -231,7 +231,7 @@
 
             @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
             {
-	            var dictionary = new Tuple<int, int>(16, 9);
+	            var ratio = new AspectRatio(16, 9);
 
                  <div class="3u">
                     <!-- Feature -->
@@ -240,7 +240,7 @@
                         {
                             var featureImage = Umbraco.TypedMedia((string)feature.Image);
                             <a href="@feature.Url" class="image image-full">
-                                <img data-srcset="@featureImage.GetImgSrcSet(1920, 0, dictionary)" data-src="@featureImage.GetCropUrl(270, 161)" sizes="auto" class="lazyload" />
+                                <img data-srcset="@featureImage.GetImgSrcSet(1920, 0, ratio)" data-src="@featureImage.GetCropUrl(270, 161)" sizes="auto" class="lazyload" />
                             </a>
                         }
                         <h3>

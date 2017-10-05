@@ -196,7 +196,7 @@ namespace Slimsy
         /// <param name="height"></param>
         /// <param name="aspectRatio"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, Tuple<int, int> aspectRatio)
+        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
 		{
 
 			var w = 160;
@@ -210,8 +210,8 @@ namespace Slimsy
 			{
 				if (w < width)
 				{
-					heightRatio = (decimal)aspectRatio.Item2 /
-								  (decimal)aspectRatio.Item1;
+					heightRatio = (decimal)aspectRatio.Height /
+								  (decimal)aspectRatio.Width;
 				}
 				else
 				{
