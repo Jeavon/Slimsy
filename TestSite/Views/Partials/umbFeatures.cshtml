@@ -23,7 +23,9 @@
                         @if (feature.HasValue("Image"))
                         {
                             var featureImage = Umbraco.TypedMedia((string)feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetCropUrl(270, 161, ratioMode:ImageCropRatioMode.Height, quality:90, furtherOptions:"&slimmage=true")" alt="" /></a>
+	                        <a href="@feature.Url" class="image image-full">
+		                        <img src="@featureImage.GetCropUrl(270, 161, ratioMode: ImageCropRatioMode.Height, quality: 90, furtherOptions: "&slimmage=true")" alt=""/>
+	                        </a>
                         }
                         <h3><a href="@feature.Url">@feature.Name</a></h3>
                         @Umbraco.Truncate(feature.BodyText, 100)
@@ -229,10 +231,7 @@
 
             @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
             {
-                var dictionary = new Dictionary<int, Tuple<int, int>>()
-                {
-                    {1920, new Tuple<int, int>(2, 1) }
-                };
+	            var dictionary = new Tuple<int, int>(16, 9);
 
                  <div class="3u">
                     <!-- Feature -->
@@ -282,6 +281,33 @@
 
     </div>
 		
+    <div class="row">
+	    
+	    <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
+	    @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+		{
+			var featureImage = Umbraco.TypedMedia((string)feature.Image);
+			<div class="3u">
+				<!-- Feature -->
+				<section class="is-feature">
+					
+					<picture>
+						<!--[if IE 9]><video style="display: none"><![endif]-->
+						<source data-srcset="@featureImage.GetImgSrcSet(270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
+						<source data-srcset="@featureImage.GetImgSrcSet(270, 161)" type="image/jpeg" data-sizes="auto"/>
+						<!--[if IE 9]></video><![endif]-->
+						<img
+							src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+							data-src="@featureImage.GetCropUrl(270, 161)"
+							class="lazyload"
+							alt="image with artdirection"
+							data-sizes="auto"/>
+					</picture>
+				</section>
+			</div>
+	    }
+    </div>
+
 
     </div>
 </section>
