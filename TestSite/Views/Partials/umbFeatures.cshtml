@@ -11,80 +11,10 @@
 <section class="is-features">
     <h2 class="major"><span>Wonderful featured pages</span></h2>
     <div>
-        <div class="row">
-
-            <h2>How we currently roll Slimmage</h2>
-
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
-                <div class="3u">
-                    <!-- Feature -->
-                    <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.TypedMedia((string)feature.Image);
-	                        <a href="@feature.Url" class="image image-full">
-		                        <img src="@featureImage.GetCropUrl(270, 161, ratioMode: ImageCropRatioMode.Height, quality: 90, furtherOptions: "&slimmage=true")" alt=""/>
-	                        </a>
-                        }
-                        <h3><a href="@feature.Url">@feature.Name</a></h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
-                    <!-- /Feature -->
-                </div>
-            }
-
-        </div>
-
-        <div class="row">
-
-            <h2>Lets make it simple with Slimsy and work with Dynamics</h2>
-
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
-                <div class="3u">
-                    <!-- Feature -->
-                    <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.Media(feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" /></a>
-                        }
-                        <h3><a href="@feature.Url">@feature.Name</a></h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
-                    <!-- /Feature -->
-                </div>
-            }
-
-        </div>
-
-        <div class="row">
-
-            <h2>Lets make it simple with Slimsy and work with Dynamics (overload)</h2>
-
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
-                <div class="3u">
-                    <!-- Feature -->
-                    <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.Media(feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161, "umbracoFile")" alt="" /></a>
-                        }
-                        <h3><a href="@feature.Url">@feature.Name</a></h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
-                    <!-- /Feature -->
-                </div>
-            }
-
-        </div>
         
         <div class="row">
 
-            <h2>Dynamics - return PNGs (Overload)</h2>
+            <h2>Using Image Source Set using Pre Defined Crop</h2>
 
             @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
             {
@@ -93,220 +23,48 @@
                     <section class="is-feature">
                         @if (feature.HasValue("Image"))
                         {
-                            var featureImage = Umbraco.Media(feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161, "umbracoFile", "png")" alt="" /></a>
-                        }
-                        <h3><a href="@feature.Url">@feature.Name</a></h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
-                    <!-- /Feature -->
-                </div>
-            }
-
-        </div>        
-
-        <div class="row">
-
-            <h2>Lets make it simple with Slimsy using Typed model</h2>
-
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
-                <div class="3u">
-                    <!-- Feature -->
-                    <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.TypedMedia((string)feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" /></a>
-                        }
-                        <h3><a href="@feature.Url">@feature.Name</a></h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
-                    <!-- /Feature -->
-                </div>
-            }
-
-        </div>
-        
-        <div class="row">
-
-            <h2>Slimsy using Typed model, returning PNGs (no idea why)</h2>
-
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
-                <div class="3u">
-                    <!-- Feature -->
-                    <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.TypedMedia((string)feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveImageUrl(270, 161, "umbracoFile", "png")" alt="" /></a>
-                        }
-                        <h3><a href="@feature.Url">@feature.Name</a></h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
-                    <!-- /Feature -->
-                </div>
-            }
-
-        </div>     
-
-        <div class="row">
-
-            <h2>Lets make it simple with Slimsy using a predefined crop</h2>
-
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
-                <div class="3u">
-                    <!-- Feature -->
-                    <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.Media(feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveCropUrl("home", "umbracoFile")" alt="" /></a>
-                        }
-                        <h3><a href="@feature.Url">@feature.Name</a></h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
-                    <!-- /Feature -->
-                </div>
-            }
-
-        </div>
-
-        <div class="row">
-
-            <h2>Lets make it simple with Slimsy using a predefined crop - all PNGs</h2>
-
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-            {
-                <div class="3u">
-                    <!-- Feature -->
-                    <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.Media(feature.Image);
-                            <a href="@feature.Url" class="image image-full"><img src="@featureImage.GetResponsiveCropUrl("home", "umbracoFile", "png")" alt=""/></a>
+                            var featureImage = Umbraco.TypedMedia((string) feature.Image);
+                            <a href="@feature.Url" class="image image-full">
+                                <img data-srcset="@featureImage.GetCropSrcSet("home", "umbracoFile")" data-src="@featureImage.GetCropUrl("umbracoFile", "home")" sizes="auto" class="lazyload"/>
+                            </a>
                         }
                         <h3><a href="@feature.Url">@feature.Name</a>
                         </h3>
                         @Umbraco.Truncate(feature.BodyText, 100)
                     </section>
+
                     <!-- /Feature -->
                 </div>
             }
 
         </div>
-
-    <div class="row">
-
-        <h2>Using Image Source Set</h2>
-
-        @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-        {
-            <div class="3u">
-                <!-- Feature -->
-                <section class="is-feature">
-                    @if (feature.HasValue("Image"))
-                    {
-                        var featureImage = Umbraco.TypedMedia((string) feature.Image);
-                        <a href="@feature.Url" class="image image-full">
-                            <img data-srcset="@featureImage.GetImgSrcSet(270, 161)" data-src="@featureImage.GetCropUrl(270, 161)" data-sizes="auto" class="lazyload"/>
-                        </a>
-                    }
-                    <h3><a href="@feature.Url">@feature.Name</a>
-                    </h3>
-                    @Umbraco.Truncate(feature.BodyText, 100)
-                </section>
-
-                <!-- /Feature -->
-            </div>
-        }
-
-    </div>
 
         <div class="row">
 
-            <h2>Using Image Source Set with Aspect Ratio</h2>
-
+            <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
             @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
             {
-	            var ratio = new AspectRatio(16, 9);
-
-                 <div class="3u">
+                var featureImage = Umbraco.TypedMedia((string) feature.Image);
+                <div class="3u">
                     <!-- Feature -->
                     <section class="is-feature">
-                        @if (feature.HasValue("Image"))
-                        {
-                            var featureImage = Umbraco.TypedMedia((string)feature.Image);
-                            <a href="@feature.Url" class="image image-full">
-                                <img data-srcset="@featureImage.GetImgSrcSet(1920, 0, ratio)" data-src="@featureImage.GetCropUrl(270, 161)" sizes="auto" class="lazyload" />
-                            </a>
-                        }
-                        <h3>
-                            <a href="@feature.Url">@feature.Name</a>
-                        </h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
-                    </section>
 
-                    <!-- /Feature -->
+                        <picture>
+                            <!--[if IE 9]><video style="display: none"><![endif]-->
+                            <source data-srcset="@featureImage.GetImgSrcSet(270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
+                            <source data-srcset="@featureImage.GetImgSrcSet(270, 161)" type="image/jpeg" data-sizes="auto"/>
+                            <!--[if IE 9]></video><![endif]-->
+                            <img
+                                src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                                data-src="@featureImage.GetCropUrl(270, 161)"
+                                class="lazyload"
+                                alt="image with artdirection"
+                                data-sizes="auto"/>
+                        </picture>
+                    </section>
                 </div>
             }
-
         </div>
-
-    <div class="row">
-
-	    <h2>Using Image Source Set using Pre Defined Crop</h2>
-
-	    @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-	    {
-		    <div class="3u">
-			    <!-- Feature -->
-			    <section class="is-feature">
-				    @if (feature.HasValue("Image"))
-				    {
-					    var featureImage = Umbraco.TypedMedia((string)feature.Image);
-					    <a href="@feature.Url" class="image image-full">
-						    <img data-srcset="@featureImage.GetCropSrcSet("home", "umbracoFile")" data-src="@featureImage.GetCropUrl("umbracoFile", "home")" sizes="auto" class="lazyload" />
-					    </a>
-				    }
-				    <h3><a href="@feature.Url">@feature.Name</a></h3>
-				    @Umbraco.Truncate(feature.BodyText, 100)
-			    </section>
-
-			    <!-- /Feature -->
-		    </div>
-	    }
-
-    </div>
-		
-    <div class="row">
-	    
-	    <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
-	    @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
-		{
-			var featureImage = Umbraco.TypedMedia((string)feature.Image);
-			<div class="3u">
-				<!-- Feature -->
-				<section class="is-feature">
-					
-					<picture>
-						<!--[if IE 9]><video style="display: none"><![endif]-->
-						<source data-srcset="@featureImage.GetImgSrcSet(270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
-						<source data-srcset="@featureImage.GetImgSrcSet(270, 161)" type="image/jpeg" data-sizes="auto"/>
-						<!--[if IE 9]></video><![endif]-->
-						<img
-							src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-							data-src="@featureImage.GetCropUrl(270, 161)"
-							class="lazyload"
-							alt="image with artdirection"
-							data-sizes="auto"/>
-					</picture>
-				</section>
-			</div>
-	    }
-    </div>
 
 
     </div>
