@@ -27,7 +27,7 @@
                         {
                             var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                             <a href="@feature.Url" class="image image-full">
-                                <img data-srcset="@featureImage.GetCropSrcSet("home", "umbracoFile")" data-src="@featureImage.GetCropUrl("umbracoFile", "home")" sizes="auto" class="lazyload"/>
+                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, "home", "umbracoFile")" data-src="@Url.GetCropUrl(featureImage, "umbracoFile", "home")" sizes="auto" class="lazyload"/>
                             </a>
                         }
                         <h3><a href="@feature.Url">@feature.Name</a>
@@ -50,12 +50,12 @@
 
                         <picture>
                             <!--[if IE 9]><video style="display: none"><![endif]-->
-                            <source data-srcset="@featureImage.GetImgSrcSet(270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
-                            <source data-srcset="@featureImage.GetImgSrcSet(270, 161)" type="image/jpeg" data-sizes="auto"/>
+                            <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
+                            <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" type="image/jpeg" data-sizes="auto"/>
                             <!--[if IE 9]></video><![endif]-->
                             <img
                                 src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                                data-src="@featureImage.GetCropUrl(270, 161)"
+                                data-src="@Url.GetCropUrl(featureImage, 270, 161)"
                                 class="lazyload"
                                 alt="image with artdirection"
                                 data-sizes="auto"/>
@@ -77,7 +77,7 @@
                 <div class="3u">
                     <!-- Feature -->
                     <section class="is-feature">
-                        <img src="@featureImage.GetCropUrl(270, 161, quality:30)" data-srcset="@featureImage.GetImgSrcSet(270, 161)" data-src="@featureImage.GetCropUrl(270, 161)" sizes="auto" class="lazyload" />
+                        <img src="@Url.GetCropUrl(featureImage, 270, 161, quality:30)" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
                     </section>
                 </div>
             }

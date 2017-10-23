@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace Slimsy
 {
@@ -28,45 +28,47 @@ namespace Slimsy
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image
         /// </summary>
+        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height)
         {
-            return publishedContent.GetImgSrcSet(width, height, Constants.Conventions.Media.File);
+            return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
         }
 
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image with a quality setting
         /// </summary>
+        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="quality"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, int quality)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, int quality)
         {
-            return publishedContent.GetImgSrcSet(width, height, Constants.Conventions.Media.File, null, quality);
+            return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
         }
 
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
-            return publishedContent.GetImgSrcSet(width, height, propertyAlias, null);
+            return urlHelper.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
         }
         
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = 160;
-            const int MaxWidth = 2048;
-            const int WidthStep = 160;
+            const int maxWidth = 2048;
+            const int widthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / (decimal)width;
 
 
 
-            while (w <= MaxWidth)
+            while (w <= maxWidth)
             {
                 var h = (int)Math.Round(w * heightRatio);
                 var cropString = publishedContent.GetCropUrl(w, h, propertyAlias, quality: 90, preferFocalPoint: true,
@@ -76,7 +78,7 @@ namespace Slimsy
                 var fixedCropUrl = strPos != -1 ? cropString.Remove(strPos, 11) : cropString;
 
                 outputStringBuilder.Append($"{fixedCropUrl}&quality={quality} {w}w,");
-                w += WidthStep;
+                w += widthStep;
             }
 
             // remove the last comma
@@ -85,21 +87,21 @@ namespace Slimsy
             return outputString;
         }
 
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)
         {
             var w = 160;
-            const int MaxWidth = 2048;
-            const int WidthStep = 160;
+            const int maxWidth = 2048;
+            const int widthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / (decimal)width;
 
-            while (w <= MaxWidth)
+            while (w <= maxWidth)
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
                     $"{publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat))} {w}w,");
-                w += WidthStep;
+                w += widthStep;
             }
 
             // remove the last comma
@@ -111,12 +113,13 @@ namespace Slimsy
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image passing in a ratio for the image
         /// </summary>
+        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="aspectRatio"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
         {
 
             var w = 160;
@@ -155,26 +158,27 @@ namespace Slimsy
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image with a crop mode e.g Padded etc
         /// </summary>
+        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="imageCropMode"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetImgSrcSet(this IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode)
         {
             var w = 160;
-            const int MaxWidth = 2048;
-            const int WidthStep = 160;
+            const int maxWidth = 2048;
+            const int widthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / (decimal)width;
 
-            while (w <= MaxWidth)
+            while (w <= maxWidth)
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
                     $"{publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format())} {w}w,");
-                w += WidthStep;
+                w += widthStep;
             }
 
             // remove the last comma
@@ -182,28 +186,31 @@ namespace Slimsy
 
             return outputString;
         }
+        #endregion
 
+        #region Pre defined crops
         /// <summary>
         /// Get SrcSet based on a predefined crop
         /// </summary>
+        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="cropAlias"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetCropSrcSet(this IPublishedContent publishedContent, string cropAlias)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias)
         {
-            return publishedContent.GetCropSrcSet(cropAlias, Constants.Conventions.Media.File);
+            return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
         }
 
-        public static string GetCropSrcSet(this IPublishedContent publishedContent, string cropAlias, string propertyAlias)
+        public static string GetSrcSetUrls (this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
-            return publishedContent.GetCropSrcSet(cropAlias, propertyAlias, null);
+            return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
         }
 
-        public static string GetCropSrcSet(this IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
+        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
         {
             var w = 160;
-            const int MaxWidth = 2048;
-            const int WidthStep = 160;
+            const int maxWidth = 2048;
+            const int widthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
 
@@ -217,13 +224,13 @@ namespace Slimsy
             {
                 var heightRatio = (decimal)crop.Height / (decimal)crop.Width;
 
-                while (w <= MaxWidth)
+                while (w <= maxWidth)
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
                         $"{publishedContent.GetCropUrl(w, h, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat))} {w}w,");
 
-                    w += WidthStep;
+                    w += widthStep;
                 }
 
             }
@@ -243,8 +250,8 @@ namespace Slimsy
             {
                 var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
                 outputFormat = slimsyFormat != "false" ? (slimsyFormat ?? "jpg") : string.Empty;
-                var slimsyBGColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
-                bgColor = slimsyBGColor != null && slimsyBGColor != "false" ? slimsyBGColor : string.Empty;
+                var slimsyBgColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
+                bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
             }
 
             if (!string.IsNullOrEmpty(outputFormat))
