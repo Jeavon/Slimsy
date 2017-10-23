@@ -11,7 +11,8 @@ Umbraco Package: [![Our Umbraco project page](https://img.shields.io/badge/our-u
 
 __Prerelease Downloads__ 
 
-NuGet Package: [![MyGet build](https://img.shields.io/myget/slimsy/vpre/Our.Umbraco.Slimsy.svg)](https://www.myget.org/gallery/slimsy)
+NuGet Package: [![MyGet build](https://img.shields.io/myget/slimsy-v2/vpre/Our.Umbraco.Slimsy.svg)](https://www.myget.org/gallery/slimsy)
+
 Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/appveyor-umbraco-orange.svg)](https://ci.appveyor.com/project/JeavonLeopold/slimsy/build/artifacts) 
 
 [![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/JeavonLeopold/slimsy)
