@@ -2,6 +2,8 @@ Slimsy
 ============
 **Effortless Responsive Images with LazySizes and Umbraco**
 
+# Slimsy v2 is not compatible with Slimsy v1 at all, if you upgrade you will have to refactor all of your code! #
+
 ![](Slimsy.png)
 
 __Release Downloads__ 
@@ -75,6 +77,33 @@ Use this method when you want to use a predefined crop, assumes your image cropp
                 <h3><a href="@feature.Url">@feature.Name</a>
                 </h3>
                 @Umbraco.Truncate(feature.GetPropertyValue<string>("bodyText"), 100)
+            </section>
+        </div>
+    }
+
+# Using `<picture>` element
+
+Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp).
+
+    @foreach (var feature in featuredPages)
+    {
+        var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
+        <div class="3u">
+            <!-- Feature -->
+            <section class="is-feature">
+
+                <picture>
+                    <!--[if IE 9]><video style="display: none"><![endif]-->
+                    <source data-srcset="@featureImage.GetImgSrcSet(270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
+                    <source data-srcset="@featureImage.GetImgSrcSet(270, 161)" type="image/jpeg" data-sizes="auto"/>
+                    <!--[if IE 9]></video><![endif]-->
+                    <img
+                        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                        data-src="@featureImage.GetCropUrl(270, 161)"
+                        class="lazyload"
+                        alt="image with artdirection"
+                        data-sizes="auto"/>
+                </picture>
             </section>
         </div>
     }

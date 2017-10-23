@@ -41,9 +41,9 @@
 
         <div class="row">
             <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+            @foreach (var feature in featuredPages)
             {
-                var featureImage = Umbraco.TypedMedia((string) feature.Image);
+                var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                 <div class="3u">
                     <!-- Feature -->
                     <section class="is-feature">
