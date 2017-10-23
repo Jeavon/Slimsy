@@ -43,7 +43,7 @@ You can of course bundle these together. If you don't already have JavaScript bu
 
 Use the `GetSrcSetUrls` UrlHelper extension method to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
-#### `Url.GetSrcSetUrls(publishedContent, width, height)`
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height)`
 Use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
 
 e.g. An initial image size of 270 x 161. This example is looping pages, each page has a media picker with property alias "Image"
@@ -61,6 +61,20 @@ e.g. An initial image size of 270 x 161. This example is looping pages, each pag
 </div>
 
 This example uses the LQIP (low quality image placeholder) technique.
+
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, int quality)`
+
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias)`
+
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality)`
+
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)`
+
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, AspectRatio aspectRatio)`
+
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, ImageCropMode? imageCropMode)`
+
+#### `Url.GetSrcSetUrls(publishedContent, cropAlias)`
 
 #### `Url.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias)`
 
@@ -83,6 +97,8 @@ Use this method when you want to use a predefined crop, assumes your image cropp
             </section>
         </div>
     }
+
+#### `Url.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, string outputFormat)`
 
 # Using `<picture>` element
 
