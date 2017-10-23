@@ -7,6 +7,9 @@
     // First() gets the first ancestor found (the home page, on level 1)
     var homePage = CurrentPage.AncestorsOrSelf(1).First();
 }
+@{
+    var featuredPages = Model.Content.AncestorOrSelf(1).Children("umbTextPage").Where(x => x.GetPropertyValue<bool>("featuredPage"));
+}
 <!-- Features -->
 <section class="is-features">
     <h2 class="major"><span>Wonderful featured pages</span></h2>
@@ -16,21 +19,21 @@
 
             <h2>Using Image Source Set using Pre Defined Crop</h2>
 
-            @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+            @foreach (var feature in featuredPages)
             {
                 <div class="3u">
                     <!-- Feature -->
                     <section class="is-feature">
                         @if (feature.HasValue("Image"))
                         {
-                            var featureImage = Umbraco.TypedMedia((string) feature.Image);
+                            var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                             <a href="@feature.Url" class="image image-full">
                                 <img data-srcset="@featureImage.GetCropSrcSet("home", "umbracoFile")" data-src="@featureImage.GetCropUrl("umbracoFile", "home")" sizes="auto" class="lazyload"/>
                             </a>
                         }
                         <h3><a href="@feature.Url">@feature.Name</a>
                         </h3>
-                        @Umbraco.Truncate(feature.BodyText, 100)
+                        @Umbraco.Truncate(feature.GetPropertyValue<string>("bodyText"), 100)
                     </section>
 
                     <!-- /Feature -->
@@ -40,7 +43,6 @@
         </div>
 
         <div class="row">
-
             <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
             @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
             {
@@ -66,6 +68,23 @@
             }
         </div>
 
+
+
+        <div class="row">
+
+            <h2>Using Image Source Set with LQIP</h2>
+
+            @foreach (var feature in featuredPages)
+            {
+                var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
+                <div class="3u">
+                    <!-- Feature -->
+                    <section class="is-feature">
+                        <img src="@featureImage.GetCropUrl(270, 161, quality:30)" data-srcset="@featureImage.GetImgSrcSet(270, 161)" data-src="@featureImage.GetCropUrl(270, 161)" sizes="auto" class="lazyload" />
+                    </section>
+                </div>
+            }
+        </div>
 
     </div>
 </section>

@@ -1,6 +1,6 @@
 Slimsy
 ============
-**Effortless Responsive Images with Slimmage and Umbraco**
+**Effortless Responsive Images with LazySizes and Umbraco**
 
 ![](Slimsy.png)
 
@@ -16,105 +16,71 @@ Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/
 
 [![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/JeavonLeopold/slimsy)
 
+**Note** Slimsy v2.0.0+ requires Umbraco v7.6.0+
 
-**Note** Slimsy v1.1.6+ requires Umbraco v7.3.0+ (for earler versions of Umbraco use Slimsy v1.1.5 from the archive)
+LazySizes.js used in conjunction with ImageProcessor.Web and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
 
-Slimmage.js used in conjunction with ImageProcessor.Web (included in Umbraco v7.1+) and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
-
-Slimsy installs everything you need to use Slimmage.js in Umbraco v7.1+. It includes Slimmage.js, SlimResponse and some helper methods that work with both dynamic and typed published content models.
+Slimsy includes lazysizes.min.js and picturefill.min.js and some helper methods.
 
 
 ## Implementing post package installation
 
-### 1. Add slimmage.js to your pages
+### 1. Add lazysizes.min.js & picturefill.min.js to your pages
 
-In your master template add the Slimmage Javascript file(s) to the top of your head section (Slimmage should be the first js library)
-
-**without bundling scripts (plain HTTP requests)**
+In your master template add the  Javascript files
 
 ```
-	<script type="text/javascript">
-		window.slimmage = { verbose: false };
-	</script>
-	<script src="/scripts/slimmage.min.js"></script>
+    <script src="/scripts/picturefill.min.js"></script>
+    <script src="/scripts/lazysizes.min.js" async=""></script>
 ```
 
-**with bundling of your scripts you can fetch the configuration from a separate file**
-
-    	<script src="/scripts/slimmage.settings.js"></script>
-    	<script src="/scripts/slimmage.min.js"></script>
-
-If you don't already have js bundling in place you should take a look at the [Optimus](http://our.umbraco.org/projects/developer-tools/optimus) package, it will allow you to bundle them together in minutes.
+You can of course bundle these together. If you don't already have js bundling in place you should take a look at the [Optimus](http://our.umbraco.org/projects/developer-tools/optimus) package, it will allow you to bundle them together in minutes.
 
 ### 2. Adjust your image src attributes
 
-Use the GetResponsiveImageUrl or GetResponsiveCropUrl methods on your dynamic or typed content/media items. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
+Use the GetImgSrcSet or GetCropSrcSet methods on your media items. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
-#### GetResponsiveImageUrl(width, height)
+#### GetImgSrcSet(width, height)
 use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
 
 e.g. An initial image size of 270 x 161. This example is looping pages, each page has a media picker with property alias "Image"
 
-    @foreach (var feature in homePage.umbTextPages.Where("featuredPage"))
+    @foreach (var feature in featuredPages)
     {
+        var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
         <div class="3u">
             <!-- Feature -->
             <section class="is-feature">
-                @if (feature.HasValue("Image"))
-                {
-                    var featureImage = Umbraco.Media(feature.Image);
-                    <a href="@feature.Url" class="image image-full">
-					<img src="@featureImage.GetResponsiveImageUrl(270, 161)" alt="" />
-					</a>
-                }
-                <h3><a href="@feature.Url">@feature.Name</a></h3>
-                @Umbraco.Truncate(feature.BodyText, 100)
+                <img src="@featureImage.GetCropUrl(270, 161, quality:30)" data-srcset="@featureImage.GetImgSrcSet(270, 161)" data-src="@featureImage.GetCropUrl(270, 161)" sizes="auto" class="lazyload" />
             </section>
-            <!-- /Feature -->
         </div>
     }
 
-e.g. If you need only a width dimension (and a flexible height) set height parameter to 0
+#### GetCropSrcSet(cropAlias, propertyAlias)
 
-		<img src="@featureImage.GetResponsiveImageUrl(270, 0)" alt="" />
+Use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile".
 
-#### GetResponsiveImageUrl(width, height, propertyAlias)
-Overloaded method, with additional propertyAlias parameter to specify your image cropper property alias.
-
-
-e.g. An initial image size of 270 x 161, Image Cropper property alias of "Image"
-
-		<img src="@featureImage.GetResponsiveImageUrl(270, 161, "Image")" alt="" />
-
-e.g. If you need only a width dimension (and a flexible height) set height parameter to 0
-
-		<img src="@featuredNewsItem.GetResponsiveImageUrl(859, 0, "Image")" alt="" />
-
-#### GetResponsiveImageUrl(width, height, propertyAlias, outputFormat)
-Overloaded method, with additional outputFormat parameter so you can specify if this image should be returned as a specific format type.
-
-e.g. If you wanted a image to always be returned as a png
-
-		<img src="@featureImage.GetResponsiveImageUrl(270, 161, "Image", "png")" alt="" />
-
-#### GetResponsiveCropUrl(cropAlias)
-use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile".
-
-		<img src="@featureImage.GetResponsiveCropUrl("home")" alt="" />
-
-#### GetResponsiveCropUrl(cropAlias, propertyAlias)
-Overloaded method, with additional propertyAlias parameter to specify your image cropper property alias.
-
-		<img src="@featureImage.GetResponsiveCropUrl("home", "Image")" alt="" />
-
-#### GetResponsiveCropUrl(cropAlias, propertyAlias, outputFormat)
-Overloaded method, with additional outputFormat parameter so you can specify if this image should be returned as a specific format type.
-
-		<img src="@featureImage.GetResponsiveCropUrl("home", "Image", "png")" alt="" />
+    @foreach (var feature in featuredPages)
+    {
+        <div class="3u">
+            <section class="is-feature">
+                @if (feature.HasValue("Image"))
+                {
+                    var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
+                    <a href="@feature.Url" class="image image-full">
+                        <img data-srcset="@featureImage.GetCropSrcSet("home", "umbracoFile")" data-src="@featureImage.GetCropUrl("umbracoFile", "home")" sizes="auto" class="lazyload"/>
+                    </a>
+                }
+                <h3><a href="@feature.Url">@feature.Name</a>
+                </h3>
+                @Umbraco.Truncate(feature.GetPropertyValue<string>("bodyText"), 100)
+            </section>
+        </div>
+    }
 
 # Advanced Options
 
-By default Slimsy v1.1.0+ will request that all images generated by ImageProcessor are jpg as this provides the best compression and optimisation, this is regardless of the source image type. You can disable this behaviour by adding the following appsetting to web.config.
+By default Slimsy will request that all images generated by ImageProcessor are jpg as this provides the best compression and optimisation, this is regardless of the source image type. You can disable this behaviour by adding the following appsetting to web.config.
 
     <add key="Slimsy:Format" value="false"/>
 
@@ -124,28 +90,9 @@ If you really wanted to have all default URLs return pngs you could also do this
 
     <add key="Slimsy:Format" value="png"/>
 
-Added in Slimsy v1.1.2 - you can now specify the default background color by added another appsetting to web.config. As an exmaple this setting is used if ImageProcessor is converting a png to a jpg and it as some transparency
+You can specify the default background color by added another appsetting to web.config. As an example this setting is used if ImageProcessor is converting a png to a jpg and it as some transparency
 
 	<add key="Slimsy:BGColor" value="fff"/>
-
-# Sliders/Carousels
-
-When using a JavaScript slider it is likely that you will need to activate the slider once Slimmage has completed it's slimming. e.g.:
-
-    window.slimmage.readyCallback = function() {
-            $('.bxslider').bxSlider();
-        }
-
-Slimmage is only compatible with Sliders where the image dimensions can be computed at  browser render (not hidden by CSS).
-
-Here are a few that are known to be compatible:
-
-- [bxSlider](http://bxslider.com/) (free WTFPL)
-- [carouFredSel](http://dev7studios.com/plugins/caroufredsel/) (licensed)
-
-# Upgrades
-
-Slimsy v1.1.4 includes the update to Slimmage.js v0.4.1 - for this version of Slimmage you must ensure your images have the `max-width:100%` css property.
 
 # Test Site & Source Code
 
