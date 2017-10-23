@@ -1,21 +1,22 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Slimsy.cs" company="Our.Umbraco">
-//   2014
+//   2017
 // </copyright>
 // <summary>
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using System.Web.Mvc;
-
 namespace Slimsy
 {
     using System;
     using System.Linq;
     using System.Configuration;
     using System.Text;
+    using System.Web;
+    using System.Web.Mvc;
+
     using Newtonsoft.Json;
+
     using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Web;
@@ -33,7 +34,7 @@ namespace Slimsy
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height)
         {
             return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
         }
@@ -47,17 +48,17 @@ namespace Slimsy
         /// <param name="height"></param>
         /// <param name="quality"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, int quality)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, int quality)
         {
             return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
         }
 
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
             return urlHelper.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
         }
         
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = 160;
             const int maxWidth = 2048;
@@ -84,10 +85,10 @@ namespace Slimsy
             // remove the last comma
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
 
-            return outputString;
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)
         {
             var w = 160;
             const int maxWidth = 2048;
@@ -107,7 +108,7 @@ namespace Slimsy
             // remove the last comma
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
 
-            return outputString;
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace Slimsy
         /// <param name="height"></param>
         /// <param name="aspectRatio"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
         {
 
             var w = 160;
@@ -152,7 +153,7 @@ namespace Slimsy
             // remove the last comma
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
 
-            return outputString;
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
         /// <summary>
@@ -164,7 +165,7 @@ namespace Slimsy
         /// <param name="height"></param>
         /// <param name="imageCropMode"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode)
         {
             var w = 160;
             const int maxWidth = 2048;
@@ -184,7 +185,7 @@ namespace Slimsy
             // remove the last comma
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
 
-            return outputString;
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
         #endregion
 
@@ -196,17 +197,17 @@ namespace Slimsy
         /// <param name="publishedContent"></param>
         /// <param name="cropAlias"></param>
         /// <returns>HTML Markup</returns>
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias)
         {
             return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
         }
 
-        public static string GetSrcSetUrls (this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias)
+        public static IHtmlString GetSrcSetUrls (this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
             return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
         }
 
-        public static string GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
         {
             var w = 160;
             const int maxWidth = 2048;
@@ -238,7 +239,7 @@ namespace Slimsy
             // remove the last comma
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
 
-            return outputString;
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
         #endregion
 
