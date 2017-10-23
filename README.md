@@ -44,7 +44,7 @@ You can of course bundle these together. If you don't already have js bundling i
 Use the GetImgSrcSet or GetCropSrcSet methods on your media items. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
 #### GetImgSrcSet(width, height)
-use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
+Use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
 
 e.g. An initial image size of 270 x 161. This example is looping pages, each page has a media picker with property alias "Image"
 
@@ -58,6 +58,8 @@ e.g. An initial image size of 270 x 161. This example is looping pages, each pag
             </section>
         </div>
     }
+
+This example uses the LQIP (low quality image placeholder) technique.
 
 #### GetCropSrcSet(cropAlias, propertyAlias)
 
