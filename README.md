@@ -104,7 +104,7 @@ Visual Studio 2015 is required for compiling the source code
 
 # Credits and references
 
-This project includes [Slimmage](https://github.com/imazen/slimmage) and [SlimResponse](https://github.com/imazen/slimresponse) Both projects are MIT/Apache dual licensed by Imazen. The Umbraco package also includes [HtmlAgilityPack](http://htmlagilitypack.codeplex.com/) licensed under the [MS-PL](http://opensource.org/licenses/MS-PL).
+This project includes [LazySizes](https://github.com/aFarkas/lazysizes) and [Picturefill](https://github.com/scottjehl/picturefill) Both projects are MIT licensed.
 
 Many thanks to Douglas Robar for naming Slimsy.
 
