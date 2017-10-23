@@ -65,7 +65,32 @@
             }
         </div>
 
+        <div class="row">
 
+            <h2>Using Image Source Set with Aspect Ratio</h2>
+
+            @foreach (var feature in featuredPages)
+            {
+                var ratio = new AspectRatio(16, 9);
+
+                <div class="3u">
+                    <section class="is-feature">
+                        @if (feature.HasValue("image"))
+                        {
+                            var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
+                            <a href="@feature.Url" class="image image-full">
+                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, 1920, 0, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
+                            </a>
+                        }
+                        <h3>
+                            <a href="@feature.Url">@feature.Name</a>
+                        </h3>
+                        @Umbraco.Truncate(feature.GetPropertyValue<string>("bodyText"), 100)
+                    </section>
+                </div>
+            }
+
+        </div>
 
         <div class="row">
 
