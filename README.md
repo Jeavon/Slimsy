@@ -39,7 +39,7 @@ In your master template add the  Javascript files
 
 You can of course bundle these together. If you don't already have js bundling in place you should take a look at the [Optimus](http://our.umbraco.org/projects/developer-tools/optimus) package, it will allow you to bundle them together in minutes.
 
-### 2. Adjust your image src attributes
+### 2. Adjust your image elements, adding `data-srcset` & `data-src` attributes
 
 Use the GetSrcSetUrls UrlHelper extension method to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
