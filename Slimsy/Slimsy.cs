@@ -88,7 +88,7 @@ namespace Slimsy
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
             var w = 160;
             const int maxWidth = 2048;
@@ -156,37 +156,6 @@ namespace Slimsy
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        /// <summary>
-        /// Generate SrcSet markup based on a width and height for the image with a crop mode e.g Padded etc
-        /// </summary>
-        /// <param name="urlHelper"></param>
-        /// <param name="publishedContent"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="imageCropMode"></param>
-        /// <returns>HTML Markup</returns>
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode)
-        {
-            var w = 160;
-            const int maxWidth = 2048;
-            const int widthStep = 160;
-
-            var outputStringBuilder = new StringBuilder();
-            var heightRatio = (decimal)height / (decimal)width;
-
-            while (w <= maxWidth)
-            {
-                var h = (int)Math.Round(w * heightRatio);
-                outputStringBuilder.Append(
-                    $"{publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format())} {w}w,");
-                w += widthStep;
-            }
-
-            // remove the last comma
-            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
-
-            return new HtmlString(HttpUtility.HtmlEncode(outputString));
-        }
         #endregion
 
         #region Pre defined crops
