@@ -43,7 +43,7 @@ You can of course bundle these together. If you don't already have js bundling i
 
 Use the GetImgSrcSet or GetCropSrcSet methods on your media items. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
-#### GetImgSrcSet(width, height)
+#### Url.GetSrcSetUrls(publishedContent, width, height)
 Use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
 
 e.g. An initial image size of 270 x 161. This example is looping pages, each page has a media picker with property alias "Image"
@@ -54,14 +54,15 @@ e.g. An initial image size of 270 x 161. This example is looping pages, each pag
         <div class="3u">
             <!-- Feature -->
             <section class="is-feature">
-                <img src="@featureImage.GetCropUrl(270, 161, quality:30)" data-srcset="@featureImage.GetImgSrcSet(270, 161)" data-src="@featureImage.GetCropUrl(270, 161)" sizes="auto" class="lazyload" />
+                <img src="@Url.GetCropUrl(featureImage, 270, 161, quality:30)" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
             </section>
         </div>
     }
+</div>
 
 This example uses the LQIP (low quality image placeholder) technique.
 
-#### GetCropSrcSet(cropAlias, propertyAlias)
+#### Url.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias)
 
 Use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile".
 
@@ -69,11 +70,11 @@ Use this method when you want to use a predefined crop, assumes your image cropp
     {
         <div class="3u">
             <section class="is-feature">
-                @if (feature.HasValue("Image"))
+                @if (feature.HasValue("image"))
                 {
                     var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                     <a href="@feature.Url" class="image image-full">
-                        <img data-srcset="@featureImage.GetCropSrcSet("home", "umbracoFile")" data-src="@featureImage.GetCropUrl("umbracoFile", "home")" sizes="auto" class="lazyload"/>
+                        <img data-srcset="@Url.GetSrcSetUrls(featureImage, "home", "umbracoFile")" data-src="@Url.GetCropUrl(featureImage, "umbracoFile", "home")" sizes="auto" class="lazyload"/>
                     </a>
                 }
                 <h3><a href="@feature.Url">@feature.Name</a>
@@ -96,12 +97,12 @@ Below is an example of how to use the `<picture>` element to provide automated W
 
                 <picture>
                     <!--[if IE 9]><video style="display: none"><![endif]-->
-                    <source data-srcset="@featureImage.GetImgSrcSet(270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
-                    <source data-srcset="@featureImage.GetImgSrcSet(270, 161)" type="image/jpeg" data-sizes="auto"/>
+                    <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
+                    <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" type="image/jpeg" data-sizes="auto"/>
                     <!--[if IE 9]></video><![endif]-->
                     <img
                         src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                        data-src="@featureImage.GetCropUrl(270, 161)"
+                        data-src="@Url.GetCropUrl(featureImage, 270, 161)"
                         class="lazyload"
                         alt="image with artdirection"
                         data-sizes="auto"/>
