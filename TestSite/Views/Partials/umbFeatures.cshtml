@@ -22,7 +22,6 @@
             @foreach (var feature in featuredPages)
             {
                 <div class="3u">
-                    <!-- Feature -->
                     <section class="is-feature">
                         @if (feature.HasValue("Image"))
                         {
@@ -35,8 +34,6 @@
                         </h3>
                         @Umbraco.Truncate(feature.GetPropertyValue<string>("bodyText"), 100)
                     </section>
-
-                    <!-- /Feature -->
                 </div>
             }
 
