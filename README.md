@@ -41,7 +41,7 @@ You can of course bundle these together. If you don't already have js bundling i
 
 ### 2. Adjust your image src attributes
 
-Use the GetImgSrcSet or GetCropSrcSet methods on your media items. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
+Use the GetSrcSetUrls UrlHelper extension method to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
 #### Url.GetSrcSetUrls(publishedContent, width, height)
 Use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
