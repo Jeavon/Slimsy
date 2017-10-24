@@ -61,7 +61,7 @@ e.g. An initial image size of 270 x 161. This example is looping pages, each pag
     }
 </div>
 
-This example uses the LQIP (low quality image placeholder) technique.
+This example uses the LQIP (low quality image place holder) technique.
 
 #### `Url.GetSrcSetUrls(publishedContent, int width, int height, int quality)`
 
@@ -73,7 +73,7 @@ This example uses the LQIP (low quality image placeholder) technique.
 
 #### `Url.GetSrcSetUrls(publishedContent, int width, int height, AspectRatio aspectRatio)`
 
-Slimsy 2 now allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instanciate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ration.
+Slimsy 2 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ration.
 
     @foreach (var feature in featuredPages)
     {
@@ -93,8 +93,6 @@ Slimsy 2 now allows you to define a predefined ratio for your image so you don't
             </section>
         </div>
     }
-
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, ImageCropMode? imageCropMode)`
 
 #### `Url.GetSrcSetUrls(publishedContent, cropAlias)`
 
