@@ -60,12 +60,12 @@ namespace Slimsy
         
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
-            var w = 160;
+            var w = WidthStep();
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
 
-            while (w <= MaxWidth())
+            while (w <= MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
                 var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: 90, preferFocalPoint: true,
@@ -86,12 +86,12 @@ namespace Slimsy
 
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
-            var w = 160;
+            var w = WidthStep();
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
 
-            while (w <= MaxWidth())
+            while (w <= MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
@@ -116,11 +116,11 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
         {
-            var w = 160;
+            var w = WidthStep();
 
             var outputStringBuilder = new StringBuilder();
 
-            while (w <= MaxWidth())
+            while (w <= MaxWidth(publishedContent))
             {
                 decimal heightRatio;
                 if (w < width)
@@ -168,7 +168,7 @@ namespace Slimsy
 
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
         {
-            var w = 160;
+            var w = WidthStep();
 
             var outputStringBuilder = new StringBuilder();
 
@@ -182,7 +182,7 @@ namespace Slimsy
             {
                 var heightRatio = (decimal)crop.Height / crop.Width;
 
-                while (w <= MaxWidth())
+                while (w <= MaxWidth(publishedContent))
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
@@ -207,10 +207,24 @@ namespace Slimsy
             return 160;
         }
 
-        private static int MaxWidth()
+        private static int MaxWidth(IPublishedContent publishedContent)
         {
             // this should be overridable from an appsetting
-            return 2048;
+            var maxWidth = 2048;
+
+            // if publishedContent is a media item we can see if we can get the source image width & height
+            if (publishedContent.ItemType == PublishedItemType.Media)
+            {
+                var sourceWidth = publishedContent.GetPropertyValue<int>(Constants.Conventions.Media.Width);
+
+                // if source width is less than max width then we should stop at source width
+                if (sourceWidth < maxWidth)
+                {
+                    maxWidth = sourceWidth;
+                }
+            }
+
+            return maxWidth;
         }
 
         private static string Format(string outputFormat = null)
