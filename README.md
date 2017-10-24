@@ -55,7 +55,7 @@ e.g. An initial image size of 270 x 161. This example is looping pages, each pag
         <div class="3u">
             <!-- Feature -->
             <section class="is-feature">
-                <img src="@Url.GetCropUrl(featureImage, 270, 161, quality:30)" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
+            	<img src="@Url.GetCropUrl(featureImage, 270, 161, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
             </section>
         </div>
     }
