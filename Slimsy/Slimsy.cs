@@ -24,10 +24,10 @@ namespace Slimsy
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
-    {
+    {        
         #region SrcSet
         /// <summary>
-        /// Generate SrcSet markup based on a width and height for the image
+        /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
         /// </summary>
         /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
@@ -40,7 +40,7 @@ namespace Slimsy
         }
 
         /// <summary>
-        /// Generate SrcSet markup based on a width and height for the image with a quality setting
+        /// Generate SrcSet markup based on a width and height for the image cropped around the focal point and at a specific quality
         /// </summary>
         /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
@@ -61,25 +61,21 @@ namespace Slimsy
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = 160;
-            const int maxWidth = 2048;
-            const int widthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
-            var heightRatio = (decimal)height / (decimal)width;
+            var heightRatio = (decimal)height / width;
 
-
-
-            while (w <= maxWidth)
+            while (w <= MaxWidth())
             {
                 var h = (int)Math.Round(w * heightRatio);
-                var cropString = publishedContent.GetCropUrl(w, h, propertyAlias, quality: 90, preferFocalPoint: true,
-                    furtherOptions: Format(outputFormat));
+                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: 90, preferFocalPoint: true,
+                    furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
 
                 var strPos = cropString.IndexOf("&quality=90", StringComparison.Ordinal);
                 var fixedCropUrl = strPos != -1 ? cropString.Remove(strPos, 11) : cropString;
 
                 outputStringBuilder.Append($"{fixedCropUrl}&quality={quality} {w}w,");
-                w += widthStep;
+                w += WidthStep();
             }
 
             // remove the last comma
@@ -91,18 +87,16 @@ namespace Slimsy
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
             var w = 160;
-            const int maxWidth = 2048;
-            const int widthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
-            var heightRatio = (decimal)height / (decimal)width;
+            var heightRatio = (decimal)height / width;
 
-            while (w <= maxWidth)
+            while (w <= MaxWidth())
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{publishedContent.GetCropUrl(w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat))} {w}w,");
-                w += widthStep;
+                    $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                w += WidthStep();
             }
 
             // remove the last comma
@@ -122,32 +116,28 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
         {
-
             var w = 160;
-            const int MaxWidth = 2048;
-            const int WidthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
-            var heightRatio = (decimal)height / (decimal)width;
 
-            while (w <= MaxWidth)
+            while (w <= MaxWidth())
             {
+                decimal heightRatio;
                 if (w < width)
                 {
-                    heightRatio = (decimal)aspectRatio.Height /
-                                  (decimal)aspectRatio.Width;
+                    heightRatio = (decimal)aspectRatio.Height / aspectRatio.Width;
                 }
                 else
                 {
-                    heightRatio = (decimal)height / (decimal)width;
+                    heightRatio = (decimal)height / width;
                 }
 
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{publishedContent.GetCropUrl(w, h, quality: 90, preferFocalPoint: true, furtherOptions: Format())} {w}w,");
+                    $"{urlHelper.GetCropUrl(publishedContent, w, h, quality: 90, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
 
-                w += WidthStep;
+                w += WidthStep();
             }
 
             // remove the last comma
@@ -179,8 +169,6 @@ namespace Slimsy
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
         {
             var w = 160;
-            const int maxWidth = 2048;
-            const int widthStep = 160;
 
             var outputStringBuilder = new StringBuilder();
 
@@ -192,15 +180,14 @@ namespace Slimsy
 
             if (crop != null)
             {
-                var heightRatio = (decimal)crop.Height / (decimal)crop.Width;
+                var heightRatio = (decimal)crop.Height / crop.Width;
 
-                while (w <= maxWidth)
+                while (w <= MaxWidth())
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{publishedContent.GetCropUrl(w, h, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat))} {w}w,");
-
-                    w += widthStep;
+                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                    w += WidthStep();
                 }
 
             }
@@ -213,6 +200,19 @@ namespace Slimsy
         #endregion
 
         #region Internal Functions
+
+        private static int WidthStep()
+        {
+            // this should be overridable from an appsetting
+            return 160;
+        }
+
+        private static int MaxWidth()
+        {
+            // this should be overridable from an appsetting
+            return 2048;
+        }
+
         private static string Format(string outputFormat = null)
         {
             var bgColor = string.Empty;
