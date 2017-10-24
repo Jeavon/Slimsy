@@ -71,10 +71,7 @@ namespace Slimsy
                 var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: 90, preferFocalPoint: true,
                     furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
 
-                var strPos = cropString.IndexOf("&quality=90", StringComparison.Ordinal);
-                var fixedCropUrl = strPos != -1 ? cropString.Remove(strPos, 11) : cropString;
-
-                outputStringBuilder.Append($"{fixedCropUrl}&quality={quality} {w}w,");
+                outputStringBuilder.Append($"{cropString} {w}w,");
                 w += WidthStep();
             }
 
