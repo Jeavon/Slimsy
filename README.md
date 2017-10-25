@@ -157,6 +157,10 @@ You can specify the default background color by added another appsetting to web.
 
 	<add key="Slimsy:BGColor" value="fff"/>
 
+# Lazysizes.js
+
+Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If you need to find out more information about it or how to hook into it's Javascript events be sure to check out it's [GitHub](https://github.com/aFarkas/lazysizes#combine-data-srcset-with-data-src) 
+
 # Test Site & Source Code
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.
