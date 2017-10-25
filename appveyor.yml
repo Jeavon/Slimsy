@@ -25,7 +25,7 @@ deploy:
       secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
     artifact: /.*\.nupkg/
     on:
-      branch: master
+      branch: develop
 
     # MyGet Deployment for builds & releases from feature branches
 #  - provider: NuGet
@@ -36,16 +36,6 @@ deploy:
 #    artifact: /.*\.nupkg/
 #    on:
 #      branch: /feature\/.*/
-
-    # MyGet Deployment for builds & releases from srcsetsupport (v2) branch
-  - provider: NuGet
-    server: https://www.myget.org/F/slimsy-v2/
-    symbol_server: https://nuget.symbolsource.org/MyGet/slimsy-v2
-    api_key:
-      secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
-    artifact: /.*\.nupkg/
-    on:
-      branch: feature/v2
 
      # GitHub Deployment for releases
   - provider: GitHub
