@@ -4,7 +4,7 @@
 	ng-model="renderModel">	
 	<li ng-repeat="node in renderModel">
 
-		<i class="icon icon-delete red hover-show pull-right" ng-click="remove($index)"></i>
+		<a href="" class="hover-show pull-right"><i class="icon icon-delete red" ng-click="remove($index, $event)"></i></a>
 
 		<i class="icon {{node.icon}} hover-hide"></i>
 		<a href prevent-default ng-click="openContentPicker()" >{{node.name}}</a>
@@ -13,10 +13,18 @@
 
 <ul class="unstyled list-icons" ng-show="multipicker || renderModel.length === 0">	
 	<li>
-		<i class="icon icon-add blue"></i>
+		<i class="icon icon-add turquoise"></i>
 		<a href ng-click="openContentPicker()" prevent-default>
 			<localize key="general_add">Add</localize>
 		</a>
 	</li>
 </ul>
+
+<umb-overlay
+	ng-if="contentPickerOverlay.show"
+	model="contentPickerOverlay"
+	position="right"
+	view="contentPickerOverlay.view">
+</umb-overlay>
+
 </div>

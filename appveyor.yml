@@ -1,12 +1,12 @@
 os: Visual Studio 2015
 
 # version format
-version: 1.1.8.{build}
+version: 2.0.0.{build}
 
 # UMBRACO_PACKAGE_PRERELEASE_SUFFIX will only be used for Release builds
 # example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
 init:
-  - set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=
+  - set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta1
 
 build_script:
   - cd BuildPackage
@@ -25,9 +25,9 @@ deploy:
       secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
     artifact: /.*\.nupkg/
     on:
-      branch: master
+      branch: develop
 
-#    # MyGet Deployment for builds & releases from feature branches
+    # MyGet Deployment for builds & releases from feature branches
 #  - provider: NuGet
 #    server: https://www.myget.org/F/slimsy/
 #    symbol_server: https://nuget.symbolsource.org/MyGet/slimsy

@@ -1,95 +1,227 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Slimsy.cs" company="Our.Umbraco">
-//   2014
+//   2017
 // </copyright>
 // <summary>
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Slimsy
 {
+    using System;
+    using System.Linq;
     using System.Configuration;
     using System.Text;
+    using System.Web;
+    using System.Web.Mvc;
+
+    using Newtonsoft.Json;
 
     using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Web;
     using Umbraco.Web.Models;
 
+    [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
-    {
-        public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height)
+    {        
+        #region SrcSet
+        /// <summary>
+        /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
+        /// </summary>
+        /// <param name="urlHelper"></param>
+        /// <param name="publishedContent"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height)
         {
-            return publishedContent.GetResponsiveImageUrl(width, height, Constants.Conventions.Media.File);
+            return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
         }
 
-        public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height, string propertyAlias)
+        /// <summary>
+        /// Generate SrcSet markup based on a width and height for the image cropped around the focal point and at a specific quality
+        /// </summary>
+        /// <param name="urlHelper"></param>
+        /// <param name="publishedContent"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="quality"></param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, int quality)
         {
-            return publishedContent.GetResponsiveImageUrl(width, height, propertyAlias, null);
+            return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
         }
 
-        public static string GetResponsiveImageUrl(this IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
-            string returnUrl;
+            return urlHelper.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
+        }
+        
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
+        {
+            var w = WidthStep();
 
-            if (height == 0)
+            var outputStringBuilder = new StringBuilder();
+            var heightRatio = (decimal)height / width;
+
+            while (w <= MaxWidth(publishedContent))
             {
-                returnUrl = publishedContent.GetCropUrl(
-                    width,
-                    null,
-                    propertyAlias,
-                    preferFocalPoint: true, 
-                    furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format(outputFormat)));
+                var h = (int)Math.Round(w * heightRatio);
+                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: 90, preferFocalPoint: true,
+                    furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
+
+                outputStringBuilder.Append($"{cropString} {w}w,");
+                w += WidthStep();
             }
-            else
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
+        }
+
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
+        {
+            var w = WidthStep();
+
+            var outputStringBuilder = new StringBuilder();
+            var heightRatio = (decimal)height / width;
+
+            while (w <= MaxWidth(publishedContent))
             {
-                returnUrl = publishedContent.GetCropUrl(
-                    width,
-                    height,
-                    propertyAlias,
-                    ratioMode: ImageCropRatioMode.Height,
-                    preferFocalPoint: true, 
-                    furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format(outputFormat)));
+                var h = (int)Math.Round(w * heightRatio);
+                outputStringBuilder.Append(
+                    $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                w += WidthStep();
             }
 
-            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        // this could be a overload of GetResponsiveImageUrl but then dynamics can't use it, hence a new name
-        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias)
+        /// <summary>
+        /// Generate SrcSet markup based on a width and height for the image passing in a ratio for the image
+        /// </summary>
+        /// <param name="urlHelper"></param>
+        /// <param name="publishedContent"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="aspectRatio"></param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
         {
-            var returnUrl = publishedContent.GetCropUrl(
-                cropAlias: cropAlias,
-                useCropDimensions: true,
-                ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format()));
+            var w = WidthStep();
 
-            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+            var outputStringBuilder = new StringBuilder();
+
+            while (w <= MaxWidth(publishedContent))
+            {
+                decimal heightRatio;
+                if (w < width)
+                {
+                    heightRatio = (decimal)aspectRatio.Height / aspectRatio.Width;
+                }
+                else
+                {
+                    heightRatio = (decimal)height / width;
+                }
+
+                var h = (int)Math.Round(w * heightRatio);
+
+                outputStringBuilder.Append(
+                    $"{urlHelper.GetCropUrl(publishedContent, w, h, quality: 90, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+
+                w += WidthStep();
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias, string propertyAlias)
-        {
-            var returnUrl = publishedContent.GetCropUrl(
-                propertyAlias: propertyAlias,
-                cropAlias: cropAlias,
-                useCropDimensions: true,
-                ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format()));
+        #endregion
 
-            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        #region Pre defined crops
+        /// <summary>
+        /// Get SrcSet based on a predefined crop
+        /// </summary>
+        /// <param name="urlHelper"></param>
+        /// <param name="publishedContent"></param>
+        /// <param name="cropAlias"></param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias)
+        {
+            return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
         }
 
-        public static string GetResponsiveCropUrl(this IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
+        public static IHtmlString GetSrcSetUrls (this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
-            var returnUrl = publishedContent.GetCropUrl(
-                propertyAlias: propertyAlias,
-                cropAlias: cropAlias,
-                useCropDimensions: true,
-                ratioMode: ImageCropRatioMode.Height,
-                furtherOptions: string.Format("{0}&quality=90&slimmage=true", Format(outputFormat)));
+            return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
+        }
 
-            return returnUrl != null ? returnUrl.ToLowerInvariant() : null;
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
+        {
+            var w = WidthStep();
+
+            var outputStringBuilder = new StringBuilder();
+
+            var cropperJson = publishedContent.GetPropertyValue<string>(propertyAlias);
+            var imageCrops = JsonConvert.DeserializeObject<ImageCropDataSet>(cropperJson);
+
+            var crop = imageCrops.Crops.FirstOrDefault(
+                x => string.Equals(x.Alias, cropAlias, StringComparison.InvariantCultureIgnoreCase));
+
+            if (crop != null)
+            {
+                var heightRatio = (decimal)crop.Height / crop.Width;
+
+                while (w <= MaxWidth(publishedContent))
+                {
+                    var h = (int)Math.Round(w * heightRatio);
+                    outputStringBuilder.Append(
+                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                    w += WidthStep();
+                }
+
+            }
+
+            // remove the last comma
+            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
+        }
+        #endregion
+
+        #region Internal Functions
+
+        private static int WidthStep()
+        {
+            // this should be overridable from an appsetting
+            return 160;
+        }
+
+        private static int MaxWidth(IPublishedContent publishedContent)
+        {
+            // this should be overridable from an appsetting
+            var maxWidth = 2048;
+
+            // if publishedContent is a media item we can see if we can get the source image width & height
+            if (publishedContent.ItemType == PublishedItemType.Media)
+            {
+                var sourceWidth = publishedContent.GetPropertyValue<int>(Constants.Conventions.Media.Width);
+
+                // if source width is less than max width then we should stop at source width
+                if (sourceWidth < maxWidth)
+                {
+                    maxWidth = sourceWidth;
+                }
+            }
+
+            return maxWidth;
         }
 
         private static string Format(string outputFormat = null)
@@ -98,25 +230,34 @@ namespace Slimsy
             if (outputFormat == null)
             {
                 var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
-                outputFormat = slimsyFormat != "false" ? slimsyFormat ?? "jpg" : string.Empty;
-                var slimsyBGColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
-                bgColor = slimsyBGColor != null && slimsyBGColor != "false" ? slimsyBGColor : string.Empty;
+                if (slimsyFormat == null)
+                {
+                    outputFormat = "auto";
+                }
+                var slimsyBgColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
+                bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
             }
 
             if (!string.IsNullOrEmpty(outputFormat))
             {
                 var returnString = new StringBuilder();
-                returnString.Append(string.Format("&format={0}", outputFormat));
+                returnString.Append($"&format={outputFormat}");
 
                 if (!string.IsNullOrEmpty(bgColor))
                 {
-                    returnString.Append(string.Format("&bgcolor={0}", bgColor));
+                    returnString.Append($"&bgcolor={bgColor}");
                 }
 
                 return returnString.ToString();
             }
 
+            if (!string.IsNullOrEmpty(bgColor))
+            {
+                return $"&bgcolor={bgColor}";
+            }
+
             return null;
         }
+        #endregion
     }
 }

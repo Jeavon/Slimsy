@@ -1,25 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Package">
 
-	<!-- IMPORTS -->
-	<PropertyGroup>
-		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
-		<MSBuildUmbracoTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildUmbracoTasks</MSBuildUmbracoTasksPath>
+    <!-- IMPORTS -->
+    <PropertyGroup>
+        <MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+        <MSBuildUmbracoTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildUmbracoTasks</MSBuildUmbracoTasksPath>
     <MSBuildNugetTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildNugetTasks</MSBuildNugetTasksPath>
     <AppVeyorUmbracoPath>$(MSBuildProjectDirectory)\Tools\AppVeyorUmbraco</AppVeyorUmbracoPath>
-	</PropertyGroup>
+    </PropertyGroup>
 
-	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
-	<Import Project="$(MSBuildUmbracoTasksPath)\MSBuild.Umbraco.Tasks.Targets" />
+    <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+    <Import Project="$(MSBuildUmbracoTasksPath)\MSBuild.Umbraco.Tasks.Targets" />
   <Import Project="$(MSBuildNugetTasksPath)\MSBuild.NuGet.Tasks.Targets" />
   <Import Project="$(AppVeyorUmbracoPath)\AppVeyorUmbraco.Targets" />
 
   <!-- SHARED PROPERTIES -->
   <PropertyGroup>
     <PackageName>Slimsy</PackageName>
-    <MinUmbracoVersion>7.3.0</MinUmbracoVersion>
+    <MinUmbracoVersion>7.6.0</MinUmbracoVersion>
     <Readme>Please follow the instructions on the project page http://our.umbraco.org/projects/website-utilities/slimsy</Readme>
-    <AuthorName>Jeavon Leopold, Marc Stöcker</AuthorName>
+    <AuthorName>Jeavon Leopold, Marc Stöcker, William Phillips</AuthorName>
     <AuthorUrl>http://our.umbraco.org</AuthorUrl>
     <PackageLicenseName>MIT license</PackageLicenseName>
     <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
@@ -90,18 +90,17 @@
     <FileUpdate Encoding="ASCII" Files="$(CoreProjectDir)\Properties\AssemblyInfo.cs" Regex="AssemblyInformationalVersion\(&quot;.*&quot;\)\]" ReplacementText="AssemblyInformationalVersion(&quot;$(ProductVersion)&quot;)]" />
   </Target>
 
-	<!-- COMPILE -->
-	<Target Name="Compile" DependsOnTargets="UpdateAssemblyInfo">
-		<MSBuild Projects="$(CoreProjectDir)\Slimsy.csproj" Properties="Configuration=$(BuildConfig)"/>
-	</Target>
+    <!-- COMPILE -->
+    <Target Name="Compile" DependsOnTargets="UpdateAssemblyInfo">
+        <MSBuild Projects="$(CoreProjectDir)\Slimsy.csproj" Properties="Configuration=$(BuildConfig)"/>
+    </Target>
 
-	<!-- PREPARE FILES -->
-	<Target Name="PrepareFiles" DependsOnTargets="Compile">
-		<ItemGroup>
+    <!-- PREPARE FILES -->
+    <Target Name="PrepareFiles" DependsOnTargets="Compile">
+        <ItemGroup>
       <SlimsyAssembly Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Slimsy.dll" />
       <PdbFiles Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Slimsy.pdb" />
-      <SrcFiles Include="$(CoreProjectDir)\**\*.cs" Exclude="$(CoreProjectDir)\obj\**"/>      
-      <SlimResponseAssembly Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Imazen.SlimResponse.dll" />
+      <SrcFiles Include="$(CoreProjectDir)\**\*.cs" Exclude="$(CoreProjectDir)\obj\**"/>
       <ScriptsFiles Include="$(CoreProjectDir)\Scripts\*.js" />
       <PackageFile Include="$(MSBuildProjectDirectory)\package.xml" />
       <NuSpecFile Include="$(MSBuildProjectDirectory)\package.nuspec" />
@@ -109,7 +108,6 @@
       <ViewsConfigUninstallXdt Include ="$(MSBuildProjectDirectory)\views.web.config.uninstall.xdt"/>
     </ItemGroup>
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildUmbDir)\bin" />
-    <Copy SourceFiles="@(SlimResponseAssembly)" DestinationFolder="$(BuildUmbDir)\bin" />
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildUmbDir)\Scripts" />
     <Copy SourceFiles="@(PackageFile)" DestinationFolder="$(BuildUmbDir)" />
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
@@ -127,18 +125,18 @@
       <ManifestFiles Include="$(BuildUmbDir)\**\*" Exclude="$(BuildUmbDir)\package.xml" />
     </ItemGroup>
     <ManifestUpdate
-			ManifestFile="$(BuildUmbDir)\package.xml"
-			WorkingDirectory="$(BuildUmbDir)"
-			MinimumRequiredUmbracoVersion="$(MinUmbracoVersion)"
-			PackageName="$(PackageName)"
-			PackageVersion="$(ProductVersion)"
-			AuthorName="$(AuthorName)"
-			AuthorUrl="$(AuthorUrl)"
-			Readme="$(Readme)"
-			PackageLicenseName="$(PackageLicenseName)"
-			PackageLicenseUrl="$(PackageLicenseUrl)"
-			PackageUrl="$(ProjectUrl)"
-			Files="@(ManifestFiles)" />
+            ManifestFile="$(BuildUmbDir)\package.xml"
+            WorkingDirectory="$(BuildUmbDir)"
+            MinimumRequiredUmbracoVersion="$(MinUmbracoVersion)"
+            PackageName="$(PackageName)"
+            PackageVersion="$(ProductVersion)"
+            AuthorName="$(AuthorName)"
+            AuthorUrl="$(AuthorUrl)"
+            Readme="$(Readme)"
+            PackageLicenseName="$(PackageLicenseName)"
+            PackageLicenseUrl="$(PackageLicenseUrl)"
+            PackageUrl="$(ProjectUrl)"
+            Files="@(ManifestFiles)" />
   </Target>
 
   <!-- MANIFEST FOR NUGET PACKAGE -->
@@ -147,24 +145,24 @@
       <ManifestFiles Include="$(BuildNuGetDir)\**\*" Exclude="$(BuildNuGetDir)\package.nuspec" />
     </ItemGroup>
     <MSBuild.NuGet.Tasks.ManifestUpdate
-			ManifestFile="$(BuildNuGetDir)\package.nuspec"
-			WorkingDirectory="$(BuildNuGetDir)"
-			Title="$(NugetPackageName)"
-			Description="$(Readme)"
-			Summary="$(Summary)"
-			Version="$(ProductVersion)"
-			MinimumRequiredUmbracoVersion ="$(MinUmbracoVersion)"
-			Authors="$(AuthorName)"
-			Owners="$(Owners)"
-			Copyright="$(Copyright)"
-			LicenseUrl="$(PackageLicenseUrl)"
-			ProjectUrl="$(ProjectUrl)"
-			Id="$(PackageId)"
-			IconUrl="$(IconUrl)"
-			Language="$(Language)"
-			RequireLicenseAcceptance="$(RequireLicenseAcceptance)"
-			Tags="$(Tags)"
-			Files="@(ManifestFiles)" />
+            ManifestFile="$(BuildNuGetDir)\package.nuspec"
+            WorkingDirectory="$(BuildNuGetDir)"
+            Title="$(NugetPackageName)"
+            Description="$(Readme)"
+            Summary="$(Summary)"
+            Version="$(ProductVersion)"
+            MinimumRequiredUmbracoVersion ="$(MinUmbracoVersion)"
+            Authors="$(AuthorName)"
+            Owners="$(Owners)"
+            Copyright="$(Copyright)"
+            LicenseUrl="$(PackageLicenseUrl)"
+            ProjectUrl="$(ProjectUrl)"
+            Id="$(PackageId)"
+            IconUrl="$(IconUrl)"
+            Language="$(Language)"
+            RequireLicenseAcceptance="$(RequireLicenseAcceptance)"
+            Tags="$(Tags)"
+            Files="@(ManifestFiles)" />
   </Target>
 
   <!-- PACKAGE -->
@@ -174,9 +172,9 @@
     </ItemGroup>
 
     <Package ManifestFile="$(BuildUmbDir)\package.xml"
-			WorkingDirectory="$(BuildUmbDir)"
-			OutputDirectory="$(ArtifactsDir)"
-			Files="@(PackageFiles)" />
+            WorkingDirectory="$(BuildUmbDir)"
+            OutputDirectory="$(ArtifactsDir)"
+            Files="@(PackageFiles)" />
 
     <MSBuild.NuGet.Tasks.Pack NuGetExePath="$(RootDir)\BuildPackage\Tools\NuGet.exe"
           ManifestFile="$(BuildNuGetDir)\package.nuspec"

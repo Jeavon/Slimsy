@@ -14,3 +14,4 @@ Slimsy Change log
 - 1.1.5 - Umbraco package only release without HtmlAgilityPack Assembly
 - 1.1.6 - Umbraco v7.3.0 upgrade & focal point preference fix
 - 1.1.7 - Fix to ensure that quality comes before format in ImageProcessor Urls
+- 2.0.0-beta1 - Complete rebuild using srcset and lazysizes.js, we broke everything, please don't hate us
