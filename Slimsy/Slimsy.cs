@@ -68,7 +68,7 @@ namespace Slimsy
             while (w <= MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
-                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: 90, preferFocalPoint: true,
+                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: quality, preferFocalPoint: true,
                     furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
 
                 outputStringBuilder.Append($"{cropString} {w}w,");
