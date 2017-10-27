@@ -6,7 +6,7 @@ version: 2.0.0.{build}
 # UMBRACO_PACKAGE_PRERELEASE_SUFFIX will only be used for Release builds
 # example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
 init:
-  - set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta1
+  - set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta2
 
 build_script:
   - cd BuildPackage
