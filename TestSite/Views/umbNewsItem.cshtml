@@ -23,9 +23,12 @@
                             {
                                 <span class="image image-full"><img src="@CurrentPage.GetResponsiveImageUrl(500,0,"Image")" alt="" /></span>
                             }
-
-                            @CurrentPage.BodyText
-                        </section>                           
+                            
+                            @{
+                                var bodyText = Model.Content.GetPropertyValue<string>("bodyText");
+                            }
+                            @Html.ConvertImgToSrcSet(bodyText, true, true);
+                        </section>
                     </article>
                     <!-- /Content -->
                 </div>

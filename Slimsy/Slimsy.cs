@@ -14,13 +14,17 @@ namespace Slimsy
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
 
     using Newtonsoft.Json;
+    using HtmlAgilityPack;
 
     using Umbraco.Core;
     using Umbraco.Core.Models;
     using Umbraco.Web;
     using Umbraco.Web.Models;
+    using Umbraco.Web.Extensions;
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
@@ -194,6 +198,127 @@ namespace Slimsy
 
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
+        #endregion
+
+        #region Html Helpers
+
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="htmlHelper"></param>
+        /// <param name="html"></param>
+        /// <param name="generateLqip"></param>
+        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
+        {
+            var urlHelper = new UrlHelper();
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            if (!doc.ParseErrors.Any() && doc.DocumentNode != null)
+            {
+                // Find all images
+                var imgNodes = doc.DocumentNode.SelectNodes("//img");
+
+                if (imgNodes != null)
+                {
+                    var modified = false;
+
+                    foreach (var img in imgNodes)
+                    {
+                        var srcAttr = img.Attributes.FirstOrDefault(x => x.Name == "src");
+                        var udiAttr = img.Attributes.FirstOrDefault(x => x.Name == "data-udi");
+                        var classAttr = img.Attributes.FirstOrDefault(x => x.Name == "class");
+
+                        if (srcAttr != null)
+                        {
+                            // html decode the url as variables encoded in tinymce
+                            var src = HttpUtility.HtmlDecode(srcAttr.Value);
+
+                            var hasQueryString = src.InvariantContains("?");
+                            NameValueCollection queryStringCollection;
+
+                            if (hasQueryString)
+                            {
+                                queryStringCollection = HttpUtility.ParseQueryString(src.Substring(src.IndexOf('?')));
+
+                                // ensure case of variables doesn't cause trouble
+                                IDictionary<string, string> queryString = queryStringCollection.AllKeys.ToDictionary(k => k.ToLowerInvariant(), k => queryStringCollection[k]);
+
+                                if (udiAttr != null)
+                                {
+                                    // Umbraco media
+                                    Udi nodeId;
+                                    if (Udi.TryParse(udiAttr.Value, out nodeId))
+                                    {
+                                        var node = nodeId.ToPublishedContent();
+
+                                        int width;
+                                        int height;
+
+                                        var qsWidth = queryString["width"];
+                                        var qsHeight = queryString["height"];
+
+                                        if (int.TryParse(qsWidth, out width) && int.TryParse(qsHeight, out height))
+                                        {
+                                            // change the src attribute to data-src
+                                            srcAttr.Name = "data-src";
+
+                                            var srcSet = GetSrcSetUrls(urlHelper, node, width, height);
+
+                                            img.Attributes.Add("data-srcset", srcSet.ToString());
+                                            img.Attributes.Add("data-sizes", "auto");
+
+                                            if (generateLqip)
+                                            {
+                                                var imgLqip =
+                                                    urlHelper.GetCropUrl(node, width, height, quality: 30,
+                                                        furtherOptions: "&format=auto", preferFocalPoint:true);
+                                                img.Attributes.Add("src", imgLqip.ToString());
+                                            }
+
+                                            if (classAttr != null)
+                                            {
+                                                classAttr.Value = $"{classAttr.Value} lazyload";
+                                            }
+                                            else
+                                            {
+                                                img.Attributes.Add("class", "lazyload");
+                                            }
+
+                                            if (removeStyleAttribute)
+                                            {
+                                                img.Attributes.Remove("style");
+                                            }
+
+                                            if (removeUdiAttribute)
+                                            {
+                                                img.Attributes.Remove("data-udi");
+                                            }
+
+                                            modified = true;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Image in TinyMce doesn't have a data-udi attribute
+                            }
+                        }
+                    }
+
+                    if (modified)
+                    {
+                        return new HtmlString(doc.DocumentNode.OuterHtml);
+                    }
+                }
+            }
+            return new HtmlString(html);
+        }
+
         #endregion
 
         #region Internal Functions
