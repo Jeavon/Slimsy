@@ -255,50 +255,55 @@ namespace Slimsy
                                     {
                                         var node = nodeId.ToPublishedContent();
 
-                                        int width;
-                                        int height;
-
                                         var qsWidth = queryString["width"];
                                         var qsHeight = queryString["height"];
 
-                                        if (int.TryParse(qsWidth, out width) && int.TryParse(qsHeight, out height))
+                                        // TinyMce sometimes adds decimals to image resize commands, we need to fix those
+                                        if (decimal.TryParse(qsWidth, out decimal decWidth) && decimal.TryParse(qsHeight, out decimal decHeight))
                                         {
-                                            // change the src attribute to data-src
-                                            srcAttr.Name = "data-src";
+                                            var width = (int)Math.Round(decWidth);
+                                            var height = (int) Math.Round(decHeight);
 
-                                            var srcSet = GetSrcSetUrls(urlHelper, node, width, height);
-
-                                            img.Attributes.Add("data-srcset", srcSet.ToString());
-                                            img.Attributes.Add("data-sizes", "auto");
-
-                                            if (generateLqip)
+                                            // if width is 0 (I don't know why it would be but it has been seen) then we can't do anything
+                                            if (width > 0)
                                             {
-                                                var imgLqip =
-                                                    urlHelper.GetCropUrl(node, width, height, quality: 30,
-                                                        furtherOptions: "&format=auto", preferFocalPoint:true);
-                                                img.Attributes.Add("src", imgLqip.ToString());
-                                            }
+                                                // change the src attribute to data-src
+                                                srcAttr.Name = "data-src";
 
-                                            if (classAttr != null)
-                                            {
-                                                classAttr.Value = $"{classAttr.Value} lazyload";
-                                            }
-                                            else
-                                            {
-                                                img.Attributes.Add("class", "lazyload");
-                                            }
+                                                var srcSet = GetSrcSetUrls(urlHelper, node, width, height);
 
-                                            if (removeStyleAttribute)
-                                            {
-                                                img.Attributes.Remove("style");
-                                            }
+                                                img.Attributes.Add("data-srcset", srcSet.ToString());
+                                                img.Attributes.Add("data-sizes", "auto");
 
-                                            if (removeUdiAttribute)
-                                            {
-                                                img.Attributes.Remove("data-udi");
-                                            }
+                                                if (generateLqip)
+                                                {
+                                                    var imgLqip =
+                                                        urlHelper.GetCropUrl(node, width, height, quality: 30,
+                                                            furtherOptions: "&format=auto", preferFocalPoint: true);
+                                                    img.Attributes.Add("src", imgLqip.ToString());
+                                                }
 
-                                            modified = true;
+                                                if (classAttr != null)
+                                                {
+                                                    classAttr.Value = $"{classAttr.Value} lazyload";
+                                                }
+                                                else
+                                                {
+                                                    img.Attributes.Add("class", "lazyload");
+                                                }
+
+                                                if (removeStyleAttribute)
+                                                {
+                                                    img.Attributes.Remove("style");
+                                                }
+
+                                                if (removeUdiAttribute)
+                                                {
+                                                    img.Attributes.Remove("data-udi");
+                                                }
+
+                                                modified = true;
+                                            }
                                         }
                                     }
                                 }
