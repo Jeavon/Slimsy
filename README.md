@@ -128,6 +128,17 @@ Use this method when you want to use a predefined crop, assumes your image cropp
 
 #### `Url.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, string outputFormat)`
 
+#### `Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+
+Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
+
+    @{
+        var bodyText = Model.Content.GetPropertyValue<string>("bodyText");
+    }
+    @Html.ConvertImgToSrcSet(bodyText, true, true);
+
+#### `Html.ConvertImgToSrcSet(IHtmlString html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+
 # Using `<picture>` element
 
 Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp).
@@ -179,6 +190,8 @@ Visual Studio 2015 is required for compiling the source code
 # Credits and references
 
 This project includes [LazySizes](https://github.com/aFarkas/lazysizes) and [Picturefill](https://github.com/scottjehl/picturefill) Both projects are MIT licensed.
+
+Without the amazing [ImageProcessor](http://imageprocessor.org) this package wouldn't exist, so many thanks go to [James](https://github.com/JimBobSquarePants) for creating ImageProcessor!
 
 Many thanks to Douglas Robar for naming Slimsy.
 
