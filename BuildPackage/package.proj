@@ -30,8 +30,8 @@
   <PropertyGroup>
     <NugetPackageName>Slimsy for Umbraco</NugetPackageName>
     <PackageId>Our.Umbraco.Slimsy</PackageId>
-    <Copyright>Jeavon Leopold and Marc Stöcker</Copyright>
-    <Owners>Jeavon Leopold, Marc Stöcker</Owners>
+    <Copyright>Jeavon Leopold, Marc Stöcker and William Phillips</Copyright>
+    <Owners>Jeavon Leopold, Marc Stöcker, William Phillips</Owners>
     <Summary>Effortless Responsive Images with Slimmage and Umbraco using Slimmage.js</Summary>
     <IconUrl>https://raw.githubusercontent.com/Jeavon/Slimsy/master/Slimsy.png</IconUrl>
     <Tags>umbraco</Tags>

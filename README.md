@@ -1,6 +1,6 @@
 Slimsy v2
 ============
-**Effortless Responsive Images with LazySizes and Umbraco**
+**Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
 # Slimsy v2 is not compatible with Slimsy v1 at all, if you upgrade you will have to refactor all of your code! #
 
@@ -22,10 +22,9 @@ Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/
 
 **Note** Slimsy v2.0.0+ requires Umbraco v7.6.0+
 
-LazySizes.js used in conjunction with ImageProcessor.Web and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
+LazySizes.js used in conjunction with ImageProcessor.Web and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser), the images are also be lazy loaded.
 
 Slimsy includes lazysizes.min.js and picturefill.min.js and some helper methods.
-
 
 ## Implementing post package installation
 
@@ -102,9 +101,9 @@ Slimsy 2 allows you to define a predefined ratio for your image so you don't nee
         </div>
     }
 
-#### `Url.GetSrcSetUrls(publishedContent, cropAlias)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias)`
 
-#### `Url.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias)`
 
 Use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile".
 
@@ -126,34 +125,47 @@ Use this method when you want to use a predefined crop, assumes your image cropp
         </div>
     }
 
-#### `Url.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, string outputFormat)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat)`
+
+#### `Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+
+Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
+
+    @{
+        var bodyText = Model.Content.GetPropertyValue<string>("bodyText");
+    }
+    @Html.ConvertImgToSrcSet(bodyText, true, true);
+
+#### `Html.ConvertImgToSrcSet(IHtmlString html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
 
 # Using `<picture>` element
 
-Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp).
+Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp), this example also implements a optional LQIP image.
 
-    @foreach (var feature in featuredPages)
-    {
-        var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
-        <div class="3u">
-            <!-- Feature -->
-            <section class="is-feature">
+	foreach (var caseStudyImage in caseStudyImagesCollection)
+	{
+		var imgSrcSet = Url.GetSrcSetUrls(caseStudyImage, 650, 0);
+		var imgSrcSetWebP = Url.GetSrcSetUrls(caseStudyImage, 650, 0, Constants.Conventions.Media.File, "webp", quality:70);
 
-                <picture>
-                    <!--[if IE 9]><video style="display: none"><![endif]-->
-                    <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
-                    <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" type="image/jpeg" data-sizes="auto"/>
-                    <!--[if IE 9]></video><![endif]-->
-                    <img
-                        src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                        data-src="@Url.GetCropUrl(featureImage, 270, 161)"
-                        class="lazyload"
-                        alt="image with artdirection"
-                        data-sizes="auto"/>
-                </picture>
-            </section>
-        </div>
-    }
+		var imgSrc = Url.GetCropUrl(caseStudyImage, 650, 0);
+		var imgLqip = Url.GetCropUrl(caseStudyImage, 650, 0, quality: 30, furtherOptions: "&format=auto");
+
+		<div class="picture-box">
+			<picture>
+				<!--[if IE 9]><video style="display: none"><![endif]-->
+				<source data-srcset="@imgSrcSetWebP" srcset="@imgLqip" type="image/webp" data-sizes="auto"/>
+				<source data-srcset="@imgSrcSet" srcset="@imgLqip" type="image/jpeg" data-sizes="auto"/>
+				<!--[if IE 9]></video><![endif]-->
+				<img
+					src="@imgLqip"
+					data-src="@imgSrc"
+					class="lazyload"
+					data-sizes="auto"
+					alt="@caseStudyImage.Name" />
+			</picture>
+		</div>
+	}
+}
 
 # Advanced Options
 
@@ -179,6 +191,8 @@ Visual Studio 2015 is required for compiling the source code
 # Credits and references
 
 This project includes [LazySizes](https://github.com/aFarkas/lazysizes) and [Picturefill](https://github.com/scottjehl/picturefill) Both projects are MIT licensed.
+
+Without the amazing [ImageProcessor](http://imageprocessor.org) this package wouldn't exist, so many thanks go to [James](https://github.com/JimBobSquarePants) for creating ImageProcessor!
 
 Many thanks to Douglas Robar for naming Slimsy.
 
