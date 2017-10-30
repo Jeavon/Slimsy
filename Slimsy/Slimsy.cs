@@ -324,6 +324,12 @@ namespace Slimsy
             return new HtmlString(html);
         }
 
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IHtmlString html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
+        {
+            var htmlString = html.ToString();
+            return ConvertImgToSrcSet(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
+        }
+
         #endregion
 
         #region Internal Functions
