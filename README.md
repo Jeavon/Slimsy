@@ -1,6 +1,6 @@
 Slimsy v2
 ============
-**Effortless Responsive Images with LazySizes and Umbraco**
+**Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
 # Slimsy v2 is not compatible with Slimsy v1 at all, if you upgrade you will have to refactor all of your code! #
 
@@ -22,10 +22,9 @@ Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/
 
 **Note** Slimsy v2.0.0+ requires Umbraco v7.6.0+
 
-LazySizes.js used in conjunction with ImageProcessor.Web and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser).
+LazySizes.js used in conjunction with ImageProcessor.Web and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser), the images are also be lazy loaded.
 
 Slimsy includes lazysizes.min.js and picturefill.min.js and some helper methods.
-
 
 ## Implementing post package installation
 
