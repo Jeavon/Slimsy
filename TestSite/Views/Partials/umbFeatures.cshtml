@@ -27,7 +27,7 @@
                         {
                             var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                             <a href="@feature.Url" class="image image-full">
-                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, "home", "umbracoFile")" data-src="@Url.GetCropUrl(featureImage, "umbracoFile", "home")" sizes="auto" class="lazyload"/>
+                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, "home", "umbracoFile")" data-src="@Url.GetCropUrl(featureImage, "umbracoFile", "home")" data-sizes="auto" class="lazyload"/>
                             </a>
                         }
                         <h3><a href="@feature.Url">@feature.Name</a>
@@ -50,7 +50,7 @@
 
                         <picture>
                             <!--[if IE 9]><video style="display: none"><![endif]-->
-                            <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161, "umbracoFile", "webp")" type="image/webp" data-sizes="auto"/>
+                            <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161, "umbracoFile", "webp", quality:80)" type="image/webp" data-sizes="auto"/>
                             <source data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" type="image/jpeg" data-sizes="auto"/>
                             <!--[if IE 9]></video><![endif]-->
                             <img
@@ -79,7 +79,7 @@
                         {
                             var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                             <a href="@feature.Url" class="image image-full">
-                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, 1920, 0, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
+                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, 1920, 0, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" data-sizes="auto" class="lazyload" />
                             </a>
                         }
                         <h3>
@@ -102,7 +102,7 @@
                 <div class="3u">
                     <!-- Feature -->
                     <section class="is-feature">
-                        <img src="@Url.GetCropUrl(featureImage, 270, 161, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
+                        <img src="@Url.GetCropUrl(featureImage, 270, 161, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" data-sizes="auto" class="lazyload" alt="something really long"/>
                     </section>
                 </div>
             }
@@ -110,4 +110,6 @@
 
     </div>
 </section>
+
+@Html.Partial("/Views/Partials/_Slider.cshtml", featuredPages)
 <!-- /Features -->

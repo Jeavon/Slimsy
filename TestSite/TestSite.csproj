@@ -81,10 +81,12 @@
     <Content Include="config\Lang\ru-RU.user.xml" />
     <Content Include="config\Lang\sv-SE.user.xml" />
     <Content Include="config\Lang\zh-CN.user.xml" />
+    <Content Include="css\responsive.min.css" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="scripts\lazysizes.min.js" />
     <Content Include="scripts\picturefill.min.js" />
+    <Content Include="scripts\responsive.min.js" />
     <Content Include="web.config" />
     <Content Include="packages.config" />
     <Content Include="Views\Web.config" />
@@ -126,6 +128,7 @@
     <Content Include="config\BaseRestExtensions.config" />
     <Content Include="config\applications.config" />
     <Content Include="config\404handlers.config" />
+    <Content Include="Views\umbNewsItem.cshtml" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -388,9 +391,7 @@
       <Name>Slimsy</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="css\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />

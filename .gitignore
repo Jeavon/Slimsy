@@ -3,6 +3,8 @@
 
 # Visual Studo 2015 cache/options directory
 .vs/
+BuildPackage/tools/vswhere.2.0.2
+BuildPackage/tools/vswhere.exe
 
 # User-specific files
 *.suo
