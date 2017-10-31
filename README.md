@@ -127,6 +127,8 @@ Use this method when you want to use a predefined crop, assumes your image cropp
 
 #### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat)`
 
+### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
+
 #### `Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
 
 Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
