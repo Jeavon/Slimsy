@@ -210,8 +210,9 @@ namespace Slimsy
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
+        /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
         {
             var urlHelper = new UrlHelper();
             var doc = new HtmlDocument();
@@ -269,6 +270,12 @@ namespace Slimsy
                                             {
                                                 // change the src attribute to data-src
                                                 srcAttr.Name = "data-src";
+                                                if (roundWidthHeight)
+                                                {
+                                                    var roundedUrl = urlHelper.GetCropUrl(node, width, height,
+                                                        imageCropMode: ImageCropMode.Pad, preferFocalPoint:true);
+                                                    srcAttr.Value = roundedUrl.ToString();
+                                                }
 
                                                 var srcSet = GetSrcSetUrls(urlHelper, node, width, height);
 
