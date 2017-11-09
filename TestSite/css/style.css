@@ -3,3 +3,7 @@
 img {
   display:block;
 }
+
+section.is-feature img {
+  width: 260px;
+}

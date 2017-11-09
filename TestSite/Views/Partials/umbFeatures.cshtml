@@ -66,6 +66,20 @@
         </div>
 
         <div class="row">
+            <h2>Using Image Source Set with picture element, WebP ImageProcessor Plugin and LQIP using Razor Helper</h2>
+            @foreach (var feature in featuredPages)
+            {
+                var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
+                <div class="3u">
+                    <!-- Feature -->
+                    <section class="is-feature">
+                        @SlimsyHelper.RenderPicture(Url, featureImage, 270, 161)
+                    </section>
+                </div>
+            }
+        </div>
+
+        <div class="row">
 
             <h2>Using Image Source Set with Aspect Ratio</h2>
 

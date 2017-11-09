@@ -129,6 +129,7 @@
     <Content Include="config\applications.config" />
     <Content Include="config\404handlers.config" />
     <Content Include="Views\umbNewsItem.cshtml" />
+    <Content Include="App_Code\SlimsyHelper.cshtml" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
