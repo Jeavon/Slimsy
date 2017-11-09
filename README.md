@@ -183,6 +183,10 @@ You can specify the default background color by added another appsetting to web.
 
 Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If you need to find out more information about it or how to hook into it's Javascript events be sure to check out it's [GitHub](https://github.com/aFarkas/lazysizes#combine-data-srcset-with-data-src) 
 
+# Razor Helper
+
+It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/Views/Partials/umbFeatures.cshtml#L76)
+
 # Test Site & Source Code
 
 A test site is included in the solution, the username and password for Umbraco are admin/password.
