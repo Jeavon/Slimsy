@@ -122,6 +122,22 @@
             }
         </div>
 
+        <div class="row">
+
+            <h2>Using Image Source Set with LQIP and flexible heights</h2>
+
+            @foreach (var feature in featuredPages)
+            {
+                var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
+                <div class="3u">
+                    <!-- Feature -->
+                    <section class="is-feature">
+                        <img src="@Url.GetCropUrl(featureImage, 270, 0, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 0)" data-src="@Url.GetCropUrl(featureImage, 270, 0)" data-sizes="auto" class="lazyload" alt="something really long"/>
+                    </section>
+                </div>
+            }
+        </div>
+
     </div>
 </section>
 
