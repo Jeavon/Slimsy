@@ -362,6 +362,12 @@ namespace Slimsy
                 {
                     maxWidth = sourceWidth;
                 }
+
+                // if the source image is less than the step then max width should be the first step
+                if (maxWidth < WidthStep())
+                {
+                    maxWidth = WidthStep();
+                }
             }
 
             return maxWidth;
