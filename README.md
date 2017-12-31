@@ -80,7 +80,7 @@ This example uses the LQIP (low quality image place holder) technique.
 
 #### `Url.GetSrcSetUrls(publishedContent, int width, int height, AspectRatio aspectRatio)`
 
-Slimsy 2 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ration.
+Slimsy v2 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
 
     @foreach (var feature in featuredPages)
     {
