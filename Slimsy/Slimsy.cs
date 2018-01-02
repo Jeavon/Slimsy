@@ -111,11 +111,9 @@ namespace Slimsy
         /// </summary>
         /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
         /// <param name="aspectRatio"></param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, AspectRatio aspectRatio)
         {
             var w = WidthStep();
 
@@ -123,16 +121,8 @@ namespace Slimsy
 
             while (w <= MaxWidth(publishedContent))
             {
-                decimal heightRatio;
-                if (w < width)
-                {
-                    heightRatio = (decimal)aspectRatio.Height / aspectRatio.Width;
-                }
-                else
-                {
-                    heightRatio = (decimal)height / width;
-                }
-
+                var heightRatio = (decimal)aspectRatio.Height / aspectRatio.Width;
+              
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
