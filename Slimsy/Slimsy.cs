@@ -65,6 +65,7 @@ namespace Slimsy
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = WidthStep();
+            var q = quality == 90 ? DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -72,7 +73,7 @@ namespace Slimsy
             while (w <= MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
-                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: quality, preferFocalPoint: true,
+                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
 
                 outputStringBuilder.Append($"{cropString} {w}w,");
@@ -88,6 +89,7 @@ namespace Slimsy
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
             var w = WidthStep();
+            var q = DefaultQuality();
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -96,7 +98,7 @@ namespace Slimsy
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: 90, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                    $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                 w += WidthStep();
             }
 
@@ -118,6 +120,7 @@ namespace Slimsy
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, AspectRatio aspectRatio)
         {
             var w = WidthStep();
+            var q = DefaultQuality();
 
             var outputStringBuilder = new StringBuilder();
 
@@ -136,7 +139,7 @@ namespace Slimsy
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{urlHelper.GetCropUrl(publishedContent, w, h, quality: 90, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+                    $"{urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
 
                 w += WidthStep();
             }
@@ -170,6 +173,7 @@ namespace Slimsy
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
         {
             var w = WidthStep();
+            var q = DefaultQuality();
 
             var outputStringBuilder = new StringBuilder();
 
@@ -187,7 +191,7 @@ namespace Slimsy
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, quality: 90, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, quality: q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                     w += WidthStep();
                 }
 
@@ -333,6 +337,17 @@ namespace Slimsy
         #endregion
 
         #region Internal Functions
+
+        private static int DefaultQuality()
+        {
+            var slimsyDefaultQuality = ConfigurationManager.AppSettings["Slimsy:DefaultQuality"];
+            if (!int.TryParse(slimsyDefaultQuality, out int defaultQuality))
+            {
+                defaultQuality = 90;
+            }
+
+            return defaultQuality;
+        }
 
         private static int WidthStep()
         {
