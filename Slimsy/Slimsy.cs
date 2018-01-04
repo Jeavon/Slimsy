@@ -336,14 +336,22 @@ namespace Slimsy
 
         private static int WidthStep()
         {
-            // this should be overridable from an appsetting
-            return 160;
+            var slimsyWidthStep = ConfigurationManager.AppSettings["Slimsy:WidthStep"];
+            if (!int.TryParse(slimsyWidthStep, out int widthStep))
+            {
+                widthStep = 160;
+            }
+
+            return widthStep;
         }
 
         private static int MaxWidth(IPublishedContent publishedContent)
         {
-            // this should be overridable from an appsetting
-            var maxWidth = 2048;
+            var slimsyMaxWidth = ConfigurationManager.AppSettings["Slimsy:MaxWidth"];
+            if (!int.TryParse(slimsyMaxWidth, out int maxWidth))
+            {
+                maxWidth = 2048;
+            }
 
             // if publishedContent is a media item we can see if we can get the source image width & height
             if (publishedContent.ItemType == PublishedItemType.Media)
