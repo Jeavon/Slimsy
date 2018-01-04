@@ -171,11 +171,23 @@ Below is an example of how to use the `<picture>` element to provide automated W
 
 You can specify the default output format for all images
 
-    <add key="Slimsy:Format" value="jpg"/>
+  <add key="Slimsy:Format" value="jpg"/>
 
 You can specify the default background color by added another appsetting to web.config. As an example this setting is used if ImageProcessor is converting a png to a jpg and it as some transparency
 
 	<add key="Slimsy:BGColor" value="fff"/>
+
+You can specify the default quality for all images, unless specified via helper
+
+  <add key="Slimsy:DefaultQuality" value="90"/>
+
+You can specify the max width for the generated srcset sizes
+
+  <add key="Slimsy:MaxWidth" value="2048"/>
+
+You can specify the width step for the generated srcset sizes
+
+  <add key="Slimsy:WidthStep" value="160"/>
 
 # Lazysizes.js
 
