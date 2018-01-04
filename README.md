@@ -80,7 +80,7 @@ This example uses the LQIP (low quality image place holder) technique.
 
 #### `Url.GetSrcSetUrls(publishedContent, int width, int height, AspectRatio aspectRatio)`
 
-Slimsy 2 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ration.
+Slimsy v2 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
 
     @foreach (var feature in featuredPages)
     {
@@ -126,6 +126,8 @@ Use this method when you want to use a predefined crop, assumes your image cropp
     }
 
 #### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat)`
+
+### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
 #### `Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
 
@@ -192,6 +194,10 @@ You can specify the width step for the generated srcset sizes
 # Lazysizes.js
 
 Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If you need to find out more information about it or how to hook into it's Javascript events be sure to check out it's [GitHub](https://github.com/aFarkas/lazysizes#combine-data-srcset-with-data-src) 
+
+# Razor Helper
+
+It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/Views/Partials/umbFeatures.cshtml#L76)
 
 # Test Site & Source Code
 
