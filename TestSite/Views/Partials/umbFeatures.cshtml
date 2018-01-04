@@ -93,7 +93,7 @@
                         {
                             var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                             <a href="@feature.Url" class="image image-full">
-                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, 1920, 0, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" data-sizes="auto" class="lazyload" />
+                                <img data-srcset="@Url.GetSrcSetUrls(featureImage, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" data-sizes="auto" class="lazyload" />
                             </a>
                         }
                         <h3>

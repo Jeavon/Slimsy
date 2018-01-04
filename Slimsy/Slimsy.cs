@@ -392,10 +392,8 @@ namespace Slimsy
             if (outputFormat == null)
             {
                 var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
-                if (slimsyFormat == null)
-                {
-                    outputFormat = "auto";
-                }
+                outputFormat = slimsyFormat ?? "auto";
+
                 var slimsyBgColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
                 bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
             }
