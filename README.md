@@ -78,7 +78,7 @@ This example uses the LQIP (low quality image place holder) technique.
 
 #### `Url.GetSrcSetUrls(publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)`
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, AspectRatio aspectRatio)`
+#### `Url.GetSrcSetUrls(publishedContent, AspectRatio aspectRatio)`
 
 Slimsy v2 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
 
@@ -91,7 +91,7 @@ Slimsy v2 allows you to define a predefined ratio for your image so you don't ne
                 {
                     var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
                     <a href="@feature.Url" class="image image-full">
-                        <img data-srcset="@Url.GetSrcSetUrls(featureImage, 1920, 0, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
+                        <img data-srcset="@Url.GetSrcSetUrls(featureImage, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
                     </a>
                 }
                 <h3><a href="@feature.Url">@feature.Name</a>
