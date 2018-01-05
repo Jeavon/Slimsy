@@ -16,3 +16,4 @@ Slimsy Change log
 - 1.1.7 - Fix to ensure that quality comes before format in ImageProcessor Urls
 - 2.0.0-beta1 - Complete rebuild using srcset and lazysizes.js, we broke everything, please don't hate us
 - 2.0.0-beta2 - Added Html.ConvertImgToSrcSet for use with TinyMce Richtext editior
+- 2.0.0-beta3 - Fixed #5, added option for settings in web.config (thanks to Thomas Morris), fixed bug when default format is set in web.config
