@@ -18,3 +18,4 @@ Slimsy Change log
 - 2.0.0-beta2 - Added Html.ConvertImgToSrcSet for use with TinyMce Richtext editior
 - 2.0.0-beta3 - Fixed #5, added option for settings in web.config (thanks to Thomas Morris), fixed bug when default format is set in web.config
 - 2.0.0-beta4 - Updated lazysizes.js to v4 
+- 2.0.0 - No change, beta4 made the grade
