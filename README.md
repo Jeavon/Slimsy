@@ -134,18 +134,20 @@ Use this method when you want to use a predefined crop, assumes your image cropp
 
 ### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
-#### `Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip, bool removeStyleAttribute, bool roundWidthHeight)`
 
 Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
 
 ```
-@{
-    var bodyText = Model.Content.GetPropertyValue<string>("bodyText");
-}
-@Html.ConvertImgToSrcSet(bodyText, true, true);
+@Html.ConvertImgToSrcSet(Model.Content, "bodyText", true, true)
+
 ```
 
+#### `Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+**NOTE** this method is obsolete in Slimsy v2.1+, use the above method instead
+
 #### `Html.ConvertImgToSrcSet(IHtmlString html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+**NOTE** this method is obsolete in Slimsy v2.1+, use the above method instead
 
 # Using `<picture>` element
 
