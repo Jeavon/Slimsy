@@ -27,7 +27,11 @@
                             @{
                                 var bodyText = Model.Content.GetPropertyValue<string>("bodyText");
                             }
-                            @Html.ConvertImgToSrcSet(bodyText, true, true);
+
+                            <h3>Obsolete method!</h3>
+                            @Html.ConvertImgToSrcSet(bodyText, true, true, removeUdiAttribute:true)
+                            <h3>Current method!</h3>
+                            @Html.ConvertImgToSrcSet(Model.Content, "bodyText", true, true)
                         </section>
                     </article>
                     <!-- /Content -->
