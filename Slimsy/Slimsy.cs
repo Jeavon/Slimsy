@@ -225,13 +225,14 @@ namespace Slimsy
         /// </summary>
         /// <param name="htmlHelper"></param>
         /// <param name="publishedContent"></param>
-        /// <param name="generateLqip"></param>
+        /// <param name="propertyAlias">Alias of the TinyMce property</param>
+        /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
         /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyName, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true)
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true)
         {
-            var source = publishedContent.GetProperty(propertyName).DataValue.ToString();
+            var source = publishedContent.GetProperty(propertyAlias).DataValue.ToString();
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
             var rteConverter = new RteMacroRenderingValueConverter();
