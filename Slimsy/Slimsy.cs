@@ -232,14 +232,14 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true)
         {
-            var source = publishedContent.GetProperty(propertyAlias).DataValue.ToString();
+            var dataValue = publishedContent.GetProperty(propertyAlias).DataValue.ToString();
+            var source = ConvertImgToSrcSetInternal(htmlHelper, dataValue, generateLqip, removeStyleAttribute, true, roundWidthHeight);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
             var rteConverter = new RteMacroRenderingValueConverter();
             var sourceValue = rteConverter.ConvertDataToSource(null, source, false);
             var objectValue = rteConverter.ConvertSourceToObject(null, sourceValue, false);
-
-            return ConvertImgToSrcSetInternal(htmlHelper, objectValue.ToString(), generateLqip, removeStyleAttribute, true, roundWidthHeight);
+            return objectValue as IHtmlString;
         }
 
         /// <summary>
