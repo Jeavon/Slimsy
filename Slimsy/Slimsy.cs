@@ -8,24 +8,28 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Slimsy
 {
+    using HtmlAgilityPack;
+    using Newtonsoft.Json;
+
     using System;
-    using System.Linq;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.Configuration;
+    using System.Linq;
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-
-    using Newtonsoft.Json;
-    using HtmlAgilityPack;
+    using System.Reflection;
 
     using Umbraco.Core;
+    using Umbraco.Core.Cache;
     using Umbraco.Core.Models;
     using Umbraco.Web;
-    using Umbraco.Web.Models;
     using Umbraco.Web.Extensions;
+    using Umbraco.Web.Models;
     using Umbraco.Web.PropertyEditors.ValueConverters;
+    using Umbraco.Core.Configuration;
+    using Umbraco.Core.Logging;
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
@@ -210,12 +214,14 @@ namespace Slimsy
         [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
         {
+            CheckObsoleteMethodUsageAndLog();
             return ConvertImgToSrcSetInternal(htmlHelper, html, generateLqip, removeStyleAttribute, removeUdiAttribute, roundWidthHeight);
         }
 
         [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IHtmlString html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
         {
+            CheckObsoleteMethodUsageAndLog();
             var htmlString = html.ToString();
             return ConvertImgToSrcSetInternal(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
         }
@@ -372,7 +378,6 @@ namespace Slimsy
             return new HtmlString(html);
         }
 
-
         #endregion
 
         #region Internal Functions
@@ -460,6 +465,66 @@ namespace Slimsy
 
             return null;
         }
+
+        private static void CheckObsoleteMethodUsageAndLog()
+        {
+            var stripUdiAttributesCacheKey = "Slimsy.StripUdiAttributes";
+            var hasBeenWarnedCacheKey = "Slimsy.HasBeenWarned";
+
+            var hasStripUdiSetting = GetLocalCacheItem<bool?>(stripUdiAttributesCacheKey);
+
+            if (hasStripUdiSetting == null)
+            {
+                InsertLocalCacheItem(stripUdiAttributesCacheKey, GetStripUdiAttributes);
+                hasStripUdiSetting = GetStripUdiAttributes();
+            }
+
+            if (hasStripUdiSetting != null && (bool)hasStripUdiSetting)
+            {
+                var hasBeenWarned = GetLocalCacheItem<bool>(hasBeenWarnedCacheKey);
+                if (!hasBeenWarned)
+                {
+                    InsertLocalCacheItem(hasBeenWarnedCacheKey, () => true);
+                    LogHelper.Warn(typeof(Slimsy),
+                        "Obsolete Slimsy method in use! This method is not able to convert, please update to current methods (recommended) or disable the StripUdiAttributes in UmbracoSettings.config");
+                }
+            }
+        }
+
+        private static bool? GetStripUdiAttributes()
+        {
+            var obj = UmbracoConfig.For.UmbracoSettings().Content;
+            const string name = "StripUdiAttributes";
+
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            PropertyInfo field = null;
+            var objType = obj.GetType();
+            while (objType != null && field == null)
+            {
+                field = objType.GetProperty(name, flags);
+                objType = objType.BaseType;
+            }
+
+            if (field == null) return null;
+
+            var fieldValue = field.GetValue(obj, null);
+            var propertyValue = fieldValue.GetType().GetProperty("Value")?.GetValue(fieldValue, null);
+            return propertyValue != null && (bool)propertyValue;
+        }
+
+        private static T GetLocalCacheItem<T>(string cacheKey)
+        {
+            var runtimeCache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+            var cachedItem = runtimeCache.GetCacheItem<T>(cacheKey);
+            return cachedItem;
+        }
+
+        private static void InsertLocalCacheItem<T>(string cacheKey, Func<T> getCacheItem)
+        {
+            var runtimeCache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+            runtimeCache.InsertCacheItem<T>(cacheKey, getCacheItem);
+        }
+
         #endregion
     }
 }
