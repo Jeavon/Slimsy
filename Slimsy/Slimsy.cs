@@ -468,6 +468,7 @@ namespace Slimsy
 
         private static void CheckObsoleteMethodUsageAndLog()
         {
+            // This method can be removed if/when we make Umbraco 7.13 the minimum version
             var stripUdiAttributesCacheKey = "Slimsy.StripUdiAttributes";
             var hasBeenWarnedCacheKey = "Slimsy.HasBeenWarned";
 
@@ -475,11 +476,20 @@ namespace Slimsy
 
             if (hasStripUdiSetting == null)
             {
-                InsertLocalCacheItem(stripUdiAttributesCacheKey, GetStripUdiAttributes);
                 hasStripUdiSetting = GetStripUdiAttributes();
+                if (hasStripUdiSetting != null)
+                {
+                    InsertLocalCacheItem(stripUdiAttributesCacheKey, GetStripUdiAttributes);
+                }
+                else
+                {
+                    // Version of Umbraco before stripping was added so set to false
+                    InsertLocalCacheItem(stripUdiAttributesCacheKey, () => false);
+                    hasStripUdiSetting = false;
+                }
             }
 
-            if (hasStripUdiSetting != null && (bool)hasStripUdiSetting)
+            if ((bool)hasStripUdiSetting)
             {
                 var hasBeenWarned = GetLocalCacheItem<bool>(hasBeenWarnedCacheKey);
                 if (!hasBeenWarned)
@@ -493,23 +503,32 @@ namespace Slimsy
 
         private static bool? GetStripUdiAttributes()
         {
-            var obj = UmbracoConfig.For.UmbracoSettings().Content;
-            const string name = "StripUdiAttributes";
-
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            PropertyInfo field = null;
-            var objType = obj.GetType();
-            while (objType != null && field == null)
+            // try, catch as we are getting values from Umbraco internals and we don't want it to break in the future
+            try
             {
-                field = objType.GetProperty(name, flags);
-                objType = objType.BaseType;
+                var obj = UmbracoConfig.For.UmbracoSettings().Content;
+                const string name = "StripUdiAttributes";
+
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                PropertyInfo field = null;
+                var objType = obj.GetType();
+                while (objType != null && field == null)
+                {
+                    field = objType.GetProperty(name, flags);
+                    objType = objType.BaseType;
+                }
+
+                if (field == null) return null;
+
+                var fieldValue = field.GetValue(obj, null);
+                var propertyValue = fieldValue.GetType().GetProperty("Value")?.GetValue(fieldValue, null);
+                return propertyValue != null && (bool) propertyValue;
             }
-
-            if (field == null) return null;
-
-            var fieldValue = field.GetValue(obj, null);
-            var propertyValue = fieldValue.GetType().GetProperty("Value")?.GetValue(fieldValue, null);
-            return propertyValue != null && (bool)propertyValue;
+            catch (Exception ex)
+            {
+                LogHelper.Error(typeof(Slimsy), "Error whilst getting value of StripUdiAttributes UmbracoSetting", ex);
+                return null;
+            }
         }
 
         private static T GetLocalCacheItem<T>(string cacheKey)
