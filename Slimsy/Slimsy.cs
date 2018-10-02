@@ -8,23 +8,28 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Slimsy
 {
+    using HtmlAgilityPack;
+    using Newtonsoft.Json;
+
     using System;
-    using System.Linq;
+    using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.Configuration;
+    using System.Linq;
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-
-    using Newtonsoft.Json;
-    using HtmlAgilityPack;
+    using System.Reflection;
 
     using Umbraco.Core;
+    using Umbraco.Core.Cache;
     using Umbraco.Core.Models;
     using Umbraco.Web;
-    using Umbraco.Web.Models;
     using Umbraco.Web.Extensions;
+    using Umbraco.Web.Models;
+    using Umbraco.Web.PropertyEditors.ValueConverters;
+    using Umbraco.Core.Configuration;
+    using Umbraco.Core.Logging;
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
@@ -206,9 +211,57 @@ namespace Slimsy
         /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
+        [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
         {
+            CheckObsoleteMethodUsageAndLog();
+            return ConvertImgToSrcSetInternal(htmlHelper, html, generateLqip, removeStyleAttribute, removeUdiAttribute, roundWidthHeight);
+        }
+
+        [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IHtmlString html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
+        {
+            CheckObsoleteMethodUsageAndLog();
+            var htmlString = html.ToString();
+            return ConvertImgToSrcSetInternal(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
+        }
+
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="htmlHelper"></param>
+        /// <param name="publishedContent"></param>
+        /// <param name="propertyAlias">Alias of the TinyMce property</param>
+        /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true)
+        {
+            var dataValue = publishedContent.GetProperty(propertyAlias).DataValue.ToString();
+            var source = ConvertImgToSrcSetInternal(htmlHelper, dataValue, generateLqip, removeStyleAttribute, true, roundWidthHeight);
+
+            // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
+            var rteConverter = new RteMacroRenderingValueConverter();
+            var sourceValue = rteConverter.ConvertDataToSource(null, source, false);
+            var objectValue = rteConverter.ConvertSourceToObject(null, sourceValue, false);
+            return objectValue as IHtmlString;
+        }
+
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="htmlHelper"></param>
+        /// <param name="html"></param>
+        /// <param name="generateLqip"></param>
+        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
+        /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
+        /// <returns>HTML Markup</returns>
+        private static IHtmlString ConvertImgToSrcSetInternal(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
+        {
             var urlHelper = new UrlHelper();
+
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
@@ -257,7 +310,7 @@ namespace Slimsy
                                         if (decimal.TryParse(qsWidth, out decimal decWidth) && decimal.TryParse(qsHeight, out decimal decHeight))
                                         {
                                             var width = (int)Math.Round(decWidth);
-                                            var height = (int) Math.Round(decHeight);
+                                            var height = (int)Math.Round(decHeight);
 
                                             // if width is 0 (I don't know why it would be but it has been seen) then we can't do anything
                                             if (width > 0)
@@ -267,7 +320,7 @@ namespace Slimsy
                                                 if (roundWidthHeight)
                                                 {
                                                     var roundedUrl = urlHelper.GetCropUrl(node, width, height,
-                                                        imageCropMode: ImageCropMode.Pad, preferFocalPoint:true);
+                                                        imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
                                                     srcAttr.Value = roundedUrl.ToString();
                                                 }
 
@@ -323,12 +376,6 @@ namespace Slimsy
                 }
             }
             return new HtmlString(html);
-        }
-
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IHtmlString html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
-        {
-            var htmlString = html.ToString();
-            return ConvertImgToSrcSet(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
         }
 
         #endregion
@@ -418,6 +465,85 @@ namespace Slimsy
 
             return null;
         }
+
+        private static void CheckObsoleteMethodUsageAndLog()
+        {
+            // This method can be removed if/when we make Umbraco 7.13 the minimum version
+            var stripUdiAttributesCacheKey = "Slimsy.StripUdiAttributes";
+            var hasBeenWarnedCacheKey = "Slimsy.HasBeenWarned";
+
+            var hasStripUdiSetting = GetLocalCacheItem<bool?>(stripUdiAttributesCacheKey);
+
+            if (hasStripUdiSetting == null)
+            {
+                hasStripUdiSetting = GetStripUdiAttributes();
+                if (hasStripUdiSetting != null)
+                {
+                    InsertLocalCacheItem(stripUdiAttributesCacheKey, GetStripUdiAttributes);
+                }
+                else
+                {
+                    // Version of Umbraco before stripping was added so set to false
+                    InsertLocalCacheItem(stripUdiAttributesCacheKey, () => false);
+                    hasStripUdiSetting = false;
+                }
+            }
+
+            if ((bool)hasStripUdiSetting)
+            {
+                var hasBeenWarned = GetLocalCacheItem<bool>(hasBeenWarnedCacheKey);
+                if (!hasBeenWarned)
+                {
+                    InsertLocalCacheItem(hasBeenWarnedCacheKey, () => true);
+                    LogHelper.Warn(typeof(Slimsy),
+                        "Obsolete Slimsy method in use! This method is not able to convert, please update to current methods (recommended) or disable the StripUdiAttributes in UmbracoSettings.config");
+                }
+            }
+        }
+
+        private static bool? GetStripUdiAttributes()
+        {
+            // try, catch as we are getting values from Umbraco internals and we don't want it to break in the future
+            try
+            {
+                var obj = UmbracoConfig.For.UmbracoSettings().Content;
+                const string name = "StripUdiAttributes";
+
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                PropertyInfo field = null;
+                var objType = obj.GetType();
+                while (objType != null && field == null)
+                {
+                    field = objType.GetProperty(name, flags);
+                    objType = objType.BaseType;
+                }
+
+                if (field == null) return null;
+
+                var fieldValue = field.GetValue(obj, null);
+                var propertyValue = fieldValue.GetType().GetProperty("Value")?.GetValue(fieldValue, null);
+                return propertyValue != null && (bool) propertyValue;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error(typeof(Slimsy), "Error whilst getting value of StripUdiAttributes UmbracoSetting", ex);
+                return null;
+            }
+        }
+
+        private static T GetLocalCacheItem<T>(string cacheKey)
+        {
+            var runtimeCache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+            var cachedItem = runtimeCache.GetCacheItem<T>(cacheKey);
+            return cachedItem;
+        }
+
+        private static void InsertLocalCacheItem<T>(string cacheKey, Func<T> getCacheItem)
+        {
+            var runtimeCache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+            runtimeCache.InsertCacheItem<T>(cacheKey, getCacheItem);
+        }
+
         #endregion
     }
 }

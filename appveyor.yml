@@ -1,7 +1,7 @@
 os: Visual Studio 2017
 
 # version format
-version: 2.0.0.{build}
+version: 2.1.0.{build}
 
 # UMBRACO_PACKAGE_PRERELEASE_SUFFIX will only be used for Release builds
 # example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
@@ -20,7 +20,7 @@ deploy:
      # MyGet Deployment for builds & releases
   - provider: NuGet
     server: https://www.myget.org/F/slimsy/
-    symbol_server: https://nuget.symbolsource.org/MyGet/slimsy
+    symbol_server: https://www.myget.org/F/slimsy/symbols/api/v2/package
     api_key:
       secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
     artifact: /.*\.nupkg/
@@ -40,7 +40,7 @@ deploy:
     # MyGet Deployment for builds & releases from srcsetsupport (v2) branch
   - provider: NuGet
     server: https://www.myget.org/F/slimsy-v2/
-    symbol_server: https://nuget.symbolsource.org/MyGet/slimsy-v2
+    symbol_server: https://www.myget.org/F/slimsy-v2/symbols/api/v2/package
     api_key:
       secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
     artifact: /.*\.nupkg/
