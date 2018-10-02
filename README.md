@@ -16,9 +16,9 @@ __Prerelease Downloads__
 
 NuGet Package: [![MyGet build](https://img.shields.io/myget/slimsy-v2/vpre/Our.Umbraco.Slimsy.svg)](https://www.myget.org/gallery/slimsy-v2)
 
-Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/appveyor-umbraco-orange.svg)](https://ci.appveyor.com/project/JeavonLeopold/slimsy/build/artifacts)
+Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/appveyor-umbraco-orange.svg)](https://ci.appveyor.com/project/CrumpledDog/slimsy/build/artifacts)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/JeavonLeopold/slimsy)
+[![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/CrumpledDog/slimsy)
 
 **Note** Slimsy v2.0.0+ requires Umbraco v7.6.0+
 
