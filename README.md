@@ -143,10 +143,10 @@ Use this method to convert images entered into TinyMce Rich Text editors to use 
 
 ```
 
-#### `Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+#### ~~`Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`~~
 **NOTE** this method is obsolete in Slimsy v2.1+, use the above method instead
 
-#### `Html.ConvertImgToSrcSet(IHtmlString html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`
+#### ~~`Html.ConvertImgToSrcSet(IHtmlString html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`~~
 **NOTE** this method is obsolete in Slimsy v2.1+, use the above method instead
 
 # Using `<picture>` element
