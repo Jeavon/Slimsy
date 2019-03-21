@@ -6,6 +6,12 @@
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Serilog.Core;
+using Umbraco.Core.Composing;
+using Umbraco.Core.Models.PublishedContent;
+using Umbraco.Core.PropertyEditors.ValueConverters;
+
 namespace Slimsy
 {
     using HtmlAgilityPack;
@@ -25,11 +31,11 @@ namespace Slimsy
     using Umbraco.Core.Cache;
     using Umbraco.Core.Models;
     using Umbraco.Web;
-    using Umbraco.Web.Extensions;
     using Umbraco.Web.Models;
     using Umbraco.Web.PropertyEditors.ValueConverters;
     using Umbraco.Core.Configuration;
     using Umbraco.Core.Logging;
+    using Umbraco.Web.Composing;
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
@@ -172,8 +178,8 @@ namespace Slimsy
 
             var outputStringBuilder = new StringBuilder();
 
-            var cropperJson = publishedContent.GetPropertyValue<string>(propertyAlias);
-            var imageCrops = JsonConvert.DeserializeObject<ImageCropDataSet>(cropperJson);
+            var cropperJson = publishedContent.Value<string>(propertyAlias);
+            var imageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
 
             var crop = imageCrops.Crops.FirstOrDefault(
                 x => string.Equals(x.Alias, cropAlias, StringComparison.InvariantCultureIgnoreCase));
@@ -214,14 +220,12 @@ namespace Slimsy
         [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
         {
-            CheckObsoleteMethodUsageAndLog();
             return ConvertImgToSrcSetInternal(htmlHelper, html, generateLqip, removeStyleAttribute, removeUdiAttribute, roundWidthHeight);
         }
 
         [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IHtmlString html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
         {
-            CheckObsoleteMethodUsageAndLog();
             var htmlString = html.ToString();
             return ConvertImgToSrcSetInternal(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
         }
@@ -238,13 +242,13 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true)
         {
-            var dataValue = publishedContent.GetProperty(propertyAlias).DataValue.ToString();
+            var dataValue = publishedContent.GetProperty(propertyAlias).GetSourceValue().ToString();
             var source = ConvertImgToSrcSetInternal(htmlHelper, dataValue, generateLqip, removeStyleAttribute, true, roundWidthHeight);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var rteConverter = new RteMacroRenderingValueConverter();
-            var sourceValue = rteConverter.ConvertDataToSource(null, source, false);
-            var objectValue = rteConverter.ConvertSourceToObject(null, sourceValue, false);
+            var rteConverter = new RteMacroRenderingValueConverter(null, null);
+            var intermediateValue = rteConverter.ConvertSourceToIntermediate(null, null, source, false);
+            var objectValue = rteConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
             return objectValue as IHtmlString;
         }
 
@@ -301,7 +305,8 @@ namespace Slimsy
                                     Udi nodeId;
                                     if (Udi.TryParse(udiAttr.Value, out nodeId))
                                     {
-                                        var node = nodeId.ToPublishedContent();
+                                        var guidUdi = nodeId as GuidUdi;
+                                        var node = Current.UmbracoContext.ContentCache.GetById(guidUdi.Guid);
 
                                         var qsWidth = queryString["width"];
                                         var qsHeight = queryString["height"];
@@ -415,7 +420,7 @@ namespace Slimsy
             // if publishedContent is a media item we can see if we can get the source image width & height
             if (publishedContent.ItemType == PublishedItemType.Media)
             {
-                var sourceWidth = publishedContent.GetPropertyValue<int>(Constants.Conventions.Media.Width);
+                var sourceWidth = publishedContent.Value<int>(Constants.Conventions.Media.Width);
 
                 // if source width is less than max width then we should stop at source width
                 if (sourceWidth < maxWidth)
@@ -466,81 +471,16 @@ namespace Slimsy
             return null;
         }
 
-        private static void CheckObsoleteMethodUsageAndLog()
-        {
-            // This method can be removed if/when we make Umbraco 7.13 the minimum version
-            var stripUdiAttributesCacheKey = "Slimsy.StripUdiAttributes";
-            var hasBeenWarnedCacheKey = "Slimsy.HasBeenWarned";
-
-            var hasStripUdiSetting = GetLocalCacheItem<bool?>(stripUdiAttributesCacheKey);
-
-            if (hasStripUdiSetting == null)
-            {
-                hasStripUdiSetting = GetStripUdiAttributes();
-                if (hasStripUdiSetting != null)
-                {
-                    InsertLocalCacheItem(stripUdiAttributesCacheKey, GetStripUdiAttributes);
-                }
-                else
-                {
-                    // Version of Umbraco before stripping was added so set to false
-                    InsertLocalCacheItem(stripUdiAttributesCacheKey, () => false);
-                    hasStripUdiSetting = false;
-                }
-            }
-
-            if ((bool)hasStripUdiSetting)
-            {
-                var hasBeenWarned = GetLocalCacheItem<bool>(hasBeenWarnedCacheKey);
-                if (!hasBeenWarned)
-                {
-                    InsertLocalCacheItem(hasBeenWarnedCacheKey, () => true);
-                    LogHelper.Warn(typeof(Slimsy),
-                        "Obsolete Slimsy method in use! This method is not able to convert, please update to current methods (recommended) or disable the StripUdiAttributes in UmbracoSettings.config");
-                }
-            }
-        }
-
-        private static bool? GetStripUdiAttributes()
-        {
-            // try, catch as we are getting values from Umbraco internals and we don't want it to break in the future
-            try
-            {
-                var obj = UmbracoConfig.For.UmbracoSettings().Content;
-                const string name = "StripUdiAttributes";
-
-                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                PropertyInfo field = null;
-                var objType = obj.GetType();
-                while (objType != null && field == null)
-                {
-                    field = objType.GetProperty(name, flags);
-                    objType = objType.BaseType;
-                }
-
-                if (field == null) return null;
-
-                var fieldValue = field.GetValue(obj, null);
-                var propertyValue = fieldValue.GetType().GetProperty("Value")?.GetValue(fieldValue, null);
-                return propertyValue != null && (bool) propertyValue;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(typeof(Slimsy), "Error whilst getting value of StripUdiAttributes UmbracoSetting", ex);
-                return null;
-            }
-        }
-
         private static T GetLocalCacheItem<T>(string cacheKey)
         {
-            var runtimeCache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+            var runtimeCache = Current.AppCaches.RuntimeCache;
             var cachedItem = runtimeCache.GetCacheItem<T>(cacheKey);
             return cachedItem;
         }
 
         private static void InsertLocalCacheItem<T>(string cacheKey, Func<T> getCacheItem)
         {
-            var runtimeCache = ApplicationContext.Current.ApplicationCache.RuntimeCache;
+            var runtimeCache = Current.AppCaches.RuntimeCache;
             runtimeCache.InsertCacheItem<T>(cacheKey, getCacheItem);
         }
 

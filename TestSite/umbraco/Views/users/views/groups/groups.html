@@ -1,0 +1,107 @@
+<div ng-controller="Umbraco.Editors.Users.GroupsController as vm" class="clearfix">
+
+    <umb-load-indicator ng-if="vm.loading"></umb-load-indicator>
+
+    <umb-editor-sub-header ng-class="{'--state-selection':(vm.selection.length > 0)}">
+
+        <!-- No selection -->
+        <umb-editor-sub-header-content-left ng-if="vm.selection.length === 0">
+            <umb-button
+                type="button"
+                button-style="action"
+                action="vm.createUserGroup()"
+                label="Create Group"
+                label-key="actions_createGroup">
+            </umb-button>
+        </umb-editor-sub-header-content-left>
+
+        <umb-editor-sub-header-content-right ng-if="vm.selection.length === 0">
+
+            <umb-editor-sub-header-section>
+            <div class="form-search -no-margin-bottom pull-right">
+                <div class="inner-addon left-addon">
+                    <i class="icon icon-search"></i>
+                    <input class="form-control search-input"
+                        type="text"
+                        localize="placeholder"
+                        placeholder="@placeholders_filter"
+                        ng-model="vm.filter"
+                        prevent-enter-submit
+                        no-dirty-check>
+                </div>
+            </div>
+            </umb-editor-sub-header-section>
+
+        </umb-editor-sub-header-content-right>
+
+        <!-- With selection -->
+        <umb-editor-sub-header-content-left ng-if="vm.selection.length > 0">
+            <umb-editor-sub-header-section>
+                <umb-button
+                    type="button"
+                    label-key="buttons_clearSelection"
+                    button-style="white"
+                    action="vm.clearSelection()"
+                    size="xs">
+                </umb-button>
+            </umb-editor-sub-header-section>
+            <umb-editor-sub-header-section>
+                <strong>{{ vm.selection.length }} <localize key="general_of">of</localize> {{ vm.userGroups.length }} <localize key="general_selected">selected</localize></strong>
+            </umb-editor-sub-header-section>
+        </umb-editor-sub-header-content-left>
+
+        <umb-editor-sub-header-content-right ng-if="vm.selection.length > 0">
+            <umb-button
+                type="button"
+                label="Delete"
+                label-key="general_delete"
+                button-style="white"
+                icon="icon-trash"
+                action="vm.deleteUserGroups()"
+                size="xs">
+            </umb-button>
+        </umb-editor-sub-header-content-right>
+
+    </umb-editor-sub-header>
+
+    <div style="margin-bottom: 20px;" class="flex items-center">
+        <div style="font-size: 16px;">
+            <span class="bold"><localize key="general_groups">Groups</localize> </span> <span>({{vm.userGroups.length}})</span>
+        </div>
+    </div>
+
+    <table class="table table-hover" ng-if="!vm.loading">
+        <thead>
+            <tr>
+                <th style="width: 20px; padding-right: 5px"></th>
+                <th>Group</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="group in vm.userGroups | filter:vm.filter"
+                ng-click="vm.goToUserGroup(group)"
+                ng-class="{'cursor-pointer': group.hasAccess, 'cursor-not-allowed': !group.hasAccess, '--selected': group.selected}">
+
+                <td style="padding-right: 5px">
+                    <input
+                        ng-show="group.hasAccess && group.group.alias !== 'admin' && group.group.alias !== 'translator'"
+                        type="checkbox"
+                        ng-model="group.selected"
+                        ng-click="vm.selectUserGroup(group, vm.selection, $event)"
+                        style="width: 20px; height: 100px;"/>
+                </td>
+                <td>
+                    <umb-user-group-preview
+                        style="border-bottom: none; margin-bottom: 0; padding: 0;"
+                        icon="group.group.icon"
+                        name="group.group.name"
+                        sections="group.group.sections"
+                        content-start-node="group.group.contentStartNode"
+                        media-start-node="group.group.mediaStartNode">
+                    </umb-user-group-preview>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

@@ -1,8 +1,9 @@
 ﻿@using System.Web.Mvc
 @using Slimsy
 @using Umbraco.Core
-@using Umbraco.Core.Models
+@using Umbraco.Core.Models.PublishedContent
 @using Umbraco.Web
+
 @helper RenderPicture(UrlHelper urlHelper, IPublishedContent image, int width, int height, string altText = null)
 {
 if (image != null)
@@ -11,7 +12,7 @@ if (image != null)
 
     string defaultMimeType;
 
-    var umbracoExtension = image.GetPropertyValue<string>(Constants.Conventions.Media.Extension);
+    var umbracoExtension = image.Value<string>(Constants.Conventions.Media.Extension);
 
     var defaultFormat = umbracoExtension;
 

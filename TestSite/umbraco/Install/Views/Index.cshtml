@@ -1,4 +1,5 @@
-﻿@using Umbraco.Web
+﻿@using Umbraco.Core.Configuration
+@using Umbraco.Web
 @using Umbraco.Web.Install.Controllers
 @{
     Layout = null;
@@ -35,14 +36,16 @@
                 <p>This is most likely due to an error during application startup</p>
                 <iframe id="ysod"></iframe>
             </div>
-            <div ng-switch-default ng-include="installer.current.view"></div>    
+            <div ng-switch-default>
+                <div ng-include="installer.current.view"></div>
+            </div>    
         </div>
     </div>
 
 
     <div ng-cloak ng-animate="'fade'" id="fact" class="absolute-center clearfix" ng-show="installer.fact">
         <h2>Did you know</h2>
-        <p ng-bind-html-unsafe="installer.fact"></p>
+        <p ng-bind-html="installer.fact"></p>
     </div>
     
     <h3 ng-cloak ng-animate="'fade'" id="feedback" ng-show="installer.feedback">{{installer.feedback}}</h3> 
@@ -67,7 +70,7 @@
             "umbracoBaseUrl": "@ViewBag.UmbracoBaseFolder"
         };
     </script>
-    <script src="lib/rgrove-lazyload/lazyload.js"></script>
+    <script src="lib/lazyload-js/lazyload.min.js"></script>
     <script src="js/install.loader.js"></script>
 </body>
 </html>

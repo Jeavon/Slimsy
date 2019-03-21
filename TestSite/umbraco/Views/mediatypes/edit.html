@@ -1,4 +1,4 @@
-<div ng-controller="Umbraco.Editors.MediaTypes.EditController as vm">
+<div data-element="editor-media-types" ng-controller="Umbraco.Editors.MediaTypes.EditController as vm">
 
     <umb-load-indicator ng-if="vm.page.loading"></umb-load-indicator>
 
@@ -9,6 +9,7 @@
             <umb-editor-header
                 name="vm.contentType.name"
                 alias="vm.contentType.alias"
+                key="vm.contentType.key"
                 description="vm.contentType.description"
                 navigation="vm.page.navigation"
                 icon="vm.contentType.icon">
@@ -39,18 +40,27 @@
                 <umb-editor-footer-content-right>
 
                     <umb-button
+                        ng-if="model.infiniteMode"
+                        type="button"
+                        button-style="link"
+                        label-key="general_close"
+                        shortcut="esc"
+                        action="vm.close()">
+                    </umb-button>
+
+                    <umb-button
                         ng-if="!vm.page.modelsBuilder"
                         type="button"
-                        action="vm.save()"
-                        state="vm.page.saveButtonState"
                         button-style="success"
+                        state="vm.page.saveButtonState"
+                        label-key="{{vm.saveButtonKey}}"
                         shortcut="ctrl+s"
-                        label="Save"
-                        label-key="buttons_save">
+                        action="vm.save()">
                     </umb-button>
 
                     <umb-button-group
                         ng-if="vm.page.modelsBuilder"
+                        button-style="success"
                         default-button="vm.page.defaultButton"
                         sub-buttons="vm.page.subButtons"
                         state="vm.page.saveButtonState"

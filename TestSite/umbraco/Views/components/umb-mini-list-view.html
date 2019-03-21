@@ -1,6 +1,8 @@
-<div>
+<div class="umb-minilistview">
 
-    <div ng-repeat="miniListView in miniListViews" ng-animate="getMiniListViewAnimation()">
+    <div class="umb-mini-list-view umb-animated" 
+        ng-class="{'umb-mini-list-view--forward': listViewAnimation === 'in', 'umb-mini-list-view--backwards': listViewAnimation === 'out'}" 
+        ng-repeat="miniListView in miniListViews">
 
         <div class="umb-mini-list-view__title">
             <i class="umb-mini-list-view__title-icon {{ miniListView.node.icon }}"></i>
@@ -11,7 +13,7 @@
 
             <a ng-if="showBackButton()" href="" class="umb-mini-list-view__back" ng-click="exitMiniListView()">
                 <i class="icon-arrow-left umb-mini-list-view__back-icon"></i>
-                <span class="umb-mini-list-view__back-text">Back</span> /
+                <span class="umb-mini-list-view__back-text"><localize key="general_back">Back</localize></span> /
             </a>
 
             <umb-breadcrumbs
@@ -61,10 +63,10 @@
                 <div class="umb-table-row"
                     ng-repeat="child in miniListView.children"
                     ng-click="selectNode(child)"
-                    ng-class="{'-selected':child.selected}">
+                    ng-class="{'umb-table-row--selected':child.selected, 'not-allowed':!child.allowed}">
                     <div class="umb-table-cell umb-table-cell--auto-width" ng-class="{'umb-table-cell--faded':child.published === false}">
                         <div class="flex items-center">
-                            <ins class="icon-navigation-right umb-table__row-expand" ng-click="openNode($event, child)" ng-class="{'umb-table__row-expand--hidden': child.hasChildren !== true}">&nbsp;</ins>
+                            <ins class="icon-navigation-right umb-table__row-expand" ng-click="openNode($event, child)" ng-class="{'umb-table__row-expand--hidden': child.metaData.hasChildren !== true}">&nbsp;</ins>
                             <i class="umb-table-body__icon umb-table-body__fileicon {{child.icon}}"></i>
                             <i class="umb-table-body__icon umb-table-body__checkicon icon-check"></i>
                         </div>
