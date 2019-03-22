@@ -182,9 +182,7 @@ TestSite/App_Data/ExamineIndexes/
 TestSite/App_Data/TEMP/PluginCache/*
 TestSite/App_Data/TEMP/SEOChecker/
 TestSite/App_Data/Logs/*
-TestSite/App_Data/TEMP/Razor/
-TestSite/App_Data/TEMP/CssMigration/
-TestSite/App_Data/TEMP/DistCache/
+TestSite/App_Data/TEMP/*
 TestSite/App_Data/FeedCache/
 TestSite/App_Data/courier/revisions/
 TestSite/App_Data/courier/cache/*
