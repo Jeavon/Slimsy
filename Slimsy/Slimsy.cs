@@ -6,14 +6,12 @@
 //   Defines the Slimsy type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
-using Serilog.Core;
-using Umbraco.Core.Composing;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Core.PropertyEditors.ValueConverters;
-
 namespace Slimsy
 {
+    using Serilog.Core;
+    using Umbraco.Core.Composing;
+    using Umbraco.Core.Models.PublishedContent;
+    using Umbraco.Core.PropertyEditors.ValueConverters;
     using HtmlAgilityPack;
     using Newtonsoft.Json;
 
@@ -36,6 +34,8 @@ namespace Slimsy
     using Umbraco.Core.Configuration;
     using Umbraco.Core.Logging;
     using Umbraco.Web.Composing;
+    using Constants = Umbraco.Core.Constants;
+    using Current = Umbraco.Web.Composing.Current;
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
