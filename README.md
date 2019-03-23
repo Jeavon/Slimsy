@@ -211,7 +211,7 @@ It may be useful to use a Razor Helper to render `img` or `picture` elements, th
 
 # Test Site & Source Code
 
-A test site is included in the solution, the username and password for Umbraco are admin/password.
+A test site is included in the solution, the username and password for Umbraco are admin@admin.com/password1234567890.
 By default the test site is configured to use full IIS (due to IIS Express SQL CE persistence issue) on the domain slimsy.local, you can change it to use IIS Express if you prefer.
 
 Visual Studio 2015 is required for compiling the source code
