@@ -2,4 +2,7 @@
 @using Umbraco.Web.Composing
 @using Umbraco.Web.Templates
 
-@Html.Raw(TemplateUtilities.ParseInternalLinks(Model.value.ToString(), Current.UmbracoContext.UrlProvider))
+@*@Html.Raw(TemplateUtilities.ParseInternalLinks(Model.value.ToString(), Current.UmbracoContext.UrlProvider))*@
+
+
+@Html.ConvertImgToSrcSet((HtmlString)Model.value, true, true, true);
