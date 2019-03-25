@@ -1,0 +1,69 @@
+﻿@using System.Web.Mvc
+@using Slimsy
+@using Umbraco.Core
+@using Umbraco.Core.Models.PublishedContent
+@using Umbraco.Web
+@helper RenderPicture(UrlHelper urlHelper, IPublishedContent image, int width, int height, string altText = null)
+{
+    if (image != null)
+    {
+        var renderWebPAlternative = true;
+
+        string defaultMimeType;
+
+        var umbracoExtension = image.Value<string>(Constants.Conventions.Media.Extension);
+
+        var defaultFormat = umbracoExtension;
+
+        switch (umbracoExtension)
+        {
+            case "jpg":
+                defaultMimeType = "image/jpeg";
+                break;
+            case "png":
+                defaultMimeType = "image/png";
+                break;
+            case "gif":
+                defaultMimeType = "image/gif";
+                renderWebPAlternative = false;
+                break;
+            default:
+                defaultMimeType = "image/jpeg";
+                defaultFormat = "jpg";
+                break;
+        }
+
+        var lqipWidth = (int)Math.Round((decimal)width / 2);
+        var lqipHeight = (int)Math.Round((decimal)height / 2);
+
+        var imgSrcSet = urlHelper.GetSrcSetUrls(image, width, height, Constants.Conventions.Media.File, defaultFormat);
+        var imgSrcSetWebP = urlHelper.GetSrcSetUrls(image, width, height, Constants.Conventions.Media.File, "webp", quality: 70);
+
+        var imgSrc = urlHelper.GetCropUrl(image, width, height, furtherOptions: "&format=" + defaultFormat);
+
+        // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
+        var imgLqip = urlHelper.GetCropUrl(image, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + defaultFormat);
+        var imgLqipWebP = urlHelper.GetCropUrl(image, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=webp");
+
+        if (altText == null)
+        {
+            altText = image.Name;
+        }
+
+        <picture>
+            <!--[if IE 9]><video style="display: none"><![endif]-->
+            @if (renderWebPAlternative)
+            {
+                <source data-srcset="@imgSrcSetWebP" srcset="@imgLqipWebP" type="image/webp" data-sizes="auto" />
+            }
+            <source data-srcset="@imgSrcSet" srcset="@imgLqip" type="@defaultMimeType" data-sizes="auto" />
+            <!--[if IE 9]></video><![endif]-->
+            <img src="@imgLqip"
+                 data-src="@imgSrc"
+                 class="lazyload"
+                 data-sizes="auto"
+                 alt="@altText" />
+        </picture>
+
+    }
+}

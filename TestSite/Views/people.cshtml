@@ -26,6 +26,7 @@
             <a class="nav-link nav-link--black" href="">Other</a>
         </nav>
         -->
+        <h2>Using Image Source Set with LQIP</h2>
         <div class="employee-grid">
             @foreach (ContentModels.Person person in Model.Children)
             {
@@ -36,7 +37,6 @@
                         <img src="@Url.GetCropUrl(person.Photo, 323, 300, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" data-src="@Url.GetCropUrl(person.Photo, 323, 300)" sizes="auto" class="lazyload" />
 
                     </div>
-
                     <div class="employee-grid__item__details">
                         <h3 class="employee-grid__item__name">@person.Name</h3>
                         @if (!string.IsNullOrEmpty(person.Email))
@@ -53,6 +53,33 @@
                 </div>
             }
         </div>
+
+        <h2>Using Image Source Set with picture element, WebP ImageProcessor Plugin and LQIP using Razor Helper</h2>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        @SlimsyHelper.RenderPicture(Url, person.Photo, 323, 300)
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
     </div>
 
 </section>

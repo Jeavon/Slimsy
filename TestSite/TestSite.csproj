@@ -13,10 +13,10 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestSiteNew</RootNamespace>
-    <AssemblyName>TestSiteNew</AssemblyName>
+    <RootNamespace>TestSite</RootNamespace>
+    <AssemblyName>TestSite</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress />
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -68,6 +68,9 @@
     </Reference>
     <Reference Include="ImageProcessor, Version=2.7.0.100, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ImageProcessor.2.7.0.100\lib\net452\ImageProcessor.dll</HintPath>
+    </Reference>
+    <Reference Include="ImageProcessor.Plugins.WebP, Version=1.2.0.100, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ImageProcessor.Plugins.WebP.1.2.0.100\lib\net452\ImageProcessor.Plugins.WebP.dll</HintPath>
     </Reference>
     <Reference Include="ImageProcessor.Web, Version=4.10.0.100, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ImageProcessor.Web.4.10.0.100\lib\net452\ImageProcessor.Web.dll</HintPath>
@@ -451,6 +454,7 @@
     <Content Include="config\HealthChecks.config" />
     <Content Include="config\ClientDependency.config" />
     <Content Include="config\BackOfficeTours\getting-started.json" />
+    <Content Include="App_Code\SlimsyHelper.cshtml" />
     <None Include="packages.config" />
     <Content Include="Views\Blog.cshtml" />
     <Content Include="Views\Blogpost.cshtml" />
@@ -496,7 +500,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50414</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
