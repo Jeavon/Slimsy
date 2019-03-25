@@ -28,6 +28,7 @@ namespace Slimsy
     using Umbraco.Core.PropertyEditors;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Core.PropertyEditors.ValueConverters;
+    using Umbraco.Web.Macros;
     using Constants = Umbraco.Core.Constants;
     using Current = Umbraco.Web.Composing.Current;
 
@@ -252,7 +253,7 @@ namespace Slimsy
             var source = ConvertImgToSrcSetInternal(htmlHelper, dataValue, generateLqip, removeStyleAttribute, true, roundWidthHeight);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var rteConverter = new RteMacroRenderingValueConverter(null, null);
+            var rteConverter = new RteMacroRenderingValueConverter(Current.UmbracoContextAccessor, Current.Factory.GetAllInstances<IMacroRenderer>().FirstOrDefault());
             var intermediateValue = rteConverter.ConvertSourceToIntermediate(null, null, source, false);
             var objectValue = rteConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
             return objectValue as IHtmlString;
@@ -308,11 +309,10 @@ namespace Slimsy
                                 if (udiAttr != null)
                                 {
                                     // Umbraco media
-                                    Udi nodeId;
-                                    if (Udi.TryParse(udiAttr.Value, out nodeId))
+                                    GuidUdi guidUdi;
+                                    if (GuidUdi.TryParse(udiAttr.Value, out guidUdi))
                                     {
-                                        var guidUdi = nodeId as GuidUdi;
-                                        var node = Current.UmbracoContext.ContentCache.GetById(guidUdi.Guid);
+                                        var node = GetAnyTypePublishedContent(guidUdi);
 
                                         var qsWidth = queryString["width"];
                                         var qsHeight = queryString["height"];
@@ -392,6 +392,21 @@ namespace Slimsy
         #endregion
 
         #region Internal Functions
+
+        private static IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
+        {
+            switch (guidUdi.EntityType)
+            {
+                case Constants.UdiEntityType.Media:
+                    return Current.UmbracoContext.MediaCache.GetById(guidUdi.Guid);
+                    break;  
+                case Constants.UdiEntityType.Document:
+                    return Current.UmbracoContext.ContentCache.GetById(guidUdi.Guid);
+                    break;
+                default:
+                    return null;
+            }
+        }
 
         private static int DefaultQuality()
         {

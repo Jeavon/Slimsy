@@ -21,6 +21,13 @@
                 @Html.GetGridHtml(Model, "bodyText", "bootstrap3-fluid")
             </article>
         </div>
+
+        <div class="col-md-9">
+            <article>
+                @Html.ConvertImgToSrcSet(Model,"richTextBody")
+            </article>
+        </div>
+
     </div>
 
 </section>

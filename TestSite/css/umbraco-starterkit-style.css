@@ -91,12 +91,15 @@ sub {
 
 img {
     border: 0;
-    display:block;
-    width: 100%;
+    display:block;    
+}
+
+.employee-grid img {
+  width: 100%;
 }
 
 svg:not(:root) {
-    overflow: hidden
+  overflow: hidden
 }
 
 figure {
