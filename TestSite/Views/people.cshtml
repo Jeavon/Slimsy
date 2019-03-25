@@ -31,7 +31,6 @@
         <div class="employee-grid">
             @foreach (ContentModels.Person person in Model.Children)
             {
-
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
                         <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "feature")" data-src="@Url.GetCropUrl(person.Photo, "feature")" sizes="auto" class="lazyload" />
@@ -54,12 +53,97 @@
             }
         </div>
 
+        <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <picture>
+                            <!--[if IE 9]><video style="display: none"><![endif]-->
+                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, "umbracoFile", "webp", quality:80)" type="image/webp" data-sizes="auto" />
+                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" type="image/jpeg" data-sizes="auto" />
+                            <!--[if IE 9]></video><![endif]-->
+                            <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                                 data-src="@Url.GetCropUrl(person.Photo, 323, 300)"
+                                 class="lazyload"
+                                 alt="image"
+                                 data-sizes="auto" />
+                        </picture>
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set with picture element, WebP ImageProcessor Plugin and LQIP using Razor Helper</h2>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        @SlimsyHelper.RenderPicture(Url, person.Photo, 323, 300)
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set with Aspect Ratio</h2>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+                var ratio = new AspectRatio(16, 9);
+
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <img data-srcset="@Url.GetSrcSetUrls(person.Photo, ratio)" data-sizes="auto" class="lazyload" />
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
 
         <h2>Using Image Source Set with LQIP</h2>
         <div class="employee-grid">
             @foreach (ContentModels.Person person in Model.Children)
             {
-
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
                         @*<img src="@Url.GetCropUrl(person.Photo, 323, 300)" />*@
@@ -83,14 +167,13 @@
             }
         </div>
 
-        <h2>Using Image Source Set with picture element, WebP ImageProcessor Plugin and LQIP using Razor Helper</h2>
+        <h2>Using Image Source Set with LQIP and flexible heights</h2>
         <div class="employee-grid">
             @foreach (ContentModels.Person person in Model.Children)
             {
-
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
-                        @SlimsyHelper.RenderPicture(Url, person.Photo, 323, 300)
+                        <img src="@Url.GetCropUrl(person.Photo, 323, 0, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 0)" data-src="@Url.GetCropUrl(person.Photo, 323, 0)" data-sizes="auto" class="lazyload" alt="something really long"/>
                     </div>
                     <div class="employee-grid__item__details">
                         <h3 class="employee-grid__item__name">@person.Name</h3>
