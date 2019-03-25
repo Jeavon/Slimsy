@@ -7,14 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Slimsy
-{
-    using Serilog.Core;
-    using Umbraco.Core.Composing;
-    using Umbraco.Core.Models.PublishedContent;
-    using Umbraco.Core.PropertyEditors.ValueConverters;
-    using HtmlAgilityPack;
-    using Newtonsoft.Json;
-
+{    
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -23,17 +16,18 @@ namespace Slimsy
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
-    using System.Reflection;
 
+    using HtmlAgilityPack;
+    using Newtonsoft.Json;
+    
     using Umbraco.Core;
     using Umbraco.Core.Cache;
-    using Umbraco.Core.Models;
     using Umbraco.Web;
     using Umbraco.Web.Models;
     using Umbraco.Web.PropertyEditors.ValueConverters;
-    using Umbraco.Core.Configuration;
-    using Umbraco.Core.Logging;
-    using Umbraco.Web.Composing;
+    using Umbraco.Core.PropertyEditors;
+    using Umbraco.Core.Models.PublishedContent;
+    using Umbraco.Core.PropertyEditors.ValueConverters;
     using Constants = Umbraco.Core.Constants;
     using Current = Umbraco.Web.Composing.Current;
 
@@ -177,11 +171,12 @@ namespace Slimsy
             var q = DefaultQuality();
 
             var outputStringBuilder = new StringBuilder();
+            var outputString = string.Empty;
 
             var cropperJson = publishedContent.Value<string>(propertyAlias);
             var imageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
 
-            var crop = imageCrops.Crops.FirstOrDefault(
+            var crop = imageCrops?.Crops?.FirstOrDefault(
                 x => string.Equals(x.Alias, cropAlias, StringComparison.InvariantCultureIgnoreCase));
 
             if (crop != null)
@@ -192,14 +187,25 @@ namespace Slimsy
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, quality: q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                     w += WidthStep();
                 }
 
+                // remove the last comma
+                outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
             }
-
-            // remove the last comma
-            var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+            else
+            {
+                // this code would execute if a predefined crop has been added to the data type but this media item hasn't been re-saved
+                var cropperConfiguration = (ImageCropperConfiguration)publishedContent.Properties.FirstOrDefault(x => x.Alias == propertyAlias)?.PropertyType.DataType.Configuration;
+                var cropConfiguration = cropperConfiguration?.Crops.FirstOrDefault(c => c.Alias == cropAlias);
+                if (cropConfiguration != null)
+                {
+                    // auto generate using focal point
+                    return urlHelper.GetSrcSetUrls(publishedContent, cropConfiguration.Width,
+                        cropConfiguration.Height, propertyAlias, outputFormat);
+                }
+            }
 
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
