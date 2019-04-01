@@ -20,3 +20,4 @@ Slimsy Change log
 - 2.0.0-beta4 - Updated lazysizes.js to v4 
 - 2.0.0 - No change, beta4 made the grade
 - 2.1.0 - Breaking! Umbraco v7.13 support. 2 x ConvertImgToSrcSet methods marked as obsolete and 1 new one added
+- 3.0.0-beta1 - Umbraco v8 compatiblity

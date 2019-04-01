@@ -2,7 +2,7 @@ Slimsy v2
 ============
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
-# Slimsy v2 is not compatible with Slimsy v1 at all, if you upgrade you will have to refactor all of your code! #
+# Slimsy v3 is made for Umbraco v8!
 
 ![](Slimsy.png)
 
@@ -20,7 +20,7 @@ Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/
 
 [![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/CrumpledDog/slimsy)
 
-**Note** Slimsy v2.0.0+ requires Umbraco v7.6.0+
+**Note** Slimsy v3.0.0+ requires Umbraco v8.0.1+
 
 LazySizes.js used in conjunction with ImageProcessor.Web and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser), the images are also be lazy loaded.
 
@@ -37,7 +37,7 @@ In your master template add the  Javascript files
 <script src="/scripts/lazysizes.min.js" async=""></script>
 ```
 
-You can of course bundle these together. If you don't already have JavaScript bundling in place you should take a look at the [Optimus](http://our.umbraco.org/projects/developer-tools/optimus) package, it will allow you to bundle them together in minutes.
+You can of course bundle these together.
 
 ### 2. Ensure all img elements are set to `display: block` or `display: inline-block;`
 
@@ -56,19 +56,22 @@ Use the `GetSrcSetUrls` UrlHelper extension method to generate your `data-srcset
 #### `Url.GetSrcSetUrls(publishedContent, int width, int height)`
 Use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
 
-e.g. An initial image size of 270 x 161. This example is looping pages, each page has a media picker with property alias "Image"
+e.g. An initial image size of 323 x 300. This example is looping people, each page has a media picker property that Models Builder is generating named "Photo"
 
-```
-@foreach (var feature in featuredPages)
-{
-    var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
-    <div class="3u">
-        <!-- Feature -->
-        <section class="is-feature">
-            <img src="@Url.GetCropUrl(featureImage, 270, 161, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(featureImage, 270, 161)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
-        </section>
-    </div>
-}
+```C#
+<div class="employee-grid">
+    @foreach (ContentModels.Person person in Model.Children)
+    {
+        <div class="employee-grid__item">
+            <div class="employee-grid__item__image">
+                <img src="@Url.GetCropUrl(person.Photo, 323, 300, quality:30, furtherOptions:"&format=auto")"
+                     data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)"
+                     data-src="@Url.GetCropUrl(person.Photo, 323, 300)"
+                     sizes="auto" class="lazyload" />
+            </div>
+        </div>
+    }
+</div>
 ```
 
 This example uses the LQIP (low quality image place holder) technique.
@@ -83,100 +86,91 @@ This example uses the LQIP (low quality image place holder) technique.
 
 #### `Url.GetSrcSetUrls(publishedContent, AspectRatio aspectRatio)`
 
-Slimsy v2 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
+Slimsy v3 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
 
-```
-@foreach (var feature in featuredPages)
-{
-    var ratio = new AspectRatio(16, 9);
-    <div class="3u">
-        <section class="is-feature">
-            @if (feature.HasValue("image"))
-            {
-                var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
-                <a href="@feature.Url" class="image image-full">
-                    <img data-srcset="@Url.GetSrcSetUrls(featureImage, ratio)" data-src="@Url.GetCropUrl(featureImage, 270, 161)" sizes="auto" class="lazyload" />
-                </a>
-            }
-            <h3><a href="@feature.Url">@feature.Name</a></h3>
-            @Umbraco.Truncate(feature.GetPropertyValue<string>("bodyText"), 100)
-        </section>
-    </div>
-}
+```C#
+<div class="employee-grid">
+    @foreach (ContentModels.Person person in Model.Children)
+    {
+        var ratio = new AspectRatio(16, 9);
+
+        <div class="employee-grid__item">
+            <div class="employee-grid__item__image">
+                <img data-srcset="@Url.GetSrcSetUrls(person.Photo, ratio)" data-sizes="auto" class="lazyload" />
+            </div>
+        </div>
+    }
+</div>
 ```
 
 #### `Url.GetSrcSetUrls(publishedContent, string cropAlias)`
-
-#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias)`
-
 Use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile".
 
+In this example the crop name is "feature"
+```C#
+<div class="employee-grid">
+    @foreach (ContentModels.Person person in Model.Children)
+    {
+        <div class="employee-grid__item">
+            <div class="employee-grid__item__image">
+                <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "feature")" data-src="@Url.GetCropUrl(person.Photo, "feature")" sizes="auto" class="lazyload" />
+
+            </div>
+        </div>
+    }
+</div>
 ```
-@foreach (var feature in featuredPages)
-{
-    <div class="3u">
-        <section class="is-feature">
-            @if (feature.HasValue("image"))
-            {
-                var featureImage = Umbraco.TypedMedia(feature.GetPropertyValue<int>("image"));
-                <a href="@feature.Url" class="image image-full">
-                    <img data-srcset="@Url.GetSrcSetUrls(featureImage, "home", "umbracoFile")" data-src="@Url.GetCropUrl(featureImage, "umbracoFile", "home")" sizes="auto" class="lazyload"/>
-                </a>
-            }
-            <h3><a href="@feature.Url">@feature.Name</a></h3>
-            @Umbraco.Truncate(feature.GetPropertyValue<string>("bodyText"), 100)
-        </section>
-    </div>
-}
-```
+
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias)`
 
 #### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat)`
 
 ### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
-#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip, bool removeStyleAttribute, bool roundWidthHeight)`
+#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip)`
 
 Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
 
-```
-@Html.ConvertImgToSrcSet(Model.Content, "bodyText", true, true)
+```C#
+@Html.ConvertImgToSrcSet(Model, "richTextBody")
 
 ```
 
-#### ~~`Html.ConvertImgToSrcSet(string html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`~~
-**NOTE** this method is obsolete in Slimsy v2.1+, use the above method instead
+#### `Html.ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip)`
+Use this method to convert images entered in a TinyMce Rich Text editor within the Grid to use img source set using generated paths. This method will also take care of parsing Umbraco links and Macros.
 
-#### ~~`Html.ConvertImgToSrcSet(IHtmlString html, bool generateLqip, bool removeStyleAttribute, bool removeUdiAttribute)`~~
-**NOTE** this method is obsolete in Slimsy v2.1+, use the above method instead
+e.g. within `Rte.chtml` found within the `Partials/Grid/Editors` folder
+
+```C#
+@Slimsy.ConvertImgToSrcSet(Html, Model.value.ToString(), true)
+
+```
 
 # Using `<picture>` element
 
 Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp), this example also implements a optional LQIP image.
 
-```
-foreach (var caseStudyImage in caseStudyImagesCollection)
-{
-    var imgSrcSet = Url.GetSrcSetUrls(caseStudyImage, 650, 0);
-    var imgSrcSetWebP = Url.GetSrcSetUrls(caseStudyImage, 650, 0, Constants.Conventions.Media.File, "webp", quality:70);
-
-    var imgSrc = Url.GetCropUrl(caseStudyImage, 650, 0);
-    var imgLqip = Url.GetCropUrl(caseStudyImage, 650, 0, quality: 30, furtherOptions: "&format=auto");
-
-    <div class="picture-box">
-        <picture>
-            <!--[if IE 9]><video style="display: none"><![endif]-->
-            <source data-srcset="@imgSrcSetWebP" srcset="@imgLqip" type="image/webp" data-sizes="auto"/>
-            <source data-srcset="@imgSrcSet" srcset="@imgLqip" type="image/jpeg" data-sizes="auto"/>
-            <!--[if IE 9]></video><![endif]-->
-            <img
-                src="@imgLqip"
-                data-src="@imgSrc"
-                class="lazyload"
-                data-sizes="auto"
-                alt="@caseStudyImage.Name" />
-        </picture>
-    </div>
-}
+```C#
+<div class="employee-grid">
+    @foreach (ContentModels.Person person in Model.Children)
+    {
+        <div class="employee-grid__item">
+            <div class="employee-grid__item__image">
+                <picture>
+                    <!--[if IE 9]><video style="display: none"><![endif]-->
+                    <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, "umbracoFile", "webp", quality:80)" type="image/webp" data-sizes="auto" />
+                    <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" type="image/jpeg" data-sizes="auto" />
+                    <!--[if IE 9]></video><![endif]-->
+                    <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                         data-src="@Url.GetCropUrl(person.Photo, 323, 300)"
+                         class="lazyload"
+                         alt="image"
+                         data-sizes="auto" />
+                </picture>
+            </div>
+        </div>
+    }
+</div>
 ```
 
 # Advanced Options
@@ -207,14 +201,14 @@ Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If y
 
 # Razor Helper
 
-It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/Views/Partials/umbFeatures.cshtml#L76)
+It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/Viewspeople.cshtml#L91)
 
 # Test Site & Source Code
 
 A test site is included in the solution, the username and password for Umbraco are admin@admin.com/password1234567890.
 By default the test site is configured to use full IIS (due to IIS Express SQL CE persistence issue) on the domain slimsy.local, you can change it to use IIS Express if you prefer.
 
-Visual Studio 2015 is required for compiling the source code
+Visual Studio 2017 is required for compiling the source code
 
 # Credits and references
 
