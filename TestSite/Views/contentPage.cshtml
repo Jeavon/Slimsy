@@ -24,9 +24,23 @@
 
         <div class="col-md-9">
             <article>
-                @Html.ConvertImgToSrcSet(Model,"richTextBody")
+                @Html.ConvertImgToSrcSet(Model, "richTextBody")
             </article>
         </div>
+
+        @{
+            // You can do this, but please don't, this is for testing only
+            var sourceValue = Model.GetProperty("richTextBody").GetSourceValue();
+            if (sourceValue != null)
+            {
+                <div class="col-md-9">
+                    <article>
+                        @Html.ConvertImgToSrcSet(sourceValue.ToString())
+                    </article>
+                </div>
+            }
+        }
+
 
     </div>
 

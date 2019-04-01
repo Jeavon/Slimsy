@@ -218,23 +218,19 @@ namespace Slimsy
         /// Convert img to img srcset, extracts width and height from querystrings
         /// </summary>
         /// <param name="htmlHelper"></param>
-        /// <param name="html"></param>
+        /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
-        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
-        /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
-        /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true)
         {
-            return ConvertImgToSrcSetInternal(htmlHelper, html, generateLqip, removeStyleAttribute, removeUdiAttribute, roundWidthHeight);
-        }
+            var source = ConvertImgToSrcSetInternal(sourceValueHtml, generateLqip);
 
-        [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IHtmlString html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
-        {
-            var htmlString = html.ToString();
-            return ConvertImgToSrcSetInternal(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
+            // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
+            var rteConverter = new RteMacroRenderingValueConverter(Current.UmbracoContextAccessor, Current.Factory.GetAllInstances<IMacroRenderer>().FirstOrDefault());
+            var intermediateValue = rteConverter.ConvertSourceToIntermediate(null, null, source, false);
+            var objectValue = rteConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
+
+            return objectValue as IHtmlString;
         }
 
         /// <summary>
@@ -244,19 +240,16 @@ namespace Slimsy
         /// <param name="publishedContent"></param>
         /// <param name="propertyAlias">Alias of the TinyMce property</param>
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
-        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
-        /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true)
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true)
         {
-            var dataValue = publishedContent.GetProperty(propertyAlias).GetSourceValue().ToString();
-            var source = ConvertImgToSrcSetInternal(htmlHelper, dataValue, generateLqip, removeStyleAttribute, true, roundWidthHeight);
+            var sourceValue = publishedContent.GetProperty(propertyAlias).GetSourceValue();
+            if (sourceValue != null)
+            {
+                return ConvertImgToSrcSet(htmlHelper, sourceValue.ToString(), generateLqip);
+            }
 
-            // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var rteConverter = new RteMacroRenderingValueConverter(Current.UmbracoContextAccessor, Current.Factory.GetAllInstances<IMacroRenderer>().FirstOrDefault());
-            var intermediateValue = rteConverter.ConvertSourceToIntermediate(null, null, source, false);
-            var objectValue = rteConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
-            return objectValue as IHtmlString;
+            return new HtmlString("");
         }
 
         /// <summary>
@@ -269,7 +262,7 @@ namespace Slimsy
         /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        private static IHtmlString ConvertImgToSrcSetInternal(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
+        private static IHtmlString ConvertImgToSrcSetInternal(string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true)
         {
             var urlHelper = new UrlHelper();
 

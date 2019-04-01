@@ -146,9 +146,10 @@
             {
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
-                        @*<img src="@Url.GetCropUrl(person.Photo, 323, 300)" />*@
-                        <img src="@Url.GetCropUrl(person.Photo, 323, 300, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" data-src="@Url.GetCropUrl(person.Photo, 323, 300)" sizes="auto" class="lazyload" />
-
+                        <img src="@Url.GetCropUrl(person.Photo, 323, 300, quality:30, furtherOptions:"&format=auto")"
+                             data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)"
+                             data-src="@Url.GetCropUrl(person.Photo, 323, 300)"
+                             sizes="auto" class="lazyload" />
                     </div>
                     <div class="employee-grid__item__details">
                         <h3 class="employee-grid__item__name">@person.Name</h3>
