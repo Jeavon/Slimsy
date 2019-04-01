@@ -111,7 +111,7 @@
 
     <!-- PREPARE FILES -->
     <Target Name="PrepareFiles" DependsOnTargets="Compile">
-        <ItemGroup>
+    <ItemGroup>
       <SlimsyAssembly Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Slimsy.dll" />
       <PdbFiles Include="$(CoreProjectDir)\Bin\$(BuildConfig)\Slimsy.pdb" />
       <SrcFiles Include="$(CoreProjectDir)\**\*.cs" Exclude="$(CoreProjectDir)\obj\**"/>
@@ -120,12 +120,19 @@
       <NuSpecFile Include="$(MSBuildProjectDirectory)\package.nuspec" />
       <ViewsConfigInstallXdt Include ="$(MSBuildProjectDirectory)\views.web.config.install.xdt"/>
       <ViewsConfigUninstallXdt Include ="$(MSBuildProjectDirectory)\views.web.config.uninstall.xdt"/>
+
+      <UmbracoOtherBinFiles Include="$(CoreProjectDir)\bin\$(BuildConfig)\Microsoft.Web.XmlTransform.dll" />
+
     </ItemGroup>
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildUmbDir)\bin" />
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildUmbDir)\Scripts" />
     <Copy SourceFiles="@(PackageFile)" DestinationFolder="$(BuildUmbDir)" />
-    <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
-    <Copy SourceFiles="@(PdbFiles)" DestinationFolder="$(BuildNuGetDir)\lib\net45" />
+    <Copy SourceFiles="@(UmbracoOtherBinFiles)" DestinationFolder="$(BuildUmbDir)\bin" />
+    <Copy SourceFiles="@(ViewsConfigInstallXdt)" DestinationFiles="$(BuildUmbDir)\App_Data\TEMP\Slimsy\views.web.config.install.xdt" />
+    <Copy SourceFiles="@(ViewsConfigUninstallXdt)" DestinationFiles="$(BuildUmbDir)\App_Data\TEMP\Slimsy\views.web.config.uninstall.xdt" />
+
+    <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildNuGetDir)\lib\net472" />
+    <Copy SourceFiles="@(PdbFiles)" DestinationFolder="$(BuildNuGetDir)\lib\net472" />
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildNuGetDir)\Content\Scripts" />
     <Copy SourceFiles="@(ViewsConfigInstallXdt)" DestinationFiles="$(BuildNuGetDir)\Content\Views\web.config.install.xdt" />
     <Copy SourceFiles="@(ViewsConfigUninstallXdt)" DestinationFiles="$(BuildNuGetDir)\Content\Views\web.config.uninstall.xdt" />

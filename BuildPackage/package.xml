@@ -28,7 +28,8 @@
   <DataTypes />
 
   <Actions>
-    <Action runat="install" undo="true" alias="Slimsy.AddNamespace" file="~/views/web.config" xpath="//configuration/system.web.webPages.razor/pages" position="end" namespace="Slimsy" />
+    <Action runat="install" undo="true" alias="Slimsy.TransformConfig" file="~/views/web.config" xdtfile="~/app_data/temp/slimsy/views.web.config">
+    </Action>
   </Actions>
 
   <control />
