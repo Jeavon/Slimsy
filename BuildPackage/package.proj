@@ -157,7 +157,9 @@
             PackageLicenseName="$(PackageLicenseName)"
             PackageLicenseUrl="$(PackageLicenseUrl)"
             PackageUrl="$(ProjectUrl)"
-            Files="@(ManifestFiles)" />
+            Files="@(ManifestFiles)"
+            IconUrl="$(IconUrl)"/>
+
   </Target>
 
   <!-- MANIFEST FOR NUGET PACKAGE -->
