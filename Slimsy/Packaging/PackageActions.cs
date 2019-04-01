@@ -1,13 +1,15 @@
-﻿using System;
-using System.Web;
-using System.Xml.Linq;
-using Microsoft.Web.XmlTransform;
-using Umbraco.Core;
-using Umbraco.Core.PackageActions;
-using Umbraco.Web.Composing;
-
-namespace Slimsy.Packaging
+﻿namespace Slimsy.Packaging
 {
+    using System;
+    using System.Web;
+    using System.Xml.Linq;
+
+    using Microsoft.Web.XmlTransform;
+
+    using Umbraco.Core;
+    using Umbraco.Core.PackageActions;
+    using Umbraco.Web.Composing;
+
     public class PackageActions
     {
         public class TransformConfig : IPackageAction
