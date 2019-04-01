@@ -59,7 +59,7 @@ namespace Slimsy.Packaging
                         fileEnd = string.Format("un{0}", fileEnd);
                     }
 
-                    var xdtfile = string.Format("{0}.{1}", AttributeValue<string>(xmlData, "xdtFile"), fileEnd);
+                    var xdtfile = string.Format("{0}.{1}", AttributeValue<string>(xmlData, "xdtfile"), fileEnd);
                     var xdtFileName = VirtualPathUtility.ToAbsolute(xdtfile);
 
                     // The translation at-hand
