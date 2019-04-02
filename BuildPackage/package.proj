@@ -122,7 +122,6 @@
       <ViewsConfigUninstallXdt Include ="$(MSBuildProjectDirectory)\views.web.config.uninstall.xdt"/>
 
       <UmbracoOtherBinFiles Include="$(CoreProjectDir)\bin\$(BuildConfig)\Microsoft.Web.XmlTransform.dll" />
-
     </ItemGroup>
     <Copy SourceFiles="@(SlimsyAssembly)" DestinationFolder="$(BuildUmbDir)\bin" />
     <Copy SourceFiles="@(ScriptsFiles)" DestinationFolder="$(BuildUmbDir)\Scripts" />
@@ -174,7 +173,6 @@
             Description="$(Readme)"
             Summary="$(Summary)"
             Version="$(ProductVersion)"
-            MinimumRequiredUmbracoVersion ="$(MinUmbracoVersion)"
             Authors="$(AuthorName)"
             Owners="$(Owners)"
             Copyright="$(Copyright)"
