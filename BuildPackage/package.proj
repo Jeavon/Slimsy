@@ -17,7 +17,7 @@
   <!-- SHARED PROPERTIES -->
   <PropertyGroup>
     <PackageName>Slimsy</PackageName>
-    <MinUmbracoVersion>8.0.1</MinUmbracoVersion>
+    <MinUmbracoVersion>8.1.0</MinUmbracoVersion>
     <Readme>Please follow the instructions on the project page http://our.umbraco.org/projects/website-utilities/slimsy</Readme>
     <AuthorName>Jeavon Leopold, Marc Stöcker, William Phillips</AuthorName>
     <AuthorUrl>http://our.umbraco.org</AuthorUrl>

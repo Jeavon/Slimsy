@@ -391,10 +391,10 @@ namespace Slimsy
             switch (guidUdi.EntityType)
             {
                 case Constants.UdiEntityType.Media:
-                    return Current.UmbracoContext.MediaCache.GetById(guidUdi.Guid);
+                    return Current.UmbracoContext.Media.GetById(guidUdi.Guid);
                     break;  
                 case Constants.UdiEntityType.Document:
-                    return Current.UmbracoContext.ContentCache.GetById(guidUdi.Guid);
+                    return Current.UmbracoContext.Content.GetById(guidUdi.Guid);
                     break;
                 default:
                     return null;

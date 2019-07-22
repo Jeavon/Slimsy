@@ -16,8 +16,8 @@
     <language></language>
     <tags></tags>
     <dependencies>
-      <dependency id="UmbracoCms.Core" version="[8.0.1,8.99999)" />
-      <dependency id="UmbracoCms.Web" version="[8.0.1,8.99999)" />
+      <dependency id="UmbracoCms.Core" version="[8.1.0,8.99999)" />
+      <dependency id="UmbracoCms.Web" version="[8.1.0,8.99999)" />
     </dependencies>
   </metadata>
 </package>
