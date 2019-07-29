@@ -20,7 +20,7 @@ Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/
 
 [![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/CrumpledDog/slimsy)
 
-**Note** Slimsy v3.0.0+ requires Umbraco v8.0.1+
+**Note** Slimsy v3.0.0+ requires Umbraco v8.1.0+
 
 LazySizes.js used in conjunction with ImageProcessor.Web and the built-in Umbraco Image Cropper will make your responsive websites images both adaptive and "retina" quality (if supported by the client browser), the images are also be lazy loaded.
 
