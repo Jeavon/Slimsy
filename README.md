@@ -201,7 +201,7 @@ Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If y
 
 # Razor Helper
 
-It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/Viewspeople.cshtml#L91)
+It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/develop/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/master-v3/TestSite/Views/people.cshtml#L91)
 
 # Test Site & Source Code
 
