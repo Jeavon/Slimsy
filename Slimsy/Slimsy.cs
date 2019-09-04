@@ -166,10 +166,10 @@ namespace Slimsy
             return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
         }
 
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = WidthStep();
-            var q = DefaultQuality();
+            var q = quality == 90 ? DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var outputString = string.Empty;
