@@ -3,7 +3,7 @@
 @using Umbraco.Core
 @using Umbraco.Core.Models.PublishedContent
 @using Umbraco.Web
-@helper RenderPicture(UrlHelper urlHelper, IPublishedContent image, int width, int height, string altText = null)
+@helper RenderPicture(UrlHelper urlHelper, IPublishedContent image, int width, int height, string altText = null, int maxWidth = -1)
 {
     if (image != null)
     {
@@ -36,7 +36,7 @@
         var lqipWidth = (int)Math.Round((decimal)width / 2);
         var lqipHeight = (int)Math.Round((decimal)height / 2);
 
-        var imgSrcSet = urlHelper.GetSrcSetUrls(image, width, height, Constants.Conventions.Media.File, defaultFormat);
+        var imgSrcSet = urlHelper.GetSrcSetUrls(image, width, height, Constants.Conventions.Media.File, defaultFormat, maxWidth);
         var imgSrcSetWebP = urlHelper.GetSrcSetUrls(image, width, height, Constants.Conventions.Media.File, "webp", quality: 70);
 
         var imgSrc = urlHelper.GetCropUrl(image, width, height, furtherOptions: "&format=" + defaultFormat);

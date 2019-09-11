@@ -76,15 +76,15 @@ e.g. An initial image size of 323 x 300. This example is looping people, each pa
 
 This example uses the LQIP (low quality image place holder) technique.
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, int quality)`
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, int quality, string cdnUrl, int maxWidth)`
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias)`
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias, string cdnUrl, int maxWidth)`
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality)`
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality, string cdnUrl, int maxWidth)`
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)`
+#### `Url.GetSrcSetUrls(publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat, string cdnUrl, int maxWidth)`
 
-#### `Url.GetSrcSetUrls(publishedContent, AspectRatio aspectRatio)`
+#### `Url.GetSrcSetUrls(publishedContent, AspectRatio aspectRatio, string cdnUrl, int maxWidth)`
 
 Slimsy v3 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
 
@@ -103,7 +103,7 @@ Slimsy v3 allows you to define a predefined ratio for your image so you don't ne
 </div>
 ```
 
-#### `Url.GetSrcSetUrls(publishedContent, string cropAlias)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string cdnUrl, int maxWidth)`
 Use this method when you want to use a predefined crop, assumes your image cropper property alias is "umbracoFile".
 
 In this example the crop name is "feature"
@@ -121,13 +121,13 @@ In this example the crop name is "feature"
 </div>
 ```
 
-#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string cdnUrl, int maxWidth)`
 
-#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat, string cdnUrl, int maxWidth)`
 
 ### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
-#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip)`
+#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip, string cdnUrl)`
 
 Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
 
@@ -136,7 +136,7 @@ Use this method to convert images entered into TinyMce Rich Text editors to use 
 
 ```
 
-#### `Html.ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip)`
+#### `Html.ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip, string cdnUrl)`
 Use this method to convert images entered in a TinyMce Rich Text editor within the Grid to use img source set using generated paths. This method will also take care of parsing Umbraco links and Macros.
 
 e.g. within `Rte.chtml` found within the `Partials/Grid/Editors` folder

@@ -1,12 +1,13 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.People>
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
-    Layout = "master.cshtml";
-}
-@helper SocialLink(string content, string service)
-{
-    if (!string.IsNullOrEmpty(content))
+        Layout = "master.cshtml";
+        string cdnUrl = $"{Request.Url.Scheme}://{Request.Url.Host}:{Request.Url.Port}";
+    }
+    @helper SocialLink(string content, string service)
     {
+        if (!string.IsNullOrEmpty(content))
+        {
         <a class="employee-grid__item__contact-item" href="http://@(service).com/@content">@service</a>
     }
 }       
@@ -52,6 +53,61 @@
                 </div>
             }
         </div>
+
+        <h2>Using Image Source Set using Pre Defined Crop and CDN url</h2>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "feature", cdnUrl: cdnUrl)" data-src="@cdnUrl@Url.GetCropUrl(person.Photo, "feature")" sizes="auto" class="lazyload" />
+
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+
+        <h2>Using Image Source Set using Pre Defined Crop with max width override</h2>
+        <p>Images should  be blurry since they are being streched from 160px to 320px</p>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "feature", cdnUrl: cdnUrl, maxWidth: 160)" data-src="@cdnUrl@Url.GetCropUrl(person.Photo, "feature")" sizes="auto" class="lazyload" />
+
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
 
         <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
         <div class="employee-grid">
@@ -174,7 +230,7 @@
             {
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
-                        <img src="@Url.GetCropUrl(person.Photo, 323, 0, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 0)" data-src="@Url.GetCropUrl(person.Photo, 323, 0)" data-sizes="auto" class="lazyload" alt="something really long"/>
+                        <img src="@Url.GetCropUrl(person.Photo, 323, 0, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 0)" data-src="@Url.GetCropUrl(person.Photo, 323, 0)" data-sizes="auto" class="lazyload" alt="something really long" />
                     </div>
                     <div class="employee-grid__item__details">
                         <h3 class="employee-grid__item__name">@person.Name</h3>
