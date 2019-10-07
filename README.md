@@ -127,7 +127,7 @@ In this example the crop name is "feature"
 
 ### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
-#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip)`
+#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip, bool removeStyleAttribute)`
 
 Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
 
@@ -136,7 +136,7 @@ Use this method to convert images entered into TinyMce Rich Text editors to use 
 
 ```
 
-#### `Html.ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip)`
+#### `Html.ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip, bool removeStyleAttribute)`
 Use this method to convert images entered in a TinyMce Rich Text editor within the Grid to use img source set using generated paths. This method will also take care of parsing Umbraco links and Macros.
 
 e.g. within `Rte.chtml` found within the `Partials/Grid/Editors` folder

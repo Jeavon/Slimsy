@@ -220,10 +220,11 @@ namespace Slimsy
         /// <param name="htmlHelper"></param>
         /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
+        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true)
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
         {
-            var source = ConvertImgToSrcSetInternal(sourceValueHtml, generateLqip);
+            var source = ConvertImgToSrcSetInternal(sourceValueHtml, generateLqip, removeStyleAttribute);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
             var rteConverter = new RteMacroRenderingValueConverter(Current.UmbracoContextAccessor, Current.Factory.GetAllInstances<IMacroRenderer>().FirstOrDefault());
@@ -240,8 +241,9 @@ namespace Slimsy
         /// <param name="publishedContent"></param>
         /// <param name="propertyAlias">Alias of the TinyMce property</param>
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true)
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
         {
             var sourceValue = publishedContent.GetProperty(propertyAlias).GetSourceValue();
             if (sourceValue != null)
@@ -308,7 +310,11 @@ namespace Slimsy
                                         var node = GetAnyTypePublishedContent(guidUdi);
 
                                         var qsWidth = queryString["width"];
-                                        var qsHeight = queryString["height"];
+                                        var qsHeight = "0";
+                                        if (queryString.ContainsKey("height"))
+                                        {
+                                            qsHeight = queryString["height"];
+                                        }
 
                                         // TinyMce sometimes adds decimals to image resize commands, we need to fix those
                                         if (decimal.TryParse(qsWidth, out decimal decWidth) && decimal.TryParse(qsHeight, out decimal decHeight))
