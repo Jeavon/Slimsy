@@ -123,7 +123,7 @@ In this example the crop name is "feature"
 
 #### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias)`
 
-#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality)`
 
 ### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
