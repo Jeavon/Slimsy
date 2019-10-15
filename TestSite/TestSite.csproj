@@ -494,6 +494,10 @@
       <Project>{1692f565-129d-4c9c-9d6b-1894b77d26e4}</Project>
       <Name>Slimsy</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestSite.Common\TestSite.Common.csproj">
+      <Project>{70830d14-8eee-40d5-9bce-ddf54ef399b0}</Project>
+      <Name>TestSite.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>

@@ -34,7 +34,14 @@ namespace Slimsy
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
-    {        
+    {
+        private static SlimsyOptions _slimsyOptions;
+
+        static Slimsy()
+        {
+            _slimsyOptions = Current.Factory.GetInstance<SlimsyOptions>();
+        }
+
         #region SrcSet
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
@@ -409,6 +416,8 @@ namespace Slimsy
 
         private static int DefaultQuality()
         {
+            return _slimsyOptions.DefaultQuality;
+
             var slimsyDefaultQuality = ConfigurationManager.AppSettings["Slimsy:DefaultQuality"];
             if (!int.TryParse(slimsyDefaultQuality, out int defaultQuality))
             {
