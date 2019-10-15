@@ -5,7 +5,7 @@ namespace Slimsy
 {
     public static class CompositionExtensions
     {
-        public static void SetSlimsyOptions(this Composition composition, Func<IFactory, SlimsyOptions> factory)
+        public static void SetSlimsyOptions(this Composition composition, Func<IFactory, ISlimsyOptions> factory)
         {
             composition.RegisterUnique(factory);
         }

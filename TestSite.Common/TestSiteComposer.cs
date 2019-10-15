@@ -15,11 +15,16 @@ namespace TestSite.Common
             //composition.SetSlimsyOptions(factory =>
             //{
             //    var options = SlimsyComposer.GetDefaultOptions(factory);
-            //    options.DomainPrefix = "https://mytestsiteprefix.com";
+            //    options.DomainPrefix = "https://setviacomposer.com";
+            //    options.WidthStep = 200;
             //    return options;
             //});
 
-            composition.Components().Append<TestSiteComponent>();
+            // if you want to pull settings from Umbraco then use a component
+            //composition.Components().Append<TestSiteComponent>();
+
+            // if you want to replace SlimsyOptions with your own class/logic then do that
+            //composition.RegisterUnique<ISlimsyOptions, SlimsyCustomConfigOptions>();
         }
     }
 
@@ -36,7 +41,7 @@ namespace TestSite.Common
         public void Initialize()
         {
             // if you want to set the settings based on things stored in Umbraco do this
-            var slimsyOptions = _factory.GetInstance<SlimsyOptions>();
+            var slimsyOptions = _factory.GetInstance<ISlimsyOptions>();
 
             using (var cref = _context.EnsureUmbracoContext())
             {
@@ -51,5 +56,25 @@ namespace TestSite.Common
         public void Terminate()
         {
         }
+    }
+
+    public class SlimsyCustomConfigOptions : ISlimsyOptions
+    {
+        public SlimsyCustomConfigOptions()
+        {
+            // do some crazy stuff to get the config settings out of the flux capacitor 
+            Format = "png";
+            BackgroundColor = "";
+            MaxWidth = 4000;
+            WidthStep = 50;
+            DefaultQuality = 95;
+            DomainPrefix = "https://setviacustomconfigoptions.com";
+        }
+        public string Format { get; set; }
+        public string BackgroundColor { get; set; }
+        public int DefaultQuality { get; set; }
+        public int MaxWidth { get; set; }
+        public int WidthStep { get; set; }
+        public string DomainPrefix { get; set; }
     }
 }

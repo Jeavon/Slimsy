@@ -11,7 +11,6 @@ namespace Slimsy
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
-    using System.Configuration;
     using System.Linq;
     using System.Text;
     using System.Web;
@@ -35,11 +34,11 @@ namespace Slimsy
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
     {
-        private static SlimsyOptions _slimsyOptions;
+        private static ISlimsyOptions _slimsyOptions;
 
         static Slimsy()
         {
-            _slimsyOptions = Current.Factory.GetInstance<SlimsyOptions>();
+            _slimsyOptions = Current.Factory.GetInstance<ISlimsyOptions>();
         }
 
         #region SrcSet
@@ -417,35 +416,17 @@ namespace Slimsy
         private static int DefaultQuality()
         {
             return _slimsyOptions.DefaultQuality;
-
-            var slimsyDefaultQuality = ConfigurationManager.AppSettings["Slimsy:DefaultQuality"];
-            if (!int.TryParse(slimsyDefaultQuality, out int defaultQuality))
-            {
-                defaultQuality = 90;
-            }
-
-            return defaultQuality;
         }
 
         private static int WidthStep()
         {
-            var slimsyWidthStep = ConfigurationManager.AppSettings["Slimsy:WidthStep"];
-            if (!int.TryParse(slimsyWidthStep, out int widthStep))
-            {
-                widthStep = 160;
-            }
-
-            return widthStep;
+            return _slimsyOptions.WidthStep;
         }
 
         private static int MaxWidth(IPublishedContent publishedContent)
         {
-            var slimsyMaxWidth = ConfigurationManager.AppSettings["Slimsy:MaxWidth"];
-            if (!int.TryParse(slimsyMaxWidth, out int maxWidth))
-            {
-                maxWidth = 2048;
-            }
-
+            var maxWidth = _slimsyOptions.MaxWidth;
+            
             // if publishedContent is a media item we can see if we can get the source image width & height
             if (publishedContent.ItemType == PublishedItemType.Media)
             {
@@ -472,10 +453,10 @@ namespace Slimsy
             var bgColor = string.Empty;
             if (outputFormat == null)
             {
-                var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
+                var slimsyFormat = _slimsyOptions.Format;
                 outputFormat = slimsyFormat ?? "auto";
 
-                var slimsyBgColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
+                var slimsyBgColor = _slimsyOptions.BackgroundColor;
                 bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
             }
 
