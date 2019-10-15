@@ -11,7 +11,7 @@ namespace TestSite.Common
     {
         public void Compose(Composition composition)
         {
-            // if you want to set the settings in code then do this
+            // option 1: f you want to set the settings in code then do this
             //composition.SetSlimsyOptions(factory =>
             //{
             //    var options = SlimsyComposer.GetDefaultOptions(factory);
@@ -20,47 +20,47 @@ namespace TestSite.Common
             //    return options;
             //});
 
-            // if you want to pull settings from Umbraco then use a component
+            // option 2: if you want to pull settings from Umbraco then use a component
             //composition.Components().Append<TestSiteComponent>();
 
-            // if you want to replace SlimsyOptions with your own class/logic then do that
+            // option 3: if you want to replace SlimsyOptions with your own class/logic then do that
             //composition.RegisterUnique<ISlimsyOptions, SlimsyCustomConfigOptions>();
         }
     }
 
-    public class TestSiteComponent : IComponent
-    {
-        private readonly IFactory _factory;
-        private readonly IUmbracoContextFactory _context;
+    //public class TestSiteComponent : IComponent
+    //{
+    //    private readonly IFactory _factory;
+    //    private readonly IUmbracoContextFactory _context;
 
-        public TestSiteComponent(IFactory factory, IUmbracoContextFactory context)
-        {
-            _factory = factory;
-            _context = context;
-        }
-        public void Initialize()
-        {
-            // if you want to set the settings based on things stored in Umbraco do this
-            var slimsyOptions = _factory.GetInstance<ISlimsyOptions>();
+    //    public TestSiteComponent(IFactory factory, IUmbracoContextFactory context)
+    //    {
+    //        _factory = factory;
+    //        _context = context;
+    //    }
+    //    public void Initialize()
+    //    {
+    //        // if you want to set the settings based on things stored in Umbraco do this
+    //        var slimsyOptions = _factory.GetInstance<ISlimsyOptions>();
 
-            using (var cref = _context.EnsureUmbracoContext())
-            {
-                var cache = cref.UmbracoContext.Content;
-                var node = cache.GetAtRoot().FirstOrDefault();
-                var domainPrefix = node.Value<string>("domainPrefix");
-                slimsyOptions.DomainPrefix = domainPrefix;
-                slimsyOptions.DefaultQuality = 95;
-            }
-        }
+    //        using (var cref = _context.EnsureUmbracoContext())
+    //        {
+    //            var cache = cref.UmbracoContext.Content;
+    //            var node = cache.GetAtRoot().FirstOrDefault();
+    //            var domainPrefix = node.Value<string>("domainPrefix");
+    //            slimsyOptions.DomainPrefix = domainPrefix;
+    //            slimsyOptions.DefaultQuality = 95;
+    //        }
+    //    }
 
-        public void Terminate()
-        {
-        }
-    }
+    //    public void Terminate()
+    //    {
+    //    }
+    //}
 
     public class SlimsyCustomConfigOptions : ISlimsyOptions
     {
-        public SlimsyCustomConfigOptions()
+        public SlimsyCustomConfigOptions(IUmbracoContextFactory context)
         {
             // do some crazy stuff to get the config settings out of the flux capacitor 
             Format = "png";
@@ -69,6 +69,34 @@ namespace TestSite.Common
             WidthStep = 50;
             DefaultQuality = 95;
             DomainPrefix = "https://setviacustomconfigoptions.com";
+        }
+        public string Format { get; set; }
+        public string BackgroundColor { get; set; }
+        public int DefaultQuality { get; set; }
+        public int MaxWidth { get; set; }
+        public int WidthStep { get; set; }
+        public string DomainPrefix { get; set; }
+    }
+
+    public class SlimsyConfigFromUmbracoOptions : ISlimsyOptions
+    {
+        public SlimsyConfigFromUmbracoOptions(IUmbracoContextFactory context)
+        {
+            // do some crazy stuff to get the config settings out of the flux capacitor
+
+            using (var cref = context.EnsureUmbracoContext())
+            {
+                var cache = cref.UmbracoContext.Content;
+                var node = cache.GetAtRoot().FirstOrDefault();
+                var domainPrefix = node.Value<string>("domainPrefix");
+                DomainPrefix = domainPrefix;
+                DefaultQuality = 85;
+            }
+
+            Format = "png";
+            BackgroundColor = "";
+            MaxWidth = 4000;
+            WidthStep = 50;
         }
         public string Format { get; set; }
         public string BackgroundColor { get; set; }
