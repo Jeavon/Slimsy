@@ -11,7 +11,7 @@ namespace TestSite.Common
     {
         public void Compose(Composition composition)
         {
-            // option 1: f you want to set the settings in code then do this
+            // option 1: if you want to set the settings in code then do this
             //composition.SetSlimsyOptions(factory =>
             //{
             //    var options = SlimsyComposer.GetDefaultOptions(factory);
@@ -20,43 +20,10 @@ namespace TestSite.Common
             //    return options;
             //});
 
-            // option 2: if you want to pull settings from Umbraco then use a component
-            //composition.Components().Append<TestSiteComponent>();
-
-            // option 3: if you want to replace SlimsyOptions with your own class/logic then do that
+            // option 2: if you want to replace SlimsyOptions with your own class/logic then do that
             //composition.RegisterUnique<ISlimsyOptions, SlimsyCustomConfigOptions>();
         }
     }
-
-    //public class TestSiteComponent : IComponent
-    //{
-    //    private readonly IFactory _factory;
-    //    private readonly IUmbracoContextFactory _context;
-
-    //    public TestSiteComponent(IFactory factory, IUmbracoContextFactory context)
-    //    {
-    //        _factory = factory;
-    //        _context = context;
-    //    }
-    //    public void Initialize()
-    //    {
-    //        // if you want to set the settings based on things stored in Umbraco do this
-    //        var slimsyOptions = _factory.GetInstance<ISlimsyOptions>();
-
-    //        using (var cref = _context.EnsureUmbracoContext())
-    //        {
-    //            var cache = cref.UmbracoContext.Content;
-    //            var node = cache.GetAtRoot().FirstOrDefault();
-    //            var domainPrefix = node.Value<string>("domainPrefix");
-    //            slimsyOptions.DomainPrefix = domainPrefix;
-    //            slimsyOptions.DefaultQuality = 95;
-    //        }
-    //    }
-
-    //    public void Terminate()
-    //    {
-    //    }
-    //}
 
     public class SlimsyCustomConfigOptions : ISlimsyOptions
     {

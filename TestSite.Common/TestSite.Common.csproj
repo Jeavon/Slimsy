@@ -233,6 +233,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestSiteComponentComposer.cs" />
     <Compile Include="TestSiteComposer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
