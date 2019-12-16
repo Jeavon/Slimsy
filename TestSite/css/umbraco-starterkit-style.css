@@ -1830,7 +1830,10 @@ p.testimonial-text {
     height: 300px;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: 50%
+    background-position: 50%;
+    position: relative;
+  padding-bottom: 66.6667%;
+  overflow: hidden;
 }
 
 .employee-grid__item__details {
@@ -2906,4 +2909,32 @@ article {
         -ms-grid-row-align: center;
         align-items: center
     }
+}
+
+.ls-blur-up-is-loading,
+lazyload:not([src]) {
+  visibility: hidden;
+}
+
+.ls-blur-up-img, .employee-grid__item__image img{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* only if you want to change the blur-up option from always to auto or want to use blur up effect without a lowsrc image. */
+  font-family: "blur-up: auto", "object-fit: cover";
+  object-fit: cover;
+}
+
+.ls-blur-up-img {
+  filter: blur(10px);
+  opacity: 1;
+  transition: opacity 1000ms, filter 1500ms;
+}
+
+.ls-blur-up-img.ls-inview.ls-original-loaded {
+  opacity: 0;
+  filter: blur(5px);
 }
