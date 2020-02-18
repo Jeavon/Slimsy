@@ -431,6 +431,7 @@
     <Content Include="css\umbraco-starterkit-style.css" />
     <Content Include="Global.asax" />
     <Content Include="scripts\lazysizes.min.js" />
+    <Content Include="scripts\ls.blur-up.min.js" />
     <Content Include="scripts\picturefill.min.js" />
     <Content Include="scripts\umbraco-starterkit-app.js" />
     <Content Include="Views\Partials\Grid\Editors\Rte.cshtml" />
