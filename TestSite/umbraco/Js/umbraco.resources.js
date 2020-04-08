@@ -1411,7 +1411,7 @@
             getCount: function getCount() {
                 return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('contentTypeApiBaseUrl', 'GetCount')), 'Failed to retrieve count');
             },
-            getAvailableCompositeContentTypes: function getAvailableCompositeContentTypes(contentTypeId, filterContentTypes, filterPropertyTypes) {
+            getAvailableCompositeContentTypes: function getAvailableCompositeContentTypes(contentTypeId, filterContentTypes, filterPropertyTypes, isElement) {
                 if (!filterContentTypes) {
                     filterContentTypes = [];
                 }
@@ -1421,7 +1421,8 @@
                 var query = {
                     contentTypeId: contentTypeId,
                     filterContentTypes: filterContentTypes,
-                    filterPropertyTypes: filterPropertyTypes
+                    filterPropertyTypes: filterPropertyTypes,
+                    isElement: isElement
                 };
                 return umbRequestHelper.resourcePromise($http.post(umbRequestHelper.getApiUrl('contentTypeApiBaseUrl', 'GetAvailableCompositeContentTypes'), query), 'Failed to retrieve data for content type id ' + contentTypeId);
             },
@@ -1631,6 +1632,9 @@
             },
             createDefaultTemplate: function createDefaultTemplate(id) {
                 return umbRequestHelper.resourcePromise($http.post(umbRequestHelper.getApiUrl('contentTypeApiBaseUrl', 'PostCreateDefaultTemplate', { id: id })), 'Failed to create default template for content type with id ' + id);
+            },
+            hasContentNodes: function hasContentNodes(id) {
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('contentTypeApiBaseUrl', 'HasContentNodes', [{ id: id }])), 'Failed to retrieve indication for whether content type with id ' + id + ' has associated content nodes');
             }
         };
     }
@@ -1813,6 +1817,21 @@
                     { editorAlias: editorAlias },
                     { dataTypeId: dataTypeId }
                 ])), 'Failed to retrieve pre values for editor alias ' + editorAlias);
+            },
+            /**
+     * @ngdoc method
+     * @name umbraco.resources.dataTypeResource#getReferences
+     * @methodOf umbraco.resources.dataTypeResource
+     *
+     * @description
+     * Retrieves references of a given data type.
+     *
+     * @param {Int} id id of datatype to retrieve references for
+     * @returns {Promise} resourcePromise object.
+     *
+     */
+            getReferences: function getReferences(id) {
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('dataTypeApiBaseUrl', 'GetReferences', { id: id })), 'Failed to retrieve usages for data type of id ' + id);
             },
             /**
      * @ngdoc method
@@ -2036,7 +2055,7 @@
             renameContainer: function renameContainer(id, name) {
                 return umbRequestHelper.resourcePromise($http.post(umbRequestHelper.getApiUrl('dataTypeApiBaseUrl', 'PostRenameContainer', {
                     id: id,
-                    name: name
+                    name: encodeURIComponent(name)
                 })), 'Failed to rename the folder with id ' + id);
             }
         };
@@ -2173,6 +2192,32 @@
     angular.module('umbraco.resources').factory('dictionaryResource', dictionaryResource);
     'use strict';
     /**
+ * @ngdoc service
+ * @name umbraco.resources.emailMarketingResource
+ * @description Used to add a backoffice user to Umbraco's email marketing system, if user opts in
+ *
+ *
+ **/
+    function emailMarketingResource($http, umbRequestHelper) {
+        // LOCAL
+        // http://localhost:7071/api/EmailProxy
+        // LIVE
+        // https://emailcollector.umbraco.io/api/EmailProxy
+        var emailApiUrl = 'https://emailcollector.umbraco.io/api/EmailProxy';
+        //the factory object returned
+        return {
+            postAddUserToEmailMarketing: function postAddUserToEmailMarketing(user) {
+                return umbRequestHelper.resourcePromise($http.post(emailApiUrl, {
+                    name: user.name,
+                    email: user.email,
+                    usergroup: user.userGroups
+                }), 'Failed to add user to email marketing list');
+            }
+        };
+    }
+    angular.module('umbraco.resources').factory('emailMarketingResource', emailMarketingResource);
+    'use strict';
+    /**
     * @ngdoc service
     * @name umbraco.resources.entityResource
     * @description Loads in basic data for all entities
@@ -2266,17 +2311,34 @@
      *
      * @param {Int} id Id of node to return the public url to
      * @param {string} type Object type name
+     * @param {string} culture Culture
      * @returns {Promise} resourcePromise object containing the url.
      *
      */
-            getUrl: function getUrl(id, type) {
+            getUrl: function getUrl(id, type, culture) {
                 if (id === -1 || id === '-1') {
                     return '';
                 }
+                if (!culture) {
+                    culture = '';
+                }
                 return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('entityApiBaseUrl', 'GetUrl', [
                     { id: id },
-                    { type: type }
+                    { type: type },
+                    { culture: culture }
                 ])), 'Failed to retrieve url for id:' + id);
+            },
+            getUrlByUdi: function getUrlByUdi(udi, culture) {
+                if (!udi) {
+                    return '';
+                }
+                if (!culture) {
+                    culture = '';
+                }
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('entityApiBaseUrl', 'GetUrl', [
+                    { udi: udi },
+                    { culture: culture }
+                ])), 'Failed to retrieve url for UDI:' + udi);
             },
             /**
      * @ngdoc method
@@ -2289,7 +2351,7 @@
      * ##usage
      * <pre>
      * //get media by id
-     * entityResource.getEntityById(0, "Media")
+     * entityResource.getById(0, "Media")
      *    .then(function(ent) {
      *        var myDoc = ent;
      *        alert('its here!');
@@ -2310,11 +2372,17 @@
                     { type: type }
                 ])), 'Failed to retrieve entity data for id ' + id);
             },
-            getUrlAndAnchors: function getUrlAndAnchors(id) {
+            getUrlAndAnchors: function getUrlAndAnchors(id, culture) {
                 if (id === -1 || id === '-1') {
                     return null;
                 }
-                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('entityApiBaseUrl', 'GetUrlAndAnchors', { id: id })), 'Failed to retrieve url and anchors data for id ' + id);
+                if (!culture) {
+                    culture = '';
+                }
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('entityApiBaseUrl', 'GetUrlAndAnchors', [
+                    { id: id },
+                    { culture: culture }
+                ])), 'Failed to retrieve url and anchors data for id ' + id);
             },
             getAnchors: function getAnchors(rteContent) {
                 if (!rteContent || rteContent.length === 0) {
@@ -2333,7 +2401,7 @@
      * ##usage
      * <pre>
      * //Get templates for ids
-     * entityResource.getEntitiesByIds( [1234,2526,28262], "Template")
+     * entityResource.getByIds( [1234,2526,28262], "Template")
      *    .then(function(templateArray) {
      *        var myDoc = contentArray;
      *        alert('they are here!');
@@ -2494,7 +2562,8 @@
                     pageNumber: 100,
                     filter: '',
                     orderDirection: 'Ascending',
-                    orderBy: 'SortOrder'
+                    orderBy: 'SortOrder',
+                    dataTypeKey: null
                 };
                 if (options === undefined) {
                     options = {};
@@ -2994,31 +3063,43 @@
  *
  **/
     function logViewerResource($q, $http, umbRequestHelper) {
+        /**
+   * verb => 'get', 'post',
+   * method => API method to call
+   * params => additional data to send
+   * error => error message when things go wrong...
+   */
+        var request = function request(verb, method, params, error) {
+            return umbRequestHelper.resourcePromise(verb === 'GET' ? $http.get(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', method) + (params ? params : '')) : $http.post(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', method), params), error);
+        };
         //the factory object returned
         return {
             getNumberOfErrors: function getNumberOfErrors(startDate, endDate) {
-                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'GetNumberOfErrors') + '?startDate=' + startDate + '&endDate=' + endDate), 'Failed to retrieve number of errors in logs');
+                return request('GET', 'GetNumberOfErrors', '?startDate=' + startDate + '&endDate=' + endDate, 'Failed to retrieve number of errors in logs');
+            },
+            getLogLevel: function getLogLevel() {
+                return request('GET', 'GetLogLevel', null, 'Failed to retrieve log level');
             },
             getLogLevelCounts: function getLogLevelCounts(startDate, endDate) {
-                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'GetLogLevelCounts') + '?startDate=' + startDate + '&endDate=' + endDate), 'Failed to retrieve log level counts');
+                return request('GET', 'GetLogLevelCounts', '?startDate=' + startDate + '&endDate=' + endDate, 'Failed to retrieve log level counts');
             },
             getMessageTemplates: function getMessageTemplates(startDate, endDate) {
-                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'GetMessageTemplates') + '?startDate=' + startDate + '&endDate=' + endDate), 'Failed to retrieve log templates');
+                return request('GET', 'GetMessageTemplates', '?startDate=' + startDate + '&endDate=' + endDate, 'Failed to retrieve log templates');
             },
             getSavedSearches: function getSavedSearches() {
-                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'GetSavedSearches')), 'Failed to retrieve saved searches');
+                return request('GET', 'GetSavedSearches', null, 'Failed to retrieve saved searches');
             },
             postSavedSearch: function postSavedSearch(name, query) {
-                return umbRequestHelper.resourcePromise($http.post(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'PostSavedSearch'), {
+                return request('POST', 'PostSavedSearch', {
                     'name': name,
                     'query': query
-                }), 'Failed to add new saved search');
+                }, 'Failed to add new saved search');
             },
             deleteSavedSearch: function deleteSavedSearch(name, query) {
-                return umbRequestHelper.resourcePromise($http.post(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'DeleteSavedSearch'), {
+                return request('POST', 'DeleteSavedSearch', {
                     'name': name,
                     'query': query
-                }), 'Failed to delete saved search');
+                }, 'Failed to delete saved search');
             },
             getLogs: function getLogs(options) {
                 var defaults = {
@@ -3037,7 +3118,7 @@
                 return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'GetLogs', options)), 'Failed to retrieve common log messages');
             },
             canViewLogs: function canViewLogs(startDate, endDate) {
-                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('logViewerApiBaseUrl', 'GetCanViewLogs') + '?startDate=' + startDate + '&endDate=' + endDate), 'Failed to retrieve state if logs can be viewed');
+                return request('GET', 'GetCanViewLogs', '?startDate=' + startDate + '&endDate=' + endDate, 'Failed to retrieve state if logs can be viewed');
             }
         };
     }
@@ -3105,6 +3186,12 @@
             },
             getParameterEditors: function getParameterEditors() {
                 return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('macroApiBaseUrl', 'GetParameterEditors'), 'Failed to get parameter editors'));
+            },
+            getGroupedParameterEditors: function getGroupedParameterEditors() {
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('macroApiBaseUrl', 'GetGroupedParameterEditors'), 'Failed to get parameter editors'));
+            },
+            getParameterEditorByAlias: function getParameterEditorByAlias(alias) {
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('macroApiBaseUrl', 'GetParameterEditorByAlias', { 'alias': alias }), 'Failed to get parameter editor'));
             },
             getById: function getById(id) {
                 return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('macroApiBaseUrl', 'GetById', { 'id': id }), 'Failed to get macro'));
@@ -3570,6 +3657,26 @@
                     { 'searchFrom': searchFrom }
                 ];
                 return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('mediaApiBaseUrl', 'Search', args)), 'Failed to retrieve media items for search: ' + query);
+            },
+            getPagedReferences: function getPagedReferences(id, options) {
+                var defaults = {
+                    pageSize: 25,
+                    pageNumber: 1,
+                    entityType: 'DOCUMENT'
+                };
+                if (options === undefined) {
+                    options = {};
+                }
+                //overwrite the defaults if there are any specified
+                angular.extend(defaults, options);
+                //now copy back to the options we will use
+                options = defaults;
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('mediaApiBaseUrl', 'GetPagedReferences', {
+                    id: id,
+                    entityType: options.entityType,
+                    pageNumber: options.pageNumber,
+                    pageSize: options.pageSize
+                })), 'Failed to retrieve usages for media of id ' + id);
             }
         };
     }
@@ -4051,6 +4158,21 @@
     }
     angular.module('umbraco.resources').factory('memberTypeResource', memberTypeResource);
     'use strict';
+    function modelsBuilderManagementResource($q, $http, umbRequestHelper) {
+        return {
+            getModelsOutOfDateStatus: function getModelsOutOfDateStatus() {
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('modelsBuilderBaseUrl', 'GetModelsOutOfDateStatus')), 'Failed to get models out-of-date status');
+            },
+            buildModels: function buildModels() {
+                return umbRequestHelper.resourcePromise($http.post(umbRequestHelper.getApiUrl('modelsBuilderBaseUrl', 'BuildModels')), 'Failed to build models');
+            },
+            getDashboard: function getDashboard() {
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('modelsBuilderBaseUrl', 'GetDashboard')), 'Failed to get dashboard');
+            }
+        };
+    }
+    angular.module('umbraco.resources').factory('modelsBuilderManagementResource', modelsBuilderManagementResource);
+    'use strict';
     angular.module('umbraco.resources').factory('Umbraco.PropertyEditors.NestedContent.Resources', function ($q, $http, umbRequestHelper) {
         return {
             getContentTypes: function getContentTypes() {
@@ -4501,6 +4623,24 @@
      */
             deleteById: function deleteById(id) {
                 return umbRequestHelper.resourcePromise($http.post(umbRequestHelper.getApiUrl('relationTypeApiBaseUrl', 'DeleteById', [{ id: id }])), 'Failed to delete item ' + id);
+            },
+            getPagedResults: function getPagedResults(id, options) {
+                var defaults = {
+                    pageSize: 25,
+                    pageNumber: 1
+                };
+                if (options === undefined) {
+                    options = {};
+                }
+                //overwrite the defaults if there are any specified
+                angular.extend(defaults, options);
+                //now copy back to the options we will use
+                options = defaults;
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('relationTypeApiBaseUrl', 'GetPagedResults', {
+                    id: id,
+                    pageNumber: options.pageNumber,
+                    pageSize: options.pageSize
+                })), 'Failed to get paged relations for id ' + id);
             }
         };
     }
@@ -4873,7 +5013,13 @@
             function getTours() {
                 return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('tourApiBaseUrl', 'GetTours')), 'Failed to get tours');
             }
-            var resource = { getTours: getTours };
+            function getToursForDoctype(doctypeAlias) {
+                return umbRequestHelper.resourcePromise($http.get(umbRequestHelper.getApiUrl('tourApiBaseUrl', 'GetToursForDoctype', [{ doctypeAlias: doctypeAlias }])), 'Failed to get tours');
+            }
+            var resource = {
+                getTours: getTours,
+                getToursForDoctype: getToursForDoctype
+            };
             return resource;
         }
         angular.module('umbraco.resources').factory('tourResource', tourResource);

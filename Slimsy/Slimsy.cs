@@ -28,6 +28,7 @@ namespace Slimsy
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Core.PropertyEditors.ValueConverters;
     using Umbraco.Web.Macros;
+    using Umbraco.Web.Templates;
     using Constants = Umbraco.Core.Constants;
     using Current = Umbraco.Web.Composing.Current;
 
@@ -233,7 +234,9 @@ namespace Slimsy
             var source = ConvertImgToSrcSetInternal(sourceValueHtml, generateLqip, removeStyleAttribute);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var rteConverter = new RteMacroRenderingValueConverter(Current.UmbracoContextAccessor, Current.Factory.GetAllInstances<IMacroRenderer>().FirstOrDefault());
+            var factory = Current.Factory;
+            var rteConverter = new RteMacroRenderingValueConverter(Current.UmbracoContextAccessor, factory.GetInstance<IMacroRenderer>(), factory.GetInstance<HtmlLocalLinkParser>(), factory.GetInstance<HtmlUrlParser>(), factory.GetInstance<HtmlImageSourceParser>());
+
             var intermediateValue = rteConverter.ConvertSourceToIntermediate(null, null, source, false);
             var objectValue = rteConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
 
