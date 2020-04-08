@@ -149,7 +149,7 @@ e.g. within `Rte.chtml` found within the `Partials/Grid/Editors` folder
 
 # Using `<picture>` element
 
-Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp), this example also implements a optional LQIP image.
+Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp) (needs to be installed from NuGet), this example also implements a optional LQIP image.
 
 ```C#
 <div class="employee-grid">
