@@ -29,12 +29,16 @@
             var slimsyBgColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
             var bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
 
+            var domainPrefix = ConfigurationManager.AppSettings["Slimsy:DomainPrefix"];
+            if (string.IsNullOrEmpty(domainPrefix))
+                domainPrefix = null;
+
             Format = outputFormat;
             BackgroundColor = bgColor;
             MaxWidth = maxWidth;
             WidthStep = widthStep;
             DefaultQuality = defaultQuality;
-            DomainPrefix = "https://www.umbraco.com";
+            DomainPrefix = domainPrefix;
         }
 
         public string Format { get; set; }

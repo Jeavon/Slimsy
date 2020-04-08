@@ -89,7 +89,7 @@ namespace Slimsy
                 var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
 
-                outputStringBuilder.Append($"{cropString} {w}w,");
+                outputStringBuilder.Append($"{DomainPrefix()}{cropString} {w}w,");
                 w += WidthStep();
             }
 
@@ -111,7 +111,7 @@ namespace Slimsy
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                    $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                 w += WidthStep();
             }
 
@@ -142,7 +142,7 @@ namespace Slimsy
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+                    $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
 
                 w += WidthStep();
             }
@@ -195,7 +195,7 @@ namespace Slimsy
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                        $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                     w += WidthStep();
                 }
 
@@ -495,6 +495,11 @@ namespace Slimsy
         {
             var runtimeCache = Current.AppCaches.RuntimeCache;
             runtimeCache.InsertCacheItem<T>(cacheKey, getCacheItem);
+        }
+
+        private static string DomainPrefix()
+        {
+            return _slimsyOptions.DomainPrefix;
         }
 
         #endregion
