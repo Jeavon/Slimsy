@@ -8,27 +8,28 @@ cd buildpackage
 
 SET toolsFolder=%CD%\tools\
 IF NOT EXIST "%toolsFolder%" (
-  MD tools
+	MD tools
 )
 
 IF NOT EXIST "%toolsFolder%vswhere.exe" (
-  ECHO vswhere not found - fetching now
-  nuget install vswhere -Version 2.2.7 -Source nuget.org -OutputDirectory tools
+	ECHO vswhere not found - fetching now
+	nuget install vswhere -Version 2.8.4 -Source nuget.org -OutputDirectory tools
 )
 
 FOR /f "delims=" %%A in ('dir "%toolsFolder%vswhere.*" /b') DO SET "vswhereExePath=%toolsFolder%%%A\"
 MOVE "%vswhereExePath%tools\vswhere.exe" "%toolsFolder%vswhere.exe"
 
-for /f "usebackq tokens=1* delims=: " %%i in (`"%CD%\tools\vswhere.exe" -latest -requires Microsoft.Component.MSBuild`) do (
-  if /i "%%i"=="installationPath" set InstallDir=%%j
+SETLOCAL EnableDelayedExpansion
+
+set vswherestr=^"!%CD%\tools\vswhere.exe^" -latest -prerelease -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+for /f "usebackq tokens=*" %%i in (`!vswherestr!`) do (  
+  set MsBuildDir=%%i
 )
 
-SET VSWherePath="%InstallDir%\MSBuild"
-
 ECHO.
-ECHO Visual Studio is installed in: %InstallDir%
+ECHO MsBuild is installed in: %MsBuildDir%
 
-CALL "%InstallDir%\MSBuild\15.0\Bin\amd64\MsBuild.exe" package.proj %~1
+CALL "%MsBuildDir%" package.proj %~1
 
 @IF %ERRORLEVEL% NEQ 0 GOTO err
 @EXIT /B 0
