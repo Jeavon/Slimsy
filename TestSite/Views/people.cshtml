@@ -1,7 +1,9 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.People>
+@using Umbraco.Web.Composing
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
     Layout = "master.cshtml";
+
 }
 @helper SocialLink(string content, string service)
 {
@@ -220,6 +222,46 @@
         }
     </div>
 
+
+    <h2>Using Image Source Set with LQIP using blur-up lazysizes plugin & DomainPrefix</h2>
+    @{
+        // DO NOT EVER DO THIS, set DomainPrefix in web.config or implement your own ISlimsyOptions
+        Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix = "http://localhost:50414/";
+
+        // Inject into a controller or service if you want to use this for GetCropUrl
+        var slimsyDomainPrefix = Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix;
+    }
+    <div class="employee-grid">
+        @foreach (ContentModels.Person person in Model.Children)
+        {
+            var lowSrc = $"{slimsyDomainPrefix}{Url.GetCropUrl(person.Photo, 323, 300, quality: 30, furtherOptions: "&format=auto")}";
+
+            <div class="employee-grid__item">
+                <div class="employee-grid__item__image">
+                    <img data-lowsrc="@lowSrc"
+                         data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)"
+                         sizes="auto" class="lazyload" />
+                </div>
+                <div class="employee-grid__item__details">
+                    <h3 class="employee-grid__item__name">@person.Name</h3>
+                    @if (!string.IsNullOrEmpty(person.Email))
+                    {
+                        <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                    }
+                    <div class="employee-grid__item__contact">
+                        @SocialLink(person.FacebookUsername, "Facebook")
+                        @SocialLink(person.TwitterUsername, "Twitter")
+                        @SocialLink(person.LinkedInUsername, "LinkedIn")
+                        @SocialLink(person.InstagramUsername, "Instagram")
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @{
+        // DO NOT EVER DO THIS, set DomainPrefix in web.config or implement your own ISlimsyOptions
+        Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix = null;
+    }
     </div>
 
 </section>

@@ -11,7 +11,6 @@ namespace Slimsy
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
-    using System.Configuration;
     using System.Linq;
     using System.Text;
     using System.Web;
@@ -35,7 +34,14 @@ namespace Slimsy
 
     [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
     public static class Slimsy
-    {        
+    {
+        private static ISlimsyOptions _slimsyOptions;
+
+        static Slimsy()
+        {
+            _slimsyOptions = Current.Factory.GetInstance<ISlimsyOptions>();
+        }
+
         #region SrcSet
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
@@ -83,7 +89,7 @@ namespace Slimsy
                 var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
 
-                outputStringBuilder.Append($"{cropString} {w}w,");
+                outputStringBuilder.Append($"{DomainPrefix()}{cropString} {w}w,");
                 w += WidthStep();
             }
 
@@ -105,7 +111,7 @@ namespace Slimsy
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                    $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                 w += WidthStep();
             }
 
@@ -136,7 +142,7 @@ namespace Slimsy
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+                    $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
 
                 w += WidthStep();
             }
@@ -189,7 +195,7 @@ namespace Slimsy
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                        $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                     w += WidthStep();
                 }
 
@@ -412,34 +418,18 @@ namespace Slimsy
 
         private static int DefaultQuality()
         {
-            var slimsyDefaultQuality = ConfigurationManager.AppSettings["Slimsy:DefaultQuality"];
-            if (!int.TryParse(slimsyDefaultQuality, out int defaultQuality))
-            {
-                defaultQuality = 90;
-            }
-
-            return defaultQuality;
+            return _slimsyOptions.DefaultQuality;
         }
 
         private static int WidthStep()
         {
-            var slimsyWidthStep = ConfigurationManager.AppSettings["Slimsy:WidthStep"];
-            if (!int.TryParse(slimsyWidthStep, out int widthStep))
-            {
-                widthStep = 160;
-            }
-
-            return widthStep;
+            return _slimsyOptions.WidthStep;
         }
 
         private static int MaxWidth(IPublishedContent publishedContent)
         {
-            var slimsyMaxWidth = ConfigurationManager.AppSettings["Slimsy:MaxWidth"];
-            if (!int.TryParse(slimsyMaxWidth, out int maxWidth))
-            {
-                maxWidth = 2048;
-            }
-
+            var maxWidth = _slimsyOptions.MaxWidth;
+            
             // if publishedContent is a media item we can see if we can get the source image width & height
             if (publishedContent.ItemType == PublishedItemType.Media)
             {
@@ -466,10 +456,10 @@ namespace Slimsy
             var bgColor = string.Empty;
             if (outputFormat == null)
             {
-                var slimsyFormat = ConfigurationManager.AppSettings["Slimsy:Format"];
+                var slimsyFormat = _slimsyOptions.Format;
                 outputFormat = slimsyFormat ?? "auto";
 
-                var slimsyBgColor = ConfigurationManager.AppSettings["Slimsy:BGColor"];
+                var slimsyBgColor = _slimsyOptions.BackgroundColor;
                 bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
             }
 
@@ -505,6 +495,11 @@ namespace Slimsy
         {
             var runtimeCache = Current.AppCaches.RuntimeCache;
             runtimeCache.InsertCacheItem<T>(cacheKey, getCacheItem);
+        }
+
+        private static string DomainPrefix()
+        {
+            return _slimsyOptions.DomainPrefix;
         }
 
         #endregion
