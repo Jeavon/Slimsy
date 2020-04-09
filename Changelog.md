@@ -22,3 +22,5 @@ Slimsy Change log
 - 2.1.0 - Breaking! Umbraco v7.13 support. 2 x ConvertImgToSrcSet methods marked as obsolete and 1 new one added
 - 3.0.0-beta1 - Umbraco v8 compatibility
 - 3.0.0-beta2 - Umbraco v8.1 compatibility
+- 3.0.0-beta3 - Quality parameter added, lazysizes update
+- 3.0.0-beta4 - Umbraco v8.6 compatibility, config options refactor
