@@ -235,7 +235,7 @@ namespace Slimsy
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
             var factory = Current.Factory;
-            var rteConverter = new RteMacroRenderingValueConverter(Current.UmbracoContextAccessor, factory.GetInstance<IMacroRenderer>(), factory.GetInstance<HtmlLocalLinkParser>(), factory.GetInstance<HtmlUrlParser>(), factory.GetInstance<HtmlImageSourceParser>());
+            var rteConverter = factory.GetInstance<RteMacroRenderingValueConverter>();
 
             var intermediateValue = rteConverter.ConvertSourceToIntermediate(null, null, source, false);
             var objectValue = rteConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
