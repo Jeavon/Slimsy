@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Slimsy.cs" company="Our.Umbraco">
+// <copyright file="SlimsyExtensions.cs" company="Our.Umbraco">
 //   2017
 // </copyright>
 // <summary>
-//   Defines the Slimsy type.
+//   Defines the SlimsyExtension methods for Url and Html Helpers.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Slimsy
