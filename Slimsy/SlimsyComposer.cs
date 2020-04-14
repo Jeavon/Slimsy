@@ -15,7 +15,7 @@ namespace Slimsy
         public void Compose(Composition composition)
         {
             composition.SetSlimsyOptions(GetDefaultOptions);
+            composition.Components().Append<SlimsyComponent>();
         }
     }
-
 }
