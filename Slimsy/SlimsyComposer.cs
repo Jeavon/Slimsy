@@ -1,9 +1,10 @@
-﻿using Umbraco.Core;
-using Umbraco.Core.Composing;
-using Umbraco.Core.Logging;
-
+﻿
 namespace Slimsy
 {
+    using Umbraco.Core;
+    using Umbraco.Core.Composing;
+    using Umbraco.Core.Logging;
+
     public sealed class SlimsyComposer : IUserComposer
     {
         public static ISlimsyOptions GetDefaultOptions(IFactory factory)

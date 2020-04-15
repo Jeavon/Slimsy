@@ -26,6 +26,7 @@ namespace Slimsy
         }
 
         #region SrcSet
+
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
         /// </summary>
