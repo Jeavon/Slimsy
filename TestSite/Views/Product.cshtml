@@ -1,30 +1,30 @@
-﻿@inherits UmbracoViewPage<Product>
-@using ContentModels = Umbraco.Web.PublishedModels;
+﻿@inherits UmbracoViewPage<TestSite.Common.ProductViewModel>
 @{
     Layout = "master.cshtml";
+    var product = Model.Content as Product;
 }
 <!-- for the section we want to show the shop header -->
-@Html.Partial("~/Views/Partials/SectionHeader.cshtml", Model.Parent)
+@Html.Partial("~/Views/Partials/SectionHeader.cshtml", product.Parent)
 
 <section class="section">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
                 <div class="product-image-container">
-                    <img class="product-image" src="@Model.Photos.Url" />
+                    <img data-srcset="@Model.PhotoSrcSetUrls" data-src="@Model.PhotoSrc" sizes="auto" class="lazyload product-image" />
                 </div>
             </div>
             <div class="col-md-6">
-                <h1>@Model.ProductName</h1>
-                <div class="product-price">@Model.Parent.GetProperty("DefaultCurrency").Value() @Model.Price.ToString("F")</div>
-                <div class="product-teaser">@Model.Description</div>
+                <h1>@product.ProductName</h1>
+                <div class="product-price">@product.Parent.GetProperty("DefaultCurrency").Value() @product.Price.ToString("F")</div>
+                <div class="product-teaser">@product.Description</div>
                 <div class="product-button">
                     <button class="button button--border--solid">Buy</button>
                 </div>
                 <div class="product-advantages">
-                    @if (Model.Features != null)
+                    @if (product.Features != null)
                     {
-                        foreach (var feature in Model.Features)
+                        foreach (var feature in product.Features)
                         {
                             <div class="product-advantage">
                                 <h4>@feature.GetProperty("featureName").Value()</h4>
@@ -40,6 +40,6 @@
 <section class="section section--sand">
     <div class="container">
         <!-- todo: Check if grid is empty via a property value converter -->
-        @Html.GetGridHtml(Model, "bodyText", "bootstrap3-fluid")
+        @Html.GetGridHtml(product, "bodyText", "bootstrap3-fluid")
     </div>
 </section>

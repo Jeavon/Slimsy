@@ -228,11 +228,16 @@
     <Reference Include="Umbraco.Web, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.1.0\lib\net472\Umbraco.Web.dll</HintPath>
     </Reference>
+    <Reference Include="Umbraco.Web.PublishedModels">
+      <HintPath>..\TestSite\bin\Umbraco.Web.PublishedModels.dll</HintPath>
+    </Reference>
     <Reference Include="Umbraco.Web.UI, Version=8.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UmbracoCms.Web.8.1.0\lib\net472\Umbraco.Web.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProductController.cs" />
+    <Compile Include="ProductViewModel.cs" />
     <Compile Include="TestSiteComponentComposer.cs" />
     <Compile Include="TestSiteComposer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
