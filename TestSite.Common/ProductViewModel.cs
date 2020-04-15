@@ -1,12 +1,11 @@
 ﻿using System.Web;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Web.Models;
+using Umbraco.Web.PublishedModels;
 
 namespace TestSite.Common
 {
-    public class ProductViewModel : ContentModel
+    public class ProductViewModel : Product
     {
-        public ProductViewModel(IPublishedContent content) : base(content) { }
+        public ProductViewModel(Product content) : base(content) { }
         public IHtmlString PhotoSrc { get; set; }
         public IHtmlString PhotoSrcSetUrls { get; set; }
     }

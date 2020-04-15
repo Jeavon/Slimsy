@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Slimsy;
 using Umbraco.Web;
 using Umbraco.Web.Models;
@@ -31,7 +26,7 @@ namespace TestSite.Common
                 PhotoSrcSetUrls = _slimsyComponent.GetSrcSetUrls(photo, "feature")
             };
 
-            return base.Index(vm);
+            return CurrentTemplate(vm);
         }
     }
 }
