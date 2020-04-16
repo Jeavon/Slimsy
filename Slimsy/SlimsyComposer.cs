@@ -17,6 +17,7 @@ namespace Slimsy
         {
             composition.SetSlimsyOptions(GetDefaultOptions);
             composition.Components().Append<SlimsyComponent>();
+            composition.Register<SlimsyService>(Lifetime.Singleton);
         }
     }
 }

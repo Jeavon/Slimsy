@@ -8,12 +8,12 @@ namespace TestSite.Common
 {
     public class ProductController : Umbraco.Web.Mvc.RenderMvcController
     {
-        private readonly SlimsyComponent _slimsyComponent;
+        private readonly SlimsyService _slimsyComponent;
         private readonly UrlHelper _urlHelper;
 
-        public ProductController(SlimsyComponent slimsyComponent)
+        public ProductController(SlimsyService slimsyService)
         {
-            _slimsyComponent = slimsyComponent;
+            _slimsyComponent = slimsyService;
             _urlHelper = new UrlHelper();
         }
         public override ActionResult Index(ContentModel model)
