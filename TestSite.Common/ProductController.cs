@@ -1,19 +1,19 @@
-﻿using System.Web.Mvc;
-using Slimsy;
-using Umbraco.Web;
-using Umbraco.Web.Models;
-using Umbraco.Web.PublishedModels;
-
-namespace TestSite.Common
+﻿namespace TestSite.Common
 {
+    using System.Web.Mvc;
+    using Slimsy.Services;
+    using Umbraco.Web;
+    using Umbraco.Web.Models;
+    using Umbraco.Web.PublishedModels;
+
     public class ProductController : Umbraco.Web.Mvc.RenderMvcController
     {
-        private readonly SlimsyService _slimsyComponent;
+        private readonly SlimsyService _slimsyService;
         private readonly UrlHelper _urlHelper;
 
         public ProductController(SlimsyService slimsyService)
         {
-            _slimsyComponent = slimsyService;
+            _slimsyService = slimsyService;
             _urlHelper = new UrlHelper();
         }
         public override ActionResult Index(ContentModel model)
@@ -23,7 +23,7 @@ namespace TestSite.Common
             var vm = new ProductViewModel(product)
             {
                 PhotoSrc = _urlHelper.GetCropUrl(photo, "feature"),
-                PhotoSrcSetUrls = _slimsyComponent.GetSrcSetUrls(photo, "feature")
+                PhotoSrcSetUrls = _slimsyService.GetSrcSetUrls(photo, "feature")
             };
 
             return CurrentTemplate(vm);

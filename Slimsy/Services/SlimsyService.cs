@@ -1,7 +1,5 @@
-﻿namespace Slimsy
+﻿namespace Slimsy.Services
 {
-    using HtmlAgilityPack;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -9,6 +7,7 @@
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
+
     using Umbraco.Core;
     using Umbraco.Core.Logging;
     using Umbraco.Core.Models.PublishedContent;
@@ -17,6 +16,11 @@
     using Umbraco.Web;
     using Umbraco.Web.Models;
     using Umbraco.Web.PropertyEditors.ValueConverters;
+
+    using HtmlAgilityPack;
+    using Newtonsoft.Json;
+
+    using Interfaces;
 
     public class SlimsyService
     {

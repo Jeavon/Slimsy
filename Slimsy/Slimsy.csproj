@@ -286,15 +286,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AspectRatio.cs" />
-    <Compile Include="CompositionExtensions.cs" />
-    <Compile Include="ISlimsyOptions.cs" />
+    <Compile Include="Models\AspectRatio.cs" />
+    <Compile Include="Extensions\CompositionExtensions.cs" />
+    <Compile Include="Interfaces\ISlimsyOptions.cs" />
     <Compile Include="Packaging\PackageActions.cs" />
-    <Compile Include="SlimsyService.cs" />
-    <Compile Include="SlimsyExtensions.cs" />
+    <Compile Include="Services\SlimsyService.cs" />
+    <Compile Include="Extensions\SlimsyExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SlimsyComposer.cs" />
-    <Compile Include="SlimsyWebConfigOptions.cs" />
+    <Compile Include="Application\SlimsyComposer.cs" />
+    <Compile Include="Configurations\SlimsyWebConfigOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

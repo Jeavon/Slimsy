@@ -1,8 +1,13 @@
-﻿namespace Slimsy
+﻿namespace Slimsy.Application
 {
     using Umbraco.Core;
     using Umbraco.Core.Composing;
     using Umbraco.Core.Logging;
+
+    using Extensions;
+    using Interfaces;
+    using Configurations;
+    using Services;
 
     public sealed class SlimsyComposer : IUserComposer
     {
