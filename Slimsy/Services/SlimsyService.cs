@@ -1,7 +1,9 @@
-﻿namespace Slimsy
+﻿namespace Slimsy.Services
 {
+    using Extensions;
     using HtmlAgilityPack;
-    using Newtonsoft.Json;
+    using Interfaces;
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -9,9 +11,8 @@
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
+    using Newtonsoft.Json;
     using Umbraco.Core;
-    using Umbraco.Core.Composing;
-    using Umbraco.Core.Logging;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Core.PropertyEditors;
     using Umbraco.Core.PropertyEditors.ValueConverters;
@@ -19,24 +20,29 @@
     using Umbraco.Web.Models;
     using Umbraco.Web.PropertyEditors.ValueConverters;
 
-    public class SlimsyComponent : IComponent
+    public class SlimsyService : ISlimsyService
     {
-        private readonly ILogger _logger;
         private readonly ISlimsyOptions _slimsyOptions;
         private readonly RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
-        private UrlHelper _urlHelper;
+        private readonly UrlHelper _urlHelper;
 
-        public SlimsyComponent(ILogger logger, ISlimsyOptions slimsyOptions, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
+        public SlimsyService(ISlimsyOptions slimsyOptions, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
         {
-            this._logger = logger;
             this._slimsyOptions = slimsyOptions;
             this._rteMacroRenderingValueConverter = rteMacroRenderingValueConverter;
-        }
-        public void Initialize()
-        {
             this._urlHelper = new UrlHelper();
-            this._logger.Info<SlimsyComponent>("Component: SlimsyComponent was initialized");
         }
+
+        #region CropUrl
+
+        public IHtmlString GetCropUrl(IPublishedContent mediaItem, string cropAlias, bool htmlEncode = true)
+        {
+            if (mediaItem == null) return new HtmlString(string.Empty);
+            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true);
+            return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
+        }
+
+        #endregion
 
         #region SrcSet
 
@@ -72,8 +78,8 @@
 
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
-            var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var w = this._slimsyOptions.WidthStep;
+            var q = quality == 90 ? this._slimsyOptions.DefaultQuality : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -84,8 +90,8 @@
                 var cropString = this._urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: this.Format(outputFormat), htmlEncode: false).ToString();
 
-                outputStringBuilder.Append($"{this.DomainPrefix()}{cropString} {w}w,");
-                w += this.WidthStep();
+                outputStringBuilder.Append($"{this._slimsyOptions.DomainPrefix}{cropString} {w}w,");
+                w += this._slimsyOptions.WidthStep;
             }
 
             // remove the last comma
@@ -96,8 +102,8 @@
 
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
-            var w = this.WidthStep();
-            var q = this.DefaultQuality();
+            var w = this._slimsyOptions.WidthStep;
+            var q = this._slimsyOptions.DefaultQuality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -106,8 +112,8 @@
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
-                w += this.WidthStep();
+                    $"{this._slimsyOptions.DomainPrefix}{this._urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: this.Format(outputFormat), htmlEncode: false)} {w}w,");
+                w += this._slimsyOptions.WidthStep;
             }
 
             // remove the last comma
@@ -124,8 +130,8 @@
         /// <returns>HTML Markup</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio)
         {
-            var w = this.WidthStep();
-            var q = this.DefaultQuality();
+            var w = this._slimsyOptions.WidthStep;
+            var q = this._slimsyOptions.DefaultQuality;
 
             var outputStringBuilder = new StringBuilder();
 
@@ -136,9 +142,9 @@
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+                    $"{this._slimsyOptions.DomainPrefix}{this._urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: this.Format(), htmlEncode: false)} {w}w,");
 
-                w += this.WidthStep();
+                w += this._slimsyOptions.WidthStep;
             }
 
             // remove the last comma
@@ -163,8 +169,8 @@
 
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality = 90)
         {
-            var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var w = this._slimsyOptions.WidthStep;
+            var q = quality == 90 ? this._slimsyOptions.DefaultQuality : quality;
 
             var outputStringBuilder = new StringBuilder();
             var outputString = string.Empty;
@@ -181,8 +187,8 @@
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: this.Format(outputFormat), htmlEncode: false)} {w}w,");
-                    w += this.WidthStep();
+                        $"{this._slimsyOptions.DomainPrefix}{this._urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: this.Format(outputFormat), htmlEncode: false)} {w}w,");
+                    w += this._slimsyOptions.WidthStep;
                 }
 
                 // remove the last comma
@@ -239,7 +245,84 @@
 
             return sourceValue != null ?
                 this.ConvertImgToSrcSet(sourceValue.ToString(), generateLqip, removeStyleAttribute) :
-                new HtmlString("");
+                new HtmlString(string.Empty);
+        }
+
+        #endregion
+
+        #region Internal Functions
+
+        private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
+        {
+            switch (guidUdi.EntityType)
+            {
+                case Constants.UdiEntityType.Media:
+                    return Umbraco.Web.Composing.Current.UmbracoContext.Media.GetById(guidUdi.Guid);
+
+                case Constants.UdiEntityType.Document:
+                    return Umbraco.Web.Composing.Current.UmbracoContext.Content.GetById(guidUdi.Guid);
+
+                default:
+                    return null;
+            }
+        }
+
+        private int MaxWidth(IPublishedContent publishedContent)
+        {
+            var maxWidth = this._slimsyOptions.MaxWidth;
+
+            // if publishedContent is a media item we can see if we can get the source image width & height
+            if (publishedContent.ItemType == PublishedItemType.Media)
+            {
+                var sourceWidth = publishedContent.Value<int>(Constants.Conventions.Media.Width);
+
+                // if source width is less than max width then we should stop at source width
+                if (sourceWidth < maxWidth)
+                {
+                    maxWidth = sourceWidth;
+                }
+
+                // if the source image is less than the step then max width should be the first step
+                if (maxWidth < this._slimsyOptions.WidthStep)
+                {
+                    maxWidth = this._slimsyOptions.WidthStep;
+                }
+            }
+
+            return maxWidth;
+        }
+
+        private string Format(string outputFormat = null)
+        {
+            var bgColor = string.Empty;
+            if (outputFormat == null)
+            {
+                var slimsyFormat = this._slimsyOptions.Format;
+                outputFormat = slimsyFormat ?? "auto";
+
+                var slimsyBgColor = this._slimsyOptions.BackgroundColor;
+                bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(outputFormat))
+            {
+                var returnString = new StringBuilder();
+                returnString.Append($"&format={outputFormat}");
+
+                if (!string.IsNullOrEmpty(bgColor))
+                {
+                    returnString.Append($"&bgcolor={bgColor}");
+                }
+
+                return returnString.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(bgColor))
+            {
+                return $"&bgcolor={bgColor}";
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -289,8 +372,7 @@
                                 if (udiAttr != null)
                                 {
                                     // Umbraco media
-                                    GuidUdi guidUdi;
-                                    if (GuidUdi.TryParse(udiAttr.Value, out guidUdi))
+                                    if (GuidUdi.TryParse(udiAttr.Value, out var guidUdi))
                                     {
                                         var node = this.GetAnyTypePublishedContent(guidUdi);
 
@@ -374,101 +456,5 @@
         }
 
         #endregion
-
-        #region Internal Functions
-
-        private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
-        {
-            switch (guidUdi.EntityType)
-            {
-                case Constants.UdiEntityType.Media:
-                    return Umbraco.Web.Composing.Current.UmbracoContext.Media.GetById(guidUdi.Guid);
-
-                case Constants.UdiEntityType.Document:
-                    return Umbraco.Web.Composing.Current.UmbracoContext.Content.GetById(guidUdi.Guid);
-
-                default:
-                    return null;
-            }
-        }
-
-        private int DefaultQuality()
-        {
-            return this._slimsyOptions.DefaultQuality;
-        }
-
-        private int WidthStep()
-        {
-            return this._slimsyOptions.WidthStep;
-        }
-
-        private int MaxWidth(IPublishedContent publishedContent)
-        {
-            var maxWidth = this._slimsyOptions.MaxWidth;
-
-            // if publishedContent is a media item we can see if we can get the source image width & height
-            if (publishedContent.ItemType == PublishedItemType.Media)
-            {
-                var sourceWidth = publishedContent.Value<int>(Constants.Conventions.Media.Width);
-
-                // if source width is less than max width then we should stop at source width
-                if (sourceWidth < maxWidth)
-                {
-                    maxWidth = sourceWidth;
-                }
-
-                // if the source image is less than the step then max width should be the first step
-                if (maxWidth < this.WidthStep())
-                {
-                    maxWidth = this.WidthStep();
-                }
-            }
-
-            return maxWidth;
-        }
-
-        private string Format(string outputFormat = null)
-        {
-            var bgColor = string.Empty;
-            if (outputFormat == null)
-            {
-                var slimsyFormat = this._slimsyOptions.Format;
-                outputFormat = slimsyFormat ?? "auto";
-
-                var slimsyBgColor = this._slimsyOptions.BackgroundColor;
-                bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
-            }
-
-            if (!string.IsNullOrEmpty(outputFormat))
-            {
-                var returnString = new StringBuilder();
-                returnString.Append($"&format={outputFormat}");
-
-                if (!string.IsNullOrEmpty(bgColor))
-                {
-                    returnString.Append($"&bgcolor={bgColor}");
-                }
-
-                return returnString.ToString();
-            }
-
-            if (!string.IsNullOrEmpty(bgColor))
-            {
-                return $"&bgcolor={bgColor}";
-            }
-
-            return null;
-        }
-
-        private string DomainPrefix()
-        {
-            return this._slimsyOptions.DomainPrefix;
-        }
-
-        #endregion
-        public void Terminate()
-        {
-            this._logger.Info<SlimsyComponent>($"Component: SlimsyComponent was terminated");
-        }
     }
 }

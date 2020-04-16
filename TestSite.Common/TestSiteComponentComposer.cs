@@ -1,11 +1,12 @@
-﻿using System.Linq;
-using Slimsy;
-using Umbraco.Core;
-using Umbraco.Core.Composing;
-using Umbraco.Web;
-
+﻿
 namespace TestSite.Common
 {
+    using Slimsy.Interfaces;
+    using System.Linq;
+    using Umbraco.Core;
+    using Umbraco.Core.Composing;
+    using Umbraco.Web;
+
     // option 3: 
     //public class TestSiteComponentComposer : ComponentComposer<TestSiteComponent2>, IUserComposer { }
 

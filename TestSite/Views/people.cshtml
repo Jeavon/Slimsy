@@ -1,4 +1,7 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.People>
+@using Slimsy.Extensions
+@using Slimsy.Interfaces
+@using Slimsy.Models
 @using Umbraco.Web.Composing
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
@@ -31,7 +34,7 @@
 
         <h2>Using Image Source Set using Pre Defined Crop</h2>
         <div class="employee-grid">
-            @foreach (ContentModels.Person person in Model.Children)
+            @foreach (Person person in Model.Children)
             {
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">

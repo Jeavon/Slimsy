@@ -6,8 +6,10 @@
 //   Defines the SlimsyExtension methods for Url and Html Helpers.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Slimsy
+namespace Slimsy.Extensions
 {
+    using Interfaces;
+    using Models;
     using System.Web;
     using System.Web.Mvc;
     using Umbraco.Core;
@@ -18,11 +20,11 @@ namespace Slimsy
 
     public static class SlimsyExtensions
     {
-        private static SlimsyComponent _slimsyComponent;
+        private static ISlimsyService _slimsyService;
 
         static SlimsyExtensions()
         {
-            _slimsyComponent = Current.Factory.GetInstance<SlimsyComponent>();
+            _slimsyService = Current.Factory.GetInstance<ISlimsyService>();
         }
 
         #region SrcSet
@@ -37,7 +39,7 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
+            return _slimsyService.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
         }
 
         /// <summary>
@@ -51,22 +53,22 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, int quality)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
+            return _slimsyService.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
         }
 
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
+            return _slimsyService.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
         }
         
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, width, height, propertyAlias, outputFormat, quality);
+            return _slimsyService.GetSrcSetUrls(publishedContent, width, height, propertyAlias, outputFormat, quality);
         }
 
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, width, height, imageCropMode, outputFormat);
+            return _slimsyService.GetSrcSetUrls(publishedContent, width, height, imageCropMode, outputFormat);
         }
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, AspectRatio aspectRatio)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, aspectRatio);
+            return _slimsyService.GetSrcSetUrls(publishedContent, aspectRatio);
         }
 
         #endregion
@@ -93,17 +95,17 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
+            return _slimsyService.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
         }
 
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
+            return _slimsyService.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
         }
 
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality = 90)
         {
-            return _slimsyComponent.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, outputFormat, quality);
+            return _slimsyService.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, outputFormat, quality);
         }
         #endregion
 
@@ -119,7 +121,7 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
         {
-            return _slimsyComponent.ConvertImgToSrcSet(sourceValueHtml, generateLqip, removeStyleAttribute);
+            return _slimsyService.ConvertImgToSrcSet(sourceValueHtml, generateLqip, removeStyleAttribute);
         }
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace Slimsy
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
         {
-            return _slimsyComponent.ConvertImgToSrcSet(publishedContent, propertyAlias, generateLqip, removeStyleAttribute);
+            return _slimsyService.ConvertImgToSrcSet(publishedContent, propertyAlias, generateLqip, removeStyleAttribute);
         }
 
         #endregion

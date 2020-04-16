@@ -1,6 +1,8 @@
-﻿namespace Slimsy
+﻿namespace Slimsy.Configurations
 {
+    using Interfaces;
     using System.Configuration;
+
     public class SlimsyWebConfigOptions : ISlimsyOptions
     {
         public SlimsyWebConfigOptions()
@@ -33,12 +35,12 @@
             if (string.IsNullOrEmpty(domainPrefix))
                 domainPrefix = null;
 
-            Format = outputFormat;
-            BackgroundColor = bgColor;
-            MaxWidth = maxWidth;
-            WidthStep = widthStep;
-            DefaultQuality = defaultQuality;
-            DomainPrefix = domainPrefix;
+            this.Format = outputFormat;
+            this.BackgroundColor = bgColor;
+            this.MaxWidth = maxWidth;
+            this.WidthStep = widthStep;
+            this.DefaultQuality = defaultQuality;
+            this.DomainPrefix = domainPrefix;
         }
 
         public string Format { get; set; }
