@@ -1,5 +1,4 @@
-﻿@inherits UmbracoViewPage<Product>
-@using ContentModels = Umbraco.Web.PublishedModels;
+﻿@inherits UmbracoViewPage<TestSite.Common.ProductViewModel>
 @{
     Layout = "master.cshtml";
 }
@@ -11,7 +10,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="product-image-container">
-                    <img class="product-image" src="@Model.Photos.Url" />
+                    <img data-srcset="@Model.PhotoSrcSetUrls" data-src="@Model.PhotoSrc" sizes="auto" class="lazyload product-image" />
                 </div>
             </div>
             <div class="col-md-6">

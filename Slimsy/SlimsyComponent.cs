@@ -1,13 +1,7 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Slimsy.cs" company="Our.Umbraco">
-//   2017
-// </copyright>
-// <summary>
-//   Defines the Slimsy type.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-namespace Slimsy
-{    
+﻿namespace Slimsy
+{
+    using HtmlAgilityPack;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
@@ -15,82 +9,83 @@ namespace Slimsy
     using System.Text;
     using System.Web;
     using System.Web.Mvc;
-
-    using HtmlAgilityPack;
-    using Newtonsoft.Json;
-    
     using Umbraco.Core;
-    using Umbraco.Core.Cache;
+    using Umbraco.Core.Composing;
+    using Umbraco.Core.Logging;
+    using Umbraco.Core.Models.PublishedContent;
+    using Umbraco.Core.PropertyEditors;
+    using Umbraco.Core.PropertyEditors.ValueConverters;
     using Umbraco.Web;
     using Umbraco.Web.Models;
     using Umbraco.Web.PropertyEditors.ValueConverters;
-    using Umbraco.Core.PropertyEditors;
-    using Umbraco.Core.Models.PublishedContent;
-    using Umbraco.Core.PropertyEditors.ValueConverters;
-    using Umbraco.Web.Macros;
-    using Umbraco.Web.Templates;
-    using Constants = Umbraco.Core.Constants;
-    using Current = Umbraco.Web.Composing.Current;
 
-    [System.Runtime.InteropServices.Guid("38B09B03-3029-45E8-BC21-21C8CC8D4278")]
-    public static class Slimsy
+    public class SlimsyComponent : IComponent
     {
-        private static ISlimsyOptions _slimsyOptions;
+        private readonly ILogger _logger;
+        private readonly ISlimsyOptions _slimsyOptions;
+        private readonly RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
+        private UrlHelper _urlHelper;
 
-        static Slimsy()
+        public SlimsyComponent(ILogger logger, ISlimsyOptions slimsyOptions, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
         {
-            _slimsyOptions = Current.Factory.GetInstance<ISlimsyOptions>();
+            this._logger = logger;
+            this._slimsyOptions = slimsyOptions;
+            this._rteMacroRenderingValueConverter = rteMacroRenderingValueConverter;
+        }
+        public void Initialize()
+        {
+            this._urlHelper = new UrlHelper();
+            this._logger.Info<SlimsyComponent>("Component: SlimsyComponent was initialized");
         }
 
         #region SrcSet
+
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
         /// </summary>
-        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height)
         {
-            return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
+            return this.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
         }
 
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image cropped around the focal point and at a specific quality
         /// </summary>
-        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="quality"></param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, int quality)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, int quality)
         {
-            return urlHelper.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
+            return this.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
         }
 
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
-            return urlHelper.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
+            return this.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
         }
-        
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
+
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
-            var w = WidthStep();
-            var q = quality == 90 ? DefaultQuality() : quality;
+            var w = this.WidthStep();
+            var q = quality == 90 ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
 
-            while (w <= MaxWidth(publishedContent))
+            while (w <= this.MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
-                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
-                    furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
+                var cropString = this._urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
+                    furtherOptions: this.Format(outputFormat), htmlEncode: false).ToString();
 
-                outputStringBuilder.Append($"{DomainPrefix()}{cropString} {w}w,");
-                w += WidthStep();
+                outputStringBuilder.Append($"{this.DomainPrefix()}{cropString} {w}w,");
+                w += this.WidthStep();
             }
 
             // remove the last comma
@@ -99,20 +94,20 @@ namespace Slimsy
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
-            var w = WidthStep();
-            var q = DefaultQuality();
+            var w = this.WidthStep();
+            var q = this.DefaultQuality();
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
 
-            while (w <= MaxWidth(publishedContent))
+            while (w <= this.MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
-                w += WidthStep();
+                    $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                w += this.WidthStep();
             }
 
             // remove the last comma
@@ -124,27 +119,26 @@ namespace Slimsy
         /// <summary>
         /// Generate SrcSet markup based on a width and height for the image passing in a ratio for the image
         /// </summary>
-        /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="aspectRatio"></param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, AspectRatio aspectRatio)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio)
         {
-            var w = WidthStep();
-            var q = DefaultQuality();
+            var w = this.WidthStep();
+            var q = this.DefaultQuality();
 
             var outputStringBuilder = new StringBuilder();
 
-            while (w <= MaxWidth(publishedContent))
+            while (w <= this.MaxWidth(publishedContent))
             {
                 var heightRatio = (decimal)aspectRatio.Height / aspectRatio.Width;
-              
+
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+                    $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
 
-                w += WidthStep();
+                w += this.WidthStep();
             }
 
             // remove the last comma
@@ -156,47 +150,39 @@ namespace Slimsy
         #endregion
 
         #region Pre defined crops
-        /// <summary>
-        /// Get SrcSet based on a predefined crop
-        /// </summary>
-        /// <param name="urlHelper"></param>
-        /// <param name="publishedContent"></param>
-        /// <param name="cropAlias"></param>
-        /// <returns>HTML Markup</returns>
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias)
+
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias)
         {
-            return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
+            return this.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
         }
 
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
-            return urlHelper.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
+            return this.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
         }
 
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality = 90)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality = 90)
         {
-            var w = WidthStep();
-            var q = quality == 90 ? DefaultQuality() : quality;
+            var w = this.WidthStep();
+            var q = quality == 90 ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var outputString = string.Empty;
 
             var cropperJson = publishedContent.Value<string>(propertyAlias);
             var imageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
-
-            var crop = imageCrops?.Crops?.FirstOrDefault(
-                x => string.Equals(x.Alias, cropAlias, StringComparison.InvariantCultureIgnoreCase));
+            var crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
 
             if (crop != null)
             {
                 var heightRatio = (decimal)crop.Height / crop.Width;
 
-                while (w <= MaxWidth(publishedContent))
+                while (w <= this.MaxWidth(publishedContent))
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{DomainPrefix()}{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
-                    w += WidthStep();
+                        $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: this.Format(outputFormat), htmlEncode: false)} {w}w,");
+                    w += this.WidthStep();
                 }
 
                 // remove the last comma
@@ -210,13 +196,14 @@ namespace Slimsy
                 if (cropConfiguration != null)
                 {
                     // auto generate using focal point
-                    return urlHelper.GetSrcSetUrls(publishedContent, cropConfiguration.Width,
+                    return this._urlHelper.GetSrcSetUrls(publishedContent, cropConfiguration.Width,
                         cropConfiguration.Height, propertyAlias, outputFormat);
                 }
             }
 
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
+
         #endregion
 
         #region Html Helpers
@@ -224,59 +211,48 @@ namespace Slimsy
         /// <summary>
         /// Convert img to img srcset, extracts width and height from querystrings
         /// </summary>
-        /// <param name="htmlHelper"></param>
         /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
+        public IHtmlString ConvertImgToSrcSet(string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
         {
-            var source = ConvertImgToSrcSetInternal(sourceValueHtml, generateLqip, removeStyleAttribute);
+            var source = this.ConvertImgToSrcSetInternal(sourceValueHtml, generateLqip, removeStyleAttribute);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var factory = Current.Factory;
-            var rteConverter = factory.GetInstance<RteMacroRenderingValueConverter>();
-
-            var intermediateValue = rteConverter.ConvertSourceToIntermediate(null, null, source, false);
-            var objectValue = rteConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
-
+            var intermediateValue = this._rteMacroRenderingValueConverter.ConvertSourceToIntermediate(null, null, source, false);
+            var objectValue = this._rteMacroRenderingValueConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
             return objectValue as IHtmlString;
         }
 
         /// <summary>
         /// Convert img to img srcset, extracts width and height from querystrings
         /// </summary>
-        /// <param name="htmlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="propertyAlias">Alias of the TinyMce property</param>
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
         /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
+        public IHtmlString ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
         {
             var sourceValue = publishedContent.GetProperty(propertyAlias).GetSourceValue();
-            if (sourceValue != null)
-            {
-                return ConvertImgToSrcSet(htmlHelper, sourceValue.ToString(), generateLqip);
-            }
 
-            return new HtmlString("");
+            return sourceValue != null ?
+                this.ConvertImgToSrcSet(sourceValue.ToString(), generateLqip, removeStyleAttribute) :
+                new HtmlString("");
         }
 
         /// <summary>
         /// Convert img to img srcset, extracts width and height from querystrings
         /// </summary>
-        /// <param name="htmlHelper"></param>
         /// <param name="html"></param>
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        private static IHtmlString ConvertImgToSrcSetInternal(string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true)
+        private IHtmlString ConvertImgToSrcSetInternal(string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true)
         {
-            var urlHelper = new UrlHelper();
-
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
@@ -316,7 +292,7 @@ namespace Slimsy
                                     GuidUdi guidUdi;
                                     if (GuidUdi.TryParse(udiAttr.Value, out guidUdi))
                                     {
-                                        var node = GetAnyTypePublishedContent(guidUdi);
+                                        var node = this.GetAnyTypePublishedContent(guidUdi);
 
                                         var qsWidth = queryString["width"];
                                         var qsHeight = "0";
@@ -338,20 +314,19 @@ namespace Slimsy
                                                 srcAttr.Name = "data-src";
                                                 if (roundWidthHeight)
                                                 {
-                                                    var roundedUrl = urlHelper.GetCropUrl(node, width, height,
+                                                    var roundedUrl = this._urlHelper.GetCropUrl(node, width, height,
                                                         imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
                                                     srcAttr.Value = roundedUrl.ToString();
                                                 }
 
-                                                var srcSet = GetSrcSetUrls(urlHelper, node, width, height);
+                                                var srcSet = this.GetSrcSetUrls(node, width, height);
 
                                                 img.Attributes.Add("data-srcset", srcSet.ToString());
                                                 img.Attributes.Add("data-sizes", "auto");
 
                                                 if (generateLqip)
                                                 {
-                                                    var imgLqip =
-                                                        urlHelper.GetCropUrl(node, width, height, quality: 30,
+                                                    var imgLqip = this._urlHelper.GetCropUrl(node, width, height, quality: 30,
                                                             furtherOptions: "&format=auto", preferFocalPoint: true);
                                                     img.Attributes.Add("src", imgLqip.ToString());
                                                 }
@@ -394,6 +369,7 @@ namespace Slimsy
                     }
                 }
             }
+
             return new HtmlString(html);
         }
 
@@ -401,35 +377,35 @@ namespace Slimsy
 
         #region Internal Functions
 
-        private static IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
+        private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
         {
             switch (guidUdi.EntityType)
             {
                 case Constants.UdiEntityType.Media:
-                    return Current.UmbracoContext.Media.GetById(guidUdi.Guid);
-                    break;  
+                    return Umbraco.Web.Composing.Current.UmbracoContext.Media.GetById(guidUdi.Guid);
+
                 case Constants.UdiEntityType.Document:
-                    return Current.UmbracoContext.Content.GetById(guidUdi.Guid);
-                    break;
+                    return Umbraco.Web.Composing.Current.UmbracoContext.Content.GetById(guidUdi.Guid);
+
                 default:
                     return null;
             }
         }
 
-        private static int DefaultQuality()
+        private int DefaultQuality()
         {
-            return _slimsyOptions.DefaultQuality;
+            return this._slimsyOptions.DefaultQuality;
         }
 
-        private static int WidthStep()
+        private int WidthStep()
         {
-            return _slimsyOptions.WidthStep;
+            return this._slimsyOptions.WidthStep;
         }
 
-        private static int MaxWidth(IPublishedContent publishedContent)
+        private int MaxWidth(IPublishedContent publishedContent)
         {
-            var maxWidth = _slimsyOptions.MaxWidth;
-            
+            var maxWidth = this._slimsyOptions.MaxWidth;
+
             // if publishedContent is a media item we can see if we can get the source image width & height
             if (publishedContent.ItemType == PublishedItemType.Media)
             {
@@ -442,24 +418,24 @@ namespace Slimsy
                 }
 
                 // if the source image is less than the step then max width should be the first step
-                if (maxWidth < WidthStep())
+                if (maxWidth < this.WidthStep())
                 {
-                    maxWidth = WidthStep();
+                    maxWidth = this.WidthStep();
                 }
             }
 
             return maxWidth;
         }
 
-        private static string Format(string outputFormat = null)
+        private string Format(string outputFormat = null)
         {
             var bgColor = string.Empty;
             if (outputFormat == null)
             {
-                var slimsyFormat = _slimsyOptions.Format;
+                var slimsyFormat = this._slimsyOptions.Format;
                 outputFormat = slimsyFormat ?? "auto";
 
-                var slimsyBgColor = _slimsyOptions.BackgroundColor;
+                var slimsyBgColor = this._slimsyOptions.BackgroundColor;
                 bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
             }
 
@@ -484,24 +460,15 @@ namespace Slimsy
             return null;
         }
 
-        private static T GetLocalCacheItem<T>(string cacheKey)
+        private string DomainPrefix()
         {
-            var runtimeCache = Current.AppCaches.RuntimeCache;
-            var cachedItem = runtimeCache.GetCacheItem<T>(cacheKey);
-            return cachedItem;
-        }
-
-        private static void InsertLocalCacheItem<T>(string cacheKey, Func<T> getCacheItem)
-        {
-            var runtimeCache = Current.AppCaches.RuntimeCache;
-            runtimeCache.InsertCacheItem<T>(cacheKey, getCacheItem);
-        }
-
-        private static string DomainPrefix()
-        {
-            return _slimsyOptions.DomainPrefix;
+            return this._slimsyOptions.DomainPrefix;
         }
 
         #endregion
+        public void Terminate()
+        {
+            this._logger.Info<SlimsyComponent>($"Component: SlimsyComponent was terminated");
+        }
     }
 }
