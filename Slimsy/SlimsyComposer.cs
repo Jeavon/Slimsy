@@ -1,5 +1,4 @@
-﻿
-namespace Slimsy
+﻿namespace Slimsy
 {
     using Umbraco.Core;
     using Umbraco.Core.Composing;
@@ -16,7 +15,6 @@ namespace Slimsy
         public void Compose(Composition composition)
         {
             composition.SetSlimsyOptions(GetDefaultOptions);
-            composition.Components().Append<SlimsyComponent>();
             composition.Register<SlimsyService>(Lifetime.Singleton);
         }
     }

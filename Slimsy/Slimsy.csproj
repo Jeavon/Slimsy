@@ -293,7 +293,6 @@
     <Compile Include="SlimsyService.cs" />
     <Compile Include="SlimsyExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SlimsyComponent.cs" />
     <Compile Include="SlimsyComposer.cs" />
     <Compile Include="SlimsyWebConfigOptions.cs" />
   </ItemGroup>
