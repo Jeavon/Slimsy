@@ -1,7 +1,4 @@
 ﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.People>
-@using Slimsy.Extensions
-@using Slimsy.Interfaces
-@using Slimsy.Models
 @using Umbraco.Web.Composing
 @using ContentModels = Umbraco.Web.PublishedModels;
 @{
@@ -60,7 +57,7 @@
 
         <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
         <div class="employee-grid">
-            @foreach (ContentModels.Person person in Model.Children)
+            @foreach (Person person in Model.Children)
             {
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
@@ -95,7 +92,7 @@
 
         <h2>Using Image Source Set with picture element, WebP ImageProcessor Plugin and LQIP using Razor Helper</h2>
         <div class="employee-grid">
-            @foreach (ContentModels.Person person in Model.Children)
+            @foreach (Person person in Model.Children)
             {
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
@@ -120,7 +117,7 @@
 
         <h2>Using Image Source Set with Aspect Ratio</h2>
         <div class="employee-grid">
-            @foreach (ContentModels.Person person in Model.Children)
+            @foreach (Person person in Model.Children)
             {
                 var ratio = new AspectRatio(16, 9);
 

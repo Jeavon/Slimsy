@@ -1,7 +1,5 @@
-﻿
-namespace Slimsy.Extensions
+﻿namespace Slimsy
 {
-    using Interfaces;
     using System;
     using Umbraco.Core.Composing;
 

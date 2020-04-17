@@ -6,10 +6,8 @@
 //   Defines the SlimsyExtension methods for Url and Html Helpers.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Slimsy.Extensions
+namespace Slimsy
 {
-    using Interfaces;
-    using Models;
     using System.Web;
     using System.Web.Mvc;
     using Umbraco.Core;
@@ -20,11 +18,11 @@ namespace Slimsy.Extensions
 
     public static class SlimsyExtensions
     {
-        private static ISlimsyService _slimsyService;
+        private static SlimsyService _slimsyService;
 
         static SlimsyExtensions()
         {
-            _slimsyService = Current.Factory.GetInstance<ISlimsyService>();
+            _slimsyService = Current.Factory.GetInstance<SlimsyService>();
         }
 
         #region SrcSet
@@ -117,7 +115,7 @@ namespace Slimsy.Extensions
         /// <param name="htmlHelper"></param>
         /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
-        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
         {
@@ -131,7 +129,7 @@ namespace Slimsy.Extensions
         /// <param name="publishedContent"></param>
         /// <param name="propertyAlias">Alias of the TinyMce property</param>
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
-        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
         {

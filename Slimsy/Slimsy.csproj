@@ -286,10 +286,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IOC\SlimsyIocRegistration.cs" />
     <Compile Include="Models\AspectRatio.cs" />
     <Compile Include="Extensions\CompositionExtensions.cs" />
-    <Compile Include="Interfaces\ISlimsyService.cs" />
     <Compile Include="Interfaces\ISlimsyOptions.cs" />
     <Compile Include="Packaging\PackageActions.cs" />
     <Compile Include="Services\SlimsyService.cs" />

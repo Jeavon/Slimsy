@@ -1,16 +1,21 @@
-﻿
-namespace Slimsy.Application
+﻿namespace Slimsy
 {
-    using IOC;
+    using Umbraco.Core;
     using Umbraco.Core.Composing;
+    using Umbraco.Core.Logging;
 
     public sealed class SlimsyComposer : IUserComposer
     {
+        public static ISlimsyOptions GetDefaultOptions(IFactory factory)
+        {
+            var logger = factory.GetInstance<ILogger>();
+            return new SlimsyWebConfigOptions();
+        }
+
         public void Compose(Composition composition)
         {
-            //register Ioc
-            var iocRegistration = new SlimsyIocRegistration();
-            iocRegistration.RegisterDependencies(composition);
+            composition.SetSlimsyOptions(GetDefaultOptions);
+            composition.Register<SlimsyService>(Lifetime.Singleton);
         }
     }
 }

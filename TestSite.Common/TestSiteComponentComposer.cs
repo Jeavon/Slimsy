@@ -1,8 +1,7 @@
-﻿
-namespace TestSite.Common
+﻿namespace TestSite.Common
 {
-    using Slimsy.Interfaces;
     using System.Linq;
+    using Slimsy;
     using Umbraco.Core;
     using Umbraco.Core.Composing;
     using Umbraco.Web;
