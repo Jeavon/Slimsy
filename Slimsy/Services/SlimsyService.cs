@@ -1,4 +1,4 @@
-﻿namespace Slimsy.Services
+﻿namespace Slimsy
 {
     using System;
     using System.Collections.Generic;
@@ -19,8 +19,6 @@
 
     using HtmlAgilityPack;
     using Newtonsoft.Json;
-
-    using Interfaces;
 
     public class SlimsyService
     {

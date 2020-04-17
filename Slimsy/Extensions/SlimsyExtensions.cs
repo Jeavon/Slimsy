@@ -16,8 +16,6 @@ namespace Slimsy
     using Constants = Umbraco.Core.Constants;
     using Current = Umbraco.Web.Composing.Current;
 
-    using Slimsy.Services;
-
     public static class SlimsyExtensions
     {
         private static SlimsyService _slimsyService;

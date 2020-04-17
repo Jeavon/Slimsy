@@ -1,4 +1,4 @@
-﻿namespace TestSite.Common
+﻿namespace TestSite.Common.Models.ViewModels
 {
     using System.Web;
     using Umbraco.Web.PublishedModels;

@@ -1,8 +1,6 @@
-﻿namespace Slimsy.Configurations
+﻿namespace Slimsy
 {
     using System.Configuration;
-
-    using Interfaces;
 
     public class SlimsyWebConfigOptions : ISlimsyOptions
     {
