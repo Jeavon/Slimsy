@@ -37,35 +37,53 @@
         #region SrcSet
 
         /// <summary>
-        /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
+        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point
         /// </summary>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        /// <returns>HTML Markup</returns>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height)
         {
             return this.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
         }
 
         /// <summary>
-        /// Generate SrcSet markup based on a width and height for the image cropped around the focal point and at a specific quality
+        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point and at a specific quality
         /// </summary>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="quality"></param>
-        /// <returns>HTML Markup</returns>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, int quality)
         {
             return this.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
         }
 
+        /// <summary>
+        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point using a specific image cropper property alias
+        /// </summary>
+        /// <param name="publishedContent"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="propertyAlias"></param>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias)
         {
             return this.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
         }
 
+        /// <summary>
+        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point using a specific image cropper property alias, output format and optional quality
+        /// </summary>
+        /// <param name="publishedContent"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="outputFormat"></param>
+        /// <param name="quality">Default is 90</param>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = this.WidthStep();
@@ -90,6 +108,15 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
+        /// <summary>
+        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point using a specific image crop mode and optional output format
+        /// </summary>
+        /// <param name="publishedContent"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="imageCropMode"></param>
+        /// <param name="outputFormat"></param>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
         {
             var w = this.WidthStep();
@@ -113,7 +140,7 @@
         }
 
         /// <summary>
-        /// Generate SrcSet markup based on a width and height for the image passing in a ratio for the image
+        /// Generate SrcSet attribute value  based on a width and height for the image passing in a ratio for the image
         /// </summary>
         /// <param name="publishedContent"></param>
         /// <param name="aspectRatio"></param>
@@ -147,16 +174,38 @@
 
         #region Pre defined crops
 
+        /// <summary>
+        /// Generate SrcSet attribute value based on a predefined crop
+        /// </summary>
+        /// <param name="publishedContent"></param>
+        /// <param name="cropAlias"></param>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias)
         {
             return this.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
         }
 
+        /// <summary>
+        /// Generate SrcSet attribute value based on a predefined crop using a specific image cropper property alias
+        /// </summary>
+        /// <param name="publishedContent"></param>
+        /// <param name="cropAlias"></param>
+        /// <param name="propertyAlias"></param>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias)
         {
             return this.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
         }
 
+        /// <summary>
+        /// Generate SrcSet attribute value based on a predefined crop using a specific image cropper property alias, output format and optional quality
+        /// </summary>
+        /// <param name="publishedContent"></param>
+        /// <param name="cropAlias"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="outputFormat"></param>
+        /// <param name="quality">Default is 90</param>
+        /// <returns>Url of image</returns>
         public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = this.WidthStep();
@@ -209,7 +258,7 @@
         /// </summary>
         /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
-        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
         public IHtmlString ConvertImgToSrcSet(string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
         {
@@ -227,7 +276,7 @@
         /// <param name="publishedContent"></param>
         /// <param name="propertyAlias">Alias of the TinyMce property</param>
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
-        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
         public IHtmlString ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
         {
@@ -243,7 +292,7 @@
         /// </summary>
         /// <param name="html"></param>
         /// <param name="generateLqip"></param>
-        /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
