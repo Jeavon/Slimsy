@@ -196,6 +196,10 @@ You can specify the width step for the generated srcset sizes.
 
   `<add key="Slimsy:WidthStep" value="160"/>`
 
+You can add a domain prefix which will be prepended to all urls, this can be used with proxy CDNs (pull)
+
+  `<add key="Slimsy:DomainPrefix" value="https://mydomain.azureedge.net" />`
+
 # Lazysizes.js
 
 Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If you need to find out more information about it or how to hook into it's Javascript events be sure to check out it's [GitHub](https://github.com/aFarkas/lazysizes#combine-data-srcset-with-data-src)
@@ -203,6 +207,10 @@ Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If y
 # Razor Helper
 
 It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/dev-v3/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/dev-v3/TestSite/Views/people.cshtml#L97)
+
+# Using with Azure CDN
+
+Follow these [steps](docs/azure-cdn/index.md)
 
 # Test Site & Source Code
 
