@@ -208,7 +208,7 @@ Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If y
 
 It may be useful to use a Razor Helper to render `img` or `picture` elements, there is an reusable example included in the test site which can be adapted to your own requirement. You can find it [here](https://github.com/Jeavon/Slimsy/blob/dev-v3/TestSite/App_Code/SlimsyHelper.cshtml) and see it in use [here](https://github.com/Jeavon/Slimsy/blob/dev-v3/TestSite/Views/people.cshtml#L97)
 
-# Using with Azure CDN
+# Using with Azure CDN (beta5+)
 
 Follow these [steps](Docs/Azure-CDN/index.md)
 
