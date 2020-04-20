@@ -12,21 +12,20 @@ namespace TestSite.Common.Controllers
     public class ProductController : RenderMvcController
     {
         private readonly SlimsyService _slimsyService;
-        private readonly UrlHelper _urlHelper;
 
         public ProductController(SlimsyService slimsyService)
         {
             this._slimsyService = slimsyService;
-            this._urlHelper = new UrlHelper();
         }
 
         public override ActionResult Index(ContentModel model)
         {
             var product = model.Content as Product;
+
             var photo = product.Photos;
             var vm = new ProductViewModel(product)
             {
-                PhotoSrc = this._urlHelper.GetCropUrl(photo, "feature"),
+                PhotoSrc = this._slimsyService.GetCropUrl(photo, "feature"),
                 PhotoSrcSetUrls = this._slimsyService.GetSrcSetUrls(photo, "feature")
             };
 
