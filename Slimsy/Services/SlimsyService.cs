@@ -25,7 +25,6 @@
         private readonly ILogger _logger;
         private readonly ISlimsyOptions _slimsyOptions;
         private readonly RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
-        private UrlHelper _urlHelper;
         private static readonly IHtmlString EmptyHtmlString = new HtmlString(string.Empty);
 
         public SlimsyService(ILogger logger, ISlimsyOptions slimsyOptions, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
@@ -33,7 +32,6 @@
             this._logger = logger;
             this._slimsyOptions = slimsyOptions;
             this._rteMacroRenderingValueConverter = rteMacroRenderingValueConverter;
-            this._urlHelper = new UrlHelper();
         }
 
         #region SrcSet
@@ -79,10 +77,10 @@
             while (w <= this.MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
-                var cropString = this._urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
+                var cropString = this.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: this.Format(outputFormat), htmlEncode: false).ToString();
 
-                outputStringBuilder.Append($"{this.DomainPrefix()}{cropString} {w}w,");
+                outputStringBuilder.Append($"{cropString} {w}w,");
                 w += this.WidthStep();
             }
 
@@ -104,7 +102,7 @@
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                    $"{this.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
                 w += this.WidthStep();
             }
 
@@ -134,7 +132,7 @@
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+                    $"{this.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
 
                 w += this.WidthStep();
             }
@@ -179,7 +177,7 @@
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{this.DomainPrefix()}{this._urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: this.Format(outputFormat), htmlEncode: false)} {w}w,");
+                        $"{this.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: this.Format(outputFormat), htmlEncode: false)} {w}w,");
                     w += this.WidthStep();
                 }
 
@@ -194,7 +192,7 @@
                 if (cropConfiguration != null)
                 {
                     // auto generate using focal point
-                    return this._urlHelper.GetSrcSetUrls(publishedContent, cropConfiguration.Width,
+                    return this.GetSrcSetUrls(publishedContent, cropConfiguration.Width,
                         cropConfiguration.Height, propertyAlias, outputFormat);
                 }
             }
@@ -312,7 +310,7 @@
                                                 srcAttr.Name = "data-src";
                                                 if (roundWidthHeight)
                                                 {
-                                                    var roundedUrl = this._urlHelper.GetCropUrl(node, width, height,
+                                                    var roundedUrl = this.GetCropUrl(node, width, height,
                                                         imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
                                                     srcAttr.Value = roundedUrl.ToString();
                                                 }
@@ -324,7 +322,7 @@
 
                                                 if (generateLqip)
                                                 {
-                                                    var imgLqip = this._urlHelper.GetCropUrl(node, width, height, quality: 30,
+                                                    var imgLqip = this.GetCropUrl(node, width, height, quality: 30,
                                                             furtherOptions: "&format=auto", preferFocalPoint: true);
                                                     img.Attributes.Add("src", imgLqip.ToString());
                                                 }
