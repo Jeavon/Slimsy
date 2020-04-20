@@ -210,7 +210,7 @@ It may be useful to use a Razor Helper to render `img` or `picture` elements, th
 
 # Using with Azure CDN
 
-Follow these [steps](docs/azure-cdn/index.md)
+Follow these [steps](Docs/Azure-CDN/index.md)
 
 # Test Site & Source Code
 
