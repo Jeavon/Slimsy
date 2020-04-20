@@ -234,7 +234,7 @@
     <div class="employee-grid">
         @foreach (ContentModels.Person person in Model.Children)
         {
-            var lowSrc = $"{slimsyDomainPrefix}{Url.GetCropUrl(person.Photo, 323, 300, quality: 30, furtherOptions: "&format=auto")}";
+            var lowSrc = SlimsyExtensions.GetCropUrl(person.Photo, 323, 300, quality: 30, furtherOptions: "&format=auto");
 
             <div class="employee-grid__item">
                 <div class="employee-grid__item__image">

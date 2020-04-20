@@ -137,5 +137,42 @@ namespace Slimsy
         }
 
         #endregion
+
+        #region GetCropUrl
+
+        public static IHtmlString GetCropUrl(IPublishedContent mediaItem, string cropAlias,
+            bool htmlEncode = true)
+        {
+            return _slimsyService.GetCropUrl(mediaItem, cropAlias, htmlEncode);
+        }
+
+        public static IHtmlString GetCropUrl(IPublishedContent mediaItem, string propertyAlias,
+            string cropAlias, bool htmlEncode = true)
+        {
+            return _slimsyService.GetCropUrl(mediaItem, propertyAlias, cropAlias, htmlEncode);
+        }
+
+        public static IHtmlString GetCropUrl(IPublishedContent mediaItem,
+            int? width = null,
+            int? height = null,
+            string propertyAlias = Umbraco.Core.Constants.Conventions.Media.File,
+            string cropAlias = null,
+            int? quality = null,
+            ImageCropMode? imageCropMode = null,
+            ImageCropAnchor? imageCropAnchor = null,
+            bool preferFocalPoint = false,
+            bool useCropDimensions = false,
+            bool cacheBuster = true,
+            string furtherOptions = null,
+            ImageCropRatioMode? ratioMode = null,
+            bool upScale = true,
+            bool htmlEncode = true)
+        {
+            return _slimsyService.GetCropUrl(mediaItem, width, height, propertyAlias, cropAlias, quality, imageCropMode,
+                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, furtherOptions, ratioMode, upScale,
+                htmlEncode);
+        }
+
+        #endregion
     }
 }
