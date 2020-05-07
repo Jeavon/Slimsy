@@ -33,45 +33,7 @@
             this._rteMacroRenderingValueConverter = rteMacroRenderingValueConverter;
         }
 
-        #region SrcSet
-
-        /// <summary>
-        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point
-        /// </summary>
-        /// <param name="publishedContent"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height)
-        {
-            return this.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File);
-        }
-
-        /// <summary>
-        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point and at a specific quality
-        /// </summary>
-        /// <param name="publishedContent"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="quality"></param>
-        /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, int quality)
-        {
-            return this.GetSrcSetUrls(publishedContent, width, height, Constants.Conventions.Media.File, null, quality);
-        }
-
-        /// <summary>
-        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point using a specific image cropper property alias
-        /// </summary>
-        /// <param name="publishedContent"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="propertyAlias"></param>
-        /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias)
-        {
-            return this.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
-        }
+        #region Generate Crops
 
         /// <summary>
         /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point using a specific image cropper property alias, output format and optional quality
@@ -80,10 +42,11 @@
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="propertyAlias"></param>
-        /// <param name="outputFormat"></param>
         /// <param name="quality">Default is 90</param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -95,7 +58,7 @@
             {
                 var h = (int)Math.Round(w * heightRatio);
                 var cropString = this.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
-                    furtherOptions: this.Format(outputFormat), htmlEncode: false).ToString();
+                    furtherOptions: this.AdditionalParams(outputFormat, furtherOptions), htmlEncode: false).ToString();
 
                 outputStringBuilder.Append($"{cropString} {w}w,");
                 w += this.WidthStep();
@@ -108,18 +71,22 @@
         }
 
         /// <summary>
-        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point using a specific image crop mode and optional output format
+        /// Generate SrcSet attribute value based on a width and height for the image cropped using a specific mode and using a specific image cropper property alias, output format and optional quality
         /// </summary>
         /// <param name="publishedContent"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
+        /// <param name="propertyAlias"></param>
         /// <param name="imageCropMode"></param>
+        /// <param name="imageCropAnchor"></param>
+        /// <param name="quality">Default is 90</param>
         /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat = "")
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, ImageCropAnchor imageCropAnchor = ImageCropAnchor.Center, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
-            var q = this.DefaultQuality();
+            var q = quality == 90 ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -127,8 +94,9 @@
             while (w <= this.MaxWidth(publishedContent))
             {
                 var h = (int)Math.Round(w * heightRatio);
-                outputStringBuilder.Append(
-                    $"{this.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                var cropString = this.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, furtherOptions: this.AdditionalParams(outputFormat, furtherOptions), imageCropMode:imageCropMode, imageCropAnchor:imageCropAnchor, htmlEncode: false).ToString();
+
+                outputStringBuilder.Append($"{cropString} {w}w,");
                 w += this.WidthStep();
             }
 
@@ -136,6 +104,7 @@
             var outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
 
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
+
         }
 
         /// <summary>
@@ -158,7 +127,7 @@
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{this.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: Format(), htmlEncode: false)} {w}w,");
+                    $"{this.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: AdditionalParams(), htmlEncode: false)} {w}w,");
 
                 w += this.WidthStep();
             }
@@ -168,7 +137,6 @@
 
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
-
 
         /// <summary>
         /// Generate SrcSet attribute value based on a width and height for a static image
@@ -182,8 +150,7 @@
         /// <param name="imageCropAnchor"></param>
         /// <param name="outputFormat"></param>
         /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(string url, int width, int height, int maxWidth, int quality = 90, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null,
-            string outputFormat = "" )
+        public IHtmlString GetSrcSetUrls(string url, int width, int height, int maxWidth, int quality = 90, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null, string outputFormat = "" )
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -195,7 +162,7 @@
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{this.GetCropUrl(url, w, h, imageCropMode: imageCropMode, imageCropAnchor:imageCropAnchor, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat))} {w}w,");
+                    $"{this.GetCropUrl(url, w, h, imageCropMode: imageCropMode, imageCropAnchor:imageCropAnchor, quality: q, preferFocalPoint: true, furtherOptions: AdditionalParams(outputFormat))} {w}w,");
                 w += this.WidthStep();
             }
 
@@ -210,38 +177,16 @@
         #region Pre defined crops
 
         /// <summary>
-        /// Generate SrcSet attribute value based on a predefined crop
-        /// </summary>
-        /// <param name="publishedContent"></param>
-        /// <param name="cropAlias"></param>
-        /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias)
-        {
-            return this.GetSrcSetUrls(publishedContent, cropAlias, Constants.Conventions.Media.File);
-        }
-
-        /// <summary>
-        /// Generate SrcSet attribute value based on a predefined crop using a specific image cropper property alias
-        /// </summary>
-        /// <param name="publishedContent"></param>
-        /// <param name="cropAlias"></param>
-        /// <param name="propertyAlias"></param>
-        /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias)
-        {
-            return this.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, null);
-        }
-
-        /// <summary>
         /// Generate SrcSet attribute value based on a predefined crop using a specific image cropper property alias, output format and optional quality
         /// </summary>
         /// <param name="publishedContent"></param>
         /// <param name="cropAlias"></param>
         /// <param name="propertyAlias"></param>
         /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
         /// <param name="quality">Default is 90</param>
         /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality = 90)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -252,16 +197,16 @@
             var cropperJson = publishedContent.Value<string>(propertyAlias);
             var imageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
             var crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
+            var additionalParams = this.AdditionalParams(outputFormat, furtherOptions);
 
             if (crop != null)
             {
                 var heightRatio = (decimal)crop.Height / crop.Width;
-
                 while (w <= this.MaxWidth(publishedContent))
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
-                        $"{this.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: this.Format(outputFormat), htmlEncode: false)} {w}w,");
+                        $"{this.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, q, furtherOptions: additionalParams, htmlEncode: false)} {w}w,");
                     w += this.WidthStep();
                 }
 
@@ -277,7 +222,7 @@
                 {
                     // auto generate using focal point
                     return this.GetSrcSetUrls(publishedContent, cropConfiguration.Width,
-                        cropConfiguration.Height, propertyAlias, outputFormat);
+                        cropConfiguration.Height, propertyAlias, outputFormat: outputFormat, quality:q, furtherOptions: additionalParams);
                 }
             }
 
@@ -507,37 +452,35 @@
             return maxWidth;
         }
 
-        private string Format(string outputFormat = null)
+        private string AdditionalParams(string outputFormat = null, string furtherOptions = null)
         {
-            var bgColor = string.Empty;
             if (outputFormat == null)
             {
                 var slimsyFormat = this._slimsyOptions.Format;
                 outputFormat = slimsyFormat ?? "auto";
+            }
 
-                var slimsyBgColor = this._slimsyOptions.BackgroundColor;
-                bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
+            var slimsyBgColor = this._slimsyOptions.BackgroundColor;
+            var bgColor = slimsyBgColor != null && slimsyBgColor != "false" ? slimsyBgColor : string.Empty;
+
+            var returnString = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(bgColor))
+            {
+                returnString.Append($"&bgcolor={bgColor}");
+            }
+
+            if (!string.IsNullOrEmpty(furtherOptions))
+            {
+                returnString.Append(furtherOptions);
             }
 
             if (!string.IsNullOrEmpty(outputFormat))
             {
-                var returnString = new StringBuilder();
                 returnString.Append($"&format={outputFormat}");
-
-                if (!string.IsNullOrEmpty(bgColor))
-                {
-                    returnString.Append($"&bgcolor={bgColor}");
-                }
-
-                return returnString.ToString();
             }
 
-            if (!string.IsNullOrEmpty(bgColor))
-            {
-                return $"&bgcolor={bgColor}";
-            }
-
-            return null;
+            return returnString.ToString();
         }
 
         private string DomainPrefix()

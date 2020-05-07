@@ -180,7 +180,7 @@ You can specify the default output format for all images.
 
   `<add key="Slimsy:Format" value="jpg"/>`
 
-You can specify the default background color by added another appsetting to web.config. As an example this setting is used if ImageProcessor is converting a png to a jpg and it as some transparency.
+You can specify the default background color by adding another appsetting to web.config. As an example this setting is used if ImageProcessor is converting a png to a jpg and it has some transparency.
 
   `<add key="Slimsy:BGColor" value="fff"/>`
 
