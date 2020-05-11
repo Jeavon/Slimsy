@@ -55,6 +55,32 @@
             }
         </div>
 
+        <h2>Using Image Source Set using Pre Defined Crop with Tint</h2>
+        <div class="employee-grid">
+            @foreach (Person person in Model.Children)
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "feature", furtherOptions:"&tint=purple")" data-src="@Url.GetCropUrl(person.Photo, cropAlias:"feature", furtherOptions:"&tint=purple")" sizes="auto" class="lazyload" />
+
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
         <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children)
@@ -63,11 +89,46 @@
                     <div class="employee-grid__item__image">
                         <picture>
                             <!--[if IE 9]><video style="display: none"><![endif]-->
-                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, "umbracoFile", "webp", quality:80)" type="image/webp" data-sizes="auto" />
+                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, "umbracoFile", 80, "webp")" type="image/webp" data-sizes="auto" />
                             <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" type="image/jpeg" data-sizes="auto" />
                             <!--[if IE 9]></video><![endif]-->
                             <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
                                  data-src="@Url.GetCropUrl(person.Photo, 323, 300)"
+                                 class="lazyload"
+                                 alt="image"
+                                 data-sizes="auto" />
+                        </picture>
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set with picture element and WebP ImageProcessor Plugin and tint</h2>
+        <div class="employee-grid">
+            @foreach (Person person in Model.Children)
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <picture>
+                            <!--[if IE 9]><video style="display: none"><![endif]-->
+                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, "umbracoFile", 80, "webp", furtherOptions:"&tint=blue")" type="image/webp" data-sizes="auto" />
+                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, furtherOptions:"&tint=blue")" type="image/jpeg" data-sizes="auto" />
+                            <!--[if IE 9]></video><![endif]-->
+                            <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                                 data-src="@Url.GetCropUrl(person.Photo, 323, 300, furtherOptions:"&tint=blue")"
                                  class="lazyload"
                                  alt="image"
                                  data-sizes="auto" />
@@ -176,7 +237,7 @@
             {
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
-                        <img src="@Url.GetCropUrl(person.Photo, 323, 0, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 0)" data-src="@Url.GetCropUrl(person.Photo, 323, 0)" data-sizes="auto" class="lazyload" alt="something really long"/>
+                        <img src="@Url.GetCropUrl(person.Photo, 323, 0, quality:30, furtherOptions:"&format=auto")" data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 0)" data-src="@Url.GetCropUrl(person.Photo, 323, 0)" data-sizes="auto" class="lazyload" alt="something really long" />
                     </div>
                     <div class="employee-grid__item__details">
                         <h3 class="employee-grid__item__name">@person.Name</h3>
@@ -195,73 +256,73 @@
             }
         </div>
 
-    <h2>Using Image Source Set with LQIP using blur-up lazysizes plugin</h2>
-    <div class="employee-grid">
-        @foreach (ContentModels.Person person in Model.Children)
-        {
-            <div class="employee-grid__item">
-                <div class="employee-grid__item__image">
-                    <img data-lowsrc="@Url.GetCropUrl(person.Photo, 323, 300, quality:30, furtherOptions:"&format=auto")"
-                         data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)"
-                         sizes="auto" class="lazyload" />
-                </div>
-                <div class="employee-grid__item__details">
-                    <h3 class="employee-grid__item__name">@person.Name</h3>
-                    @if (!string.IsNullOrEmpty(person.Email))
-                    {
-                        <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                    }
-                    <div class="employee-grid__item__contact">
-                        @SocialLink(person.FacebookUsername, "Facebook")
-                        @SocialLink(person.TwitterUsername, "Twitter")
-                        @SocialLink(person.LinkedInUsername, "LinkedIn")
-                        @SocialLink(person.InstagramUsername, "Instagram")
+        <h2>Using Image Source Set with LQIP using blur-up lazysizes plugin</h2>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <img data-lowsrc="@Url.GetCropUrl(person.Photo, 323, 300, quality:30, furtherOptions:"&format=auto")"
+                             data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)"
+                             sizes="auto" class="lazyload" />
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
+        </div>
+
+
+        <h2>Using Image Source Set with LQIP using blur-up lazysizes plugin & DomainPrefix</h2>
+        @{
+            // DO NOT EVER DO THIS, set DomainPrefix in web.config or implement your own ISlimsyOptions
+            Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix = "http://localhost:50414/";
+
+            // Inject into a controller or service if you want to use this for GetCropUrl
+            var slimsyDomainPrefix = Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix;
         }
-    </div>
+        <div class="employee-grid">
+            @foreach (ContentModels.Person person in Model.Children)
+            {
+                var lowSrc = SlimsyExtensions.GetCropUrl(person.Photo, 323, 300, quality: 30, furtherOptions: "&format=auto");
 
-
-    <h2>Using Image Source Set with LQIP using blur-up lazysizes plugin & DomainPrefix</h2>
-    @{
-        // DO NOT EVER DO THIS, set DomainPrefix in web.config or implement your own ISlimsyOptions
-        Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix = "http://localhost:50414/";
-
-        // Inject into a controller or service if you want to use this for GetCropUrl
-        var slimsyDomainPrefix = Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix;
-    }
-    <div class="employee-grid">
-        @foreach (ContentModels.Person person in Model.Children)
-        {
-            var lowSrc = SlimsyExtensions.GetCropUrl(person.Photo, 323, 300, quality: 30, furtherOptions: "&format=auto");
-
-            <div class="employee-grid__item">
-                <div class="employee-grid__item__image">
-                    <img data-lowsrc="@lowSrc"
-                         data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)"
-                         sizes="auto" class="lazyload" />
-                </div>
-                <div class="employee-grid__item__details">
-                    <h3 class="employee-grid__item__name">@person.Name</h3>
-                    @if (!string.IsNullOrEmpty(person.Email))
-                    {
-                        <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                    }
-                    <div class="employee-grid__item__contact">
-                        @SocialLink(person.FacebookUsername, "Facebook")
-                        @SocialLink(person.TwitterUsername, "Twitter")
-                        @SocialLink(person.LinkedInUsername, "LinkedIn")
-                        @SocialLink(person.InstagramUsername, "Instagram")
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <img data-lowsrc="@lowSrc"
+                             data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)"
+                             sizes="auto" class="lazyload" />
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @SocialLink(person.FacebookUsername, "Facebook")
+                            @SocialLink(person.TwitterUsername, "Twitter")
+                            @SocialLink(person.LinkedInUsername, "LinkedIn")
+                            @SocialLink(person.InstagramUsername, "Instagram")
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
+        </div>
+        @{
+            // DO NOT EVER DO THIS, set DomainPrefix in web.config or implement your own ISlimsyOptions
+            Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix = null;
         }
-    </div>
-    @{
-        // DO NOT EVER DO THIS, set DomainPrefix in web.config or implement your own ISlimsyOptions
-        Current.Factory.GetInstance<ISlimsyOptions>().DomainPrefix = null;
-    }
     </div>
 
 </section>
