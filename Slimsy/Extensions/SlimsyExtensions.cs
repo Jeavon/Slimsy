@@ -69,10 +69,14 @@ namespace Slimsy
         /// <param name="urlHelper"></param>
         /// <param name="publishedContent"></param>
         /// <param name="aspectRatio"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="quality">Default is 90</param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, AspectRatio aspectRatio)
+        public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
-            return _slimsyService.GetSrcSetUrls(publishedContent, aspectRatio);
+            return _slimsyService.GetSrcSetUrls(publishedContent, aspectRatio, propertyAlias, quality, outputFormat, furtherOptions);
         }
 
         #endregion
