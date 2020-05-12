@@ -2,8 +2,10 @@
 @using Umbraco.Web.Composing
 @using Umbraco.Web.Templates
 @{
-    var value = TemplateUtilities.ParseInternalLinks(Model.value.ToString(), Current.UmbracoContext.UrlProvider);
-    value = TemplateUtilities.ResolveUrlsFromTextString(value);
-    value = TemplateUtilities.ResolveMediaFromTextString(value);
+//var value = TemplateUtilities.ParseInternalLinks(Model.value.ToString(), Current.UmbracoContext.UrlProvider);
+//value = TemplateUtilities.ResolveUrlsFromTextString(value);
+//value = TemplateUtilities.ResolveMediaFromTextString(value);
+
+    @SlimsyExtensions.ConvertImgToSrcSet(Html, Model.value.ToString(), true)
 }
 @Html.Raw(value)

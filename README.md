@@ -52,9 +52,10 @@ img {
 
 ### 3. Adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
 
-Use the `GetSrcSetUrls` UrlHelper extension method to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height)`
+Use the `GetSrcSetUrls` UrlHelper extension methods to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
+
+#### `Url.GetSrcSetUrls(IPublishedContent publishedContent, int width, int height)`
 Use this method for setting the crop dimensions in your Razor code, assumes your image cropper property alias is "umbracoFile"
 
 e.g. An initial image size of 323 x 300. This example is looping people, each page has a media picker property that Models Builder is generating named "Photo"
@@ -77,17 +78,22 @@ e.g. An initial image size of 323 x 300. This example is looping people, each pa
 
 This example uses the LQIP (low quality image place holder) technique.
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, int quality)`
+#### `Url.GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, [optional] string propertyAlias, [optional] int quality, [optional] string outputFormat,[optional] string furtherOptions)`
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias)`
+There are additional optional parameters that can be utilised for different requirements 
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality)`
+- propertyAlias - set if your image cropper property alias is not "umbracoFile"
+- quality - change the quality setting, default is 90
+- outputFormat - if you require a specific output format, e.g. "webp"
+- furtherOptions - if you require additional Imageprocessor processors, e.g. "&tint=purple"
 
-#### `Url.GetSrcSetUrls(publishedContent, int width, int height, ImageCropMode? imageCropMode, string outputFormat)`
+#### `Url.GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, [optional] string propertyAlias, [optional] ImageCropAnchor imageCropAnchor , [optional] int quality, [optional] string outputFormat, [optional] string furtherOptions)`
 
-#### `Url.GetSrcSetUrls(publishedContent, AspectRatio aspectRatio)`
+Use this method overload if you need to change the ImageCropMode
 
-Slimsy v3 allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
+#### `Url.GetSrcSetUrls(publishedContent, AspectRatio aspectRatio, [optional] string propertyAlias, [optional] int quality, [optional] string outputFormat, [optional] string furtherOptions)`
+
+Slimsy allows you to define a predefined ratio for your image so you don't need to work out the math associated with it, first you instantiate a new built in class of AspectRatio and pass in two integer values, this will crop the image(s) to the desired ratio.
 
 ```C#
 <div class="employee-grid">
@@ -122,9 +128,14 @@ In this example the crop name is "feature"
 </div>
 ```
 
-#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias)`
+#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, [optional] string propertyAlias, [optional] int quality, [optional] string outputFormat,[optional] string furtherOptions)` 
 
-#### `Url.GetSrcSetUrls(publishedContent, string cropAlias, string propertyAlias, string outputFormat, int quality)`
+There are additional optional parameters that can be utilised for different requirements 
+
+- propertyAlias - set if your image cropper property alias is not "umbracoFile"
+- quality - change the quality setting, default is 90
+- outputFormat - if you require a specific output format, e.g. "webp"
+- furtherOptions - if you require additional Imageprocessor processors, e.g. "&tint=purple"
 
 ### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
@@ -143,7 +154,7 @@ Use this method to convert images entered in a TinyMce Rich Text editor within t
 e.g. within `Rte.chtml` found within the `Partials/Grid/Editors` folder
 
 ```C#
-@Slimsy.ConvertImgToSrcSet(Html, Model.value.ToString(), true)
+@SlimsyExtensions.ConvertImgToSrcSet(Html, Model.value.ToString(), true)
 
 ```
 
@@ -153,20 +164,20 @@ Below is an example of how to use the `<picture>` element to provide automated W
 
 ```C#
 <div class="employee-grid">
-    @foreach (ContentModels.Person person in Model.Children)
+    @foreach (Person person in Model.Children)
     {
         <div class="employee-grid__item">
             <div class="employee-grid__item__image">
                 <picture>
                     <!--[if IE 9]><video style="display: none"><![endif]-->
-                    <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, "umbracoFile", "webp", quality:80)" type="image/webp" data-sizes="auto" />
+                    <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300, "umbracoFile", 80, "webp")" type="image/webp" data-sizes="auto" />
                     <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" type="image/jpeg" data-sizes="auto" />
                     <!--[if IE 9]></video><![endif]-->
                     <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-                         data-src="@Url.GetCropUrl(person.Photo, 323, 300)"
-                         class="lazyload"
-                         alt="image"
-                         data-sizes="auto" />
+                            data-src="@Url.GetCropUrl(person.Photo, 323, 300)"
+                            class="lazyload"
+                            alt="image"
+                            data-sizes="auto" />
                 </picture>
             </div>
         </div>
@@ -174,7 +185,88 @@ Below is an example of how to use the `<picture>` element to provide automated W
 </div>
 ```
 
-# Advanced Options
+# SlimsyService
+
+You can inject SlimsyService when you want to use Slimsy methods in C#.
+
+For example in a RenderMvcController
+
+```C#
+    public class ProductController : RenderMvcController
+    {
+        private readonly SlimsyService _slimsyService;
+
+        public ProductController(SlimsyService slimsyService)
+        {
+            this._slimsyService = slimsyService;
+        }
+
+        public override ActionResult Index(ContentModel model)
+        {
+            var product = model.Content as Product;
+
+            var photo = product.Photos;
+            var vm = new ProductViewModel(product)
+            {
+                PhotoSrc = this._slimsyService.GetCropUrl(photo, "feature"),
+                PhotoSrcSetUrls = this._slimsyService.GetSrcSetUrls(photo, "feature")
+            };
+
+            return this.CurrentTemplate(vm);
+        }
+    }
+```
+
+# SlimsyOptions
+
+You can change Slimsy's configuration in a composer
+
+e.g. 
+
+```C#
+public void Compose(Composition composition)
+{
+    composition.SetSlimsyOptions(factory =>
+    {
+        var options = SlimsyComposer.GetDefaultOptions(factory);
+        options.DomainPrefix = "https://setviacomposer.com";
+        options.WidthStep = 200;
+        return options;
+    });
+}
+```
+ Or you could replace with your own custom options
+
+```C#
+public void Compose(Composition composition)
+{
+    composition.RegisterUnique<ISlimsyOptions, SlimsyCustomConfigOptions>();
+}
+ ```
+
+```C#
+public class SlimsyCustomConfigOptions : ISlimsyOptions
+{
+    public SlimsyCustomConfigOptions()
+    {
+        Format = "png";
+        BackgroundColor = "";
+        MaxWidth = 4000;
+        WidthStep = 50;
+        DefaultQuality = 95;
+        DomainPrefix = "https://setviacustomconfigoptions.com";
+    }
+    public string Format { get; set; }
+    public string BackgroundColor { get; set; }
+    public int DefaultQuality { get; set; }
+    public int MaxWidth { get; set; }
+    public int WidthStep { get; set; }
+    public string DomainPrefix { get; set; }
+}
+ ```
+## SlimsyWebConfigOptions
+
+By default Slimsy uses AppSettings in web.config
 
 You can specify the default output format for all images.
 
@@ -202,7 +294,7 @@ You can add a domain prefix which will be prepended to all urls, this can be use
 
 # Lazysizes.js
 
-Lazysizes.js is awesome and it's what makes Slimsy v2 so easy to implement. If you need to find out more information about it or how to hook into it's Javascript events be sure to check out it's [GitHub](https://github.com/aFarkas/lazysizes#combine-data-srcset-with-data-src)
+Lazysizes.js is awesome and it's what makes so easy to implement. If you need to find out more information about it or how to hook into it's Javascript events be sure to check out it's [GitHub](https://github.com/aFarkas/lazysizes#combine-data-srcset-with-data-src)
 
 # Razor Helper
 
