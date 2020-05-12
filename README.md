@@ -307,9 +307,8 @@ Follow these [steps](Docs/Azure-CDN/index.md)
 # Test Site & Source Code
 
 A test site is included in the solution, the username and password for Umbraco are admin@admin.com/password1234567890.
-By default the test site is configured to use full IIS (due to IIS Express SQL CE persistence issue) on the domain slimsy.local, you can change it to use IIS Express if you prefer.
 
-Visual Studio 2017 is required for compiling the source code
+Visual Studio 2019 is required for compiling the source code
 
 # Credits and references
 
