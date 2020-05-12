@@ -154,7 +154,7 @@
         /// <param name="imageCropAnchor"></param>
         /// <param name="outputFormat"></param>
         /// <returns>Url of image</returns>
-        public IHtmlString GetSrcSetUrls(string url, int width, int height, int maxWidth, int quality = 90, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null, string outputFormat = "" )
+        public IHtmlString GetSrcSetUrls(string url, int width, int height, int maxWidth, int quality = 90, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null, string outputFormat = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -166,7 +166,7 @@
             {
                 var h = (int)Math.Round(w * heightRatio);
                 outputStringBuilder.Append(
-                    $"{this.GetCropUrl(url, w, h, imageCropMode: imageCropMode, imageCropAnchor:imageCropAnchor, quality: q, preferFocalPoint: true, furtherOptions: AdditionalParams(outputFormat))} {w}w,");
+                    $"{this.GetCropUrl(url, w, h, imageCropMode: imageCropMode, imageCropAnchor:imageCropAnchor, quality: q, preferFocalPoint: true, furtherOptions: AdditionalParams(outputFormat), htmlEncode:false)} {w}w,");
                 w += this.WidthStep();
             }
 
