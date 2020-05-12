@@ -112,11 +112,15 @@
         /// </summary>
         /// <param name="publishedContent"></param>
         /// <param name="aspectRatio"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="quality">Default is 90</param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
         /// <returns>HTML Markup</returns>
-        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio)
+        public IHtmlString GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
-            var q = this.DefaultQuality();
+            var q = quality == 90 ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
 
@@ -127,7 +131,7 @@
                 var h = (int)Math.Round(w * heightRatio);
 
                 outputStringBuilder.Append(
-                    $"{this.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true, furtherOptions: AdditionalParams(), htmlEncode: false)} {w}w,");
+                    $"{this.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true, furtherOptions: AdditionalParams(outputFormat, furtherOptions), htmlEncode: false)} {w}w,");
 
                 w += this.WidthStep();
             }
