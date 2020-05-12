@@ -1,4 +1,4 @@
-Slimsy v3
+Slimsy v3 (this docs are written for beta5+)
 ============
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
