@@ -6,6 +6,5 @@
 //value = TemplateUtilities.ResolveUrlsFromTextString(value);
 //value = TemplateUtilities.ResolveMediaFromTextString(value);
 
-    @SlimsyExtensions.ConvertImgToSrcSet(Html, Model.value.ToString(), true)
 }
-@Html.Raw(value)
+@SlimsyExtensions.ConvertImgToSrcSet(Html, Model.value.ToString(), true)
