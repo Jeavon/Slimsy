@@ -147,7 +147,7 @@ Use this method to convert images entered into TinyMce Rich Text editors to use 
 @Html.ConvertImgToResponsive(Model, "richTextBody")
 ```
 
-You also use this method to convert RTE `<img>` to `<picture>` and render additional `<source>` elements for different image formats
+You can also use this method to convert RTE `<img>` to `<picture>` and render additional `<source>` elements for different image formats
 
 e.g.
 
@@ -167,7 +167,7 @@ e.g. within `Rte.chtml` found within the `Partials/Grid/Editors` folder
 
 # Using `<picture>` element
 
-Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp) (needs to be installed from NuGet), this example also implements a optional LQIP image.
+Below is an example of how to use the `<picture>` element to provide automated WebP versions of your images using the [ImageProcessor WebP plugin](http://imageprocessor.org/imageprocessor/plugins/#webp) (needs to be installed from NuGet), this example also implements an optional LQIP image.
 
 ```C#
 <div class="employee-grid">
