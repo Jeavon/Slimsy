@@ -139,22 +139,29 @@ There are additional optional parameters that can be utilised for different requ
 
 ### 4 (optional). Adjust the rendering of your TinyMce Richtext editors
 
-#### `Html.ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip, bool removeStyleAttribute)`
+#### `Html.ConvertImgToResponsive(IPublishedContent publishedContent, string propertyAlias, [optional] bool generateLqip, [optional] bool removeStyleAttribute, [optional] bool renderPicture, [optional] string[] pictureSources)`
 
 Use this method to convert images entered into TinyMce Rich Text editors to use img source set using generated paths
 
 ```C#
-@Html.ConvertImgToSrcSet(Model, "richTextBody")
-
+@Html.ConvertImgToResponsive(Model, "richTextBody")
 ```
 
-#### `Html.ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip, bool removeStyleAttribute)`
+You also use this method to convert RTE `<img>` to `<picture>` and render additional `<source>` elements for different image formats
+
+e.g.
+
+```C#
+@Html.ConvertImgToResponsive(Model, "richTextBody", renderPicture:true, pictureSources: new []{"webp"})
+```
+
+#### `Html.ConvertImgToResponsive(this HtmlHelper htmlHelper, string sourceValueHtml,[optional] bool generateLqip, [optional] bool removeStyleAttribute, [optional] bool renderPicture, [optional] string[] pictureSources)`
 Use this method to convert images entered in a TinyMce Rich Text editor within the Grid to use img source set using generated paths. This method will also take care of parsing Umbraco links and Macros.
 
 e.g. within `Rte.chtml` found within the `Partials/Grid/Editors` folder
 
 ```C#
-@SlimsyExtensions.ConvertImgToSrcSet(Html, Model.value.ToString(), true)
+@SlimsyExtensions.ConvertImgToResponsive(Html, Model.value.ToString(), true)
 
 ```
 

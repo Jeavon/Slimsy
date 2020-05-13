@@ -108,6 +108,8 @@ namespace Slimsy
         /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToResponsive(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
         {
@@ -122,6 +124,8 @@ namespace Slimsy
         /// <param name="propertyAlias">Alias of the TinyMce property</param>
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
         public static IHtmlString ConvertImgToResponsive(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
         {
