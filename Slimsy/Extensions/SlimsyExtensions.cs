@@ -109,9 +109,9 @@ namespace Slimsy
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
+        public static IHtmlString ConvertImgToResponsive(this HtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
         {
-            return _slimsyService.ConvertImgToSrcSet(sourceValueHtml, generateLqip, removeStyleAttribute);
+            return _slimsyService.ConvertImgToResponsive(sourceValueHtml, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
         }
 
         /// <summary>
@@ -123,9 +123,9 @@ namespace Slimsy
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
+        public static IHtmlString ConvertImgToResponsive(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
         {
-            return _slimsyService.ConvertImgToSrcSet(publishedContent, propertyAlias, generateLqip, removeStyleAttribute);
+            return _slimsyService.ConvertImgToResponsive(publishedContent, propertyAlias, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
         }
 
         #endregion

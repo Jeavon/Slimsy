@@ -243,10 +243,12 @@
         /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        public IHtmlString ConvertImgToSrcSet(string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true)
+        public IHtmlString ConvertImgToResponsive(string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
         {
-            var source = this.ConvertImgToSrcSetInternal(sourceValueHtml, generateLqip, removeStyleAttribute);
+            var source = this.ConvertImgToResponsiveInternal(sourceValueHtml, generateLqip, removeStyleAttribute, renderPicture:renderPicture, pictureSources:pictureSources);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
             var intermediateValue = this._rteMacroRenderingValueConverter.ConvertSourceToIntermediate(null, null, source, false);
@@ -261,16 +263,33 @@
         /// <param name="propertyAlias">Alias of the TinyMce property</param>
         /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        public IHtmlString ConvertImgToSrcSet(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true)
+        public IHtmlString ConvertImgToResponsive(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
         {
             var sourceValue = publishedContent.GetProperty(propertyAlias).GetSourceValue();
 
             return sourceValue != null ?
-                this.ConvertImgToSrcSet(sourceValue.ToString(), generateLqip, removeStyleAttribute) :
+                this.ConvertImgToResponsive(sourceValue.ToString(), generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlString("");
         }
 
+        #endregion
+
+        #region Internal Functions
+
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="html"></param>
+        /// <param name="generateLqip"></param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
+        /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
+        /// <param name="renderPicture">If you want to render picture element with sources</param>
+        /// <param name="pictureSources"></param>
+        /// <returns>HTML Markup</returns>
         private IHtmlString ConvertImgToResponsiveInternal(string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true, bool renderPicture = false, string[] pictureSources = null)
         {
             var doc = new HtmlDocument();
@@ -425,138 +444,6 @@
                                                 if (generateLqip)
                                                 {
                                                     img.Attributes.Add("src", defaultLqip.ToString());
-                                                }
-
-                                                if (classAttr != null)
-                                                {
-                                                    classAttr.Value = $"{classAttr.Value} lazyload";
-                                                }
-                                                else
-                                                {
-                                                    img.Attributes.Add("class", "lazyload");
-                                                }
-
-                                                if (removeStyleAttribute)
-                                                {
-                                                    img.Attributes.Remove("style");
-                                                }
-
-                                                if (removeUdiAttribute)
-                                                {
-                                                    img.Attributes.Remove("data-udi");
-                                                }
-
-                                                modified = true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // Image in TinyMce doesn't have a data-udi attribute
-                            }
-                        }
-                    }
-
-                    if (modified)
-                    {
-                        return new HtmlString(doc.DocumentNode.OuterHtml);
-                    }
-                }
-            }
-
-            return new HtmlString(html);
-        }
-
-
-        /// <summary>
-        /// Convert img to img srcset, extracts width and height from querystrings
-        /// </summary>
-        /// <param name="html"></param>
-        /// <param name="generateLqip"></param>
-        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
-        /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
-        /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
-        /// <returns>HTML Markup</returns>
-        private IHtmlString ConvertImgToSrcSetInternal(string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true)
-        {
-            var doc = new HtmlDocument();
-            doc.LoadHtml(html);
-
-            if (!doc.ParseErrors.Any() && doc.DocumentNode != null)
-            {
-                // Find all images
-                var imgNodes = doc.DocumentNode.SelectNodes("//img");
-
-                if (imgNodes != null)
-                {
-                    var modified = false;
-
-                    foreach (var img in imgNodes)
-                    {
-                        var srcAttr = img.Attributes.FirstOrDefault(x => x.Name == "src");
-                        var udiAttr = img.Attributes.FirstOrDefault(x => x.Name == "data-udi");
-                        var classAttr = img.Attributes.FirstOrDefault(x => x.Name == "class");
-
-                        if (srcAttr != null)
-                        {
-                            // html decode the url as variables encoded in tinymce
-                            var src = HttpUtility.HtmlDecode(srcAttr.Value);
-
-                            var hasQueryString = src.InvariantContains("?");
-                            NameValueCollection queryStringCollection;
-
-                            if (hasQueryString)
-                            {
-                                queryStringCollection = HttpUtility.ParseQueryString(src.Substring(src.IndexOf('?')));
-
-                                // ensure case of variables doesn't cause trouble
-                                IDictionary<string, string> queryString = queryStringCollection.AllKeys.ToDictionary(k => k.ToLowerInvariant(), k => queryStringCollection[k]);
-
-                                if (udiAttr != null)
-                                {
-                                    // Umbraco media
-                                    GuidUdi guidUdi;
-                                    if (GuidUdi.TryParse(udiAttr.Value, out guidUdi))
-                                    {
-                                        var node = this.GetAnyTypePublishedContent(guidUdi);
-
-                                        var qsWidth = queryString["width"];
-                                        var qsHeight = "0";
-                                        if (queryString.ContainsKey("height"))
-                                        {
-                                            qsHeight = queryString["height"];
-                                        }
-
-                                        // TinyMce sometimes adds decimals to image resize commands, we need to fix those
-                                        if (decimal.TryParse(qsWidth, out decimal decWidth) && decimal.TryParse(qsHeight, out decimal decHeight))
-                                        {
-                                            var width = (int)Math.Round(decWidth);
-                                            var height = (int)Math.Round(decHeight);
-
-                                            // if width is 0 (I don't know why it would be but it has been seen) then we can't do anything
-                                            if (width > 0)
-                                            {
-                                                // change the src attribute to data-src
-                                                srcAttr.Name = "data-src";
-                                                if (roundWidthHeight)
-                                                {
-                                                    var roundedUrl = this.GetCropUrl(node, width, height,
-                                                        imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
-                                                    srcAttr.Value = roundedUrl.ToString();
-                                                }
-
-                                                var srcSet = this.GetSrcSetUrls(node, width, height);
-
-                                                img.Attributes.Add("data-srcset", srcSet.ToString());
-                                                img.Attributes.Add("data-sizes", "auto");
-
-                                                if (generateLqip)
-                                                {
-                                                    var imgLqip = this.GetCropUrl(node, width, height, quality: 30,
-                                                            furtherOptions: "&format=auto", preferFocalPoint: true);
-                                                    img.Attributes.Add("src", imgLqip.ToString());
                                                 }
 
                                                 if (classAttr != null)
