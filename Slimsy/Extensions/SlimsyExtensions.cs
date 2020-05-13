@@ -14,6 +14,7 @@ namespace Slimsy
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web.Models;
     using Current = Umbraco.Web.Composing.Current;
+    using Umbraco.Core.PropertyEditors.ValueConverters;
 
     public static class SlimsyExtensions
     {
@@ -167,6 +168,27 @@ namespace Slimsy
             return _slimsyService.GetCropUrl(mediaItem, width, height, propertyAlias, cropAlias, quality, imageCropMode,
                 imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, furtherOptions, ratioMode, upScale,
                 htmlEncode);
+        }
+
+        public static IHtmlString GetCropUrl(
+            ImageCropperValue imageCropperValue,
+            int? width = null,
+            int? height = null,
+            string cropAlias = null,
+            int? quality = null,
+            ImageCropMode? imageCropMode = null,
+            ImageCropAnchor? imageCropAnchor = null,
+            bool preferFocalPoint = false,
+            bool useCropDimensions = false,
+            string cacheBusterValue = null,
+            string furtherOptions = null,
+            ImageCropRatioMode? ratioMode = null,
+            bool upScale = true,
+            bool htmlEncode = true)
+        {
+            return _slimsyService.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
+                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions, ratioMode,
+                upScale, htmlEncode);
         }
 
         #endregion
