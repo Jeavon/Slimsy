@@ -1,23 +1,30 @@
-﻿@model dynamic
-@using Umbraco.Web.Templates
+﻿@inherits UmbracoViewPage<dynamic>
 
 @if (Model.value != null)
-{   
-    var url = Model.value.image;
-    if(Model.editor.config != null && Model.editor.config.size != null){
-        url += "?width=" + Model.editor.config.size.width;
-        url += "&height=" + Model.editor.config.size.height;
+{
+    var udi = Model.value.udi.ToString();
 
-        if(Model.value.focalPoint != null){
-            url += "&center=" + Model.value.focalPoint.top +"," + Model.value.focalPoint.left;
-            url += "&mode=crop";
+    var item = Umbraco.Media(udi);
+
+    if (item != null)
+    {
+        var altText = Model.value.altText ?? Model.value.caption ?? string.Empty;
+
+        int width = 160;
+        int height = 0;
+
+        if (Model.editor.config != null && Model.editor.config.size != null)
+        {
+            bool successWidth = Int32.TryParse(Model.editor.config.size.width.ToString(), out width);
+            bool successHeight = Int32.TryParse(Model.editor.config.size.height.ToString(), out height);
         }
-    }
 
-    var altText = Model.value.altText ?? Model.value.caption ?? string.Empty;
-    
-    <img src="@url" alt="@altText">
-    
+        @SlimsyHelper.RenderPicture(Url, item, width, height, altText)
+    }
+    else
+    {
+        // log something maybe...
+    }
     if (Model.value.caption != null)
     {
         <p class="caption">@Model.value.caption</p>
