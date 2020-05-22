@@ -4,7 +4,7 @@
 {
     var udi = Model.value.udi.ToString();
 
-    var item = Umbraco.Media(udi);
+    var item = Umbraco.Media((string)udi);
 
     if (item != null)
     {
