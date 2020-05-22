@@ -1,7 +1,7 @@
 os: Visual Studio 2019
 
 # version format
-version: 3.0.0.{build}
+version: 3.0.1.{build}
 
 # UMBRACO_PACKAGE_PRERELEASE_SUFFIX will only be used for Release builds
 # example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
