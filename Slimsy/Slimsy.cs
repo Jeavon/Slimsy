@@ -74,15 +74,33 @@ namespace Slimsy
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
+            var flag = false;
 
             while (w <= MaxWidth(publishedContent))
             {
-                var h = (int)Math.Round(w * heightRatio);
-                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
-                    furtherOptions: Format(outputFormat), htmlEncode:false).ToString();
+                
+                
 
-                outputStringBuilder.Append($"{cropString} {w}w,");
+                if (width < w && !flag && UseCropAsSrc())
+                {
+                    var cropString = urlHelper.GetCropUrl(publishedContent, width, height, propertyAlias, quality: q, preferFocalPoint: true,
+                        furtherOptions: Format(outputFormat), htmlEncode: false).ToString();
+
+                    outputStringBuilder.Append($"{cropString} {w}w,");
+                    flag = true;
+                }
+                else
+                {
+                    var h = (int)Math.Round(w * heightRatio);
+                    var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
+                        furtherOptions: Format(outputFormat), htmlEncode: false).ToString();
+
+                    outputStringBuilder.Append($"{cropString} {w}w,");
+
+                }
+
                 w += WidthStep();
+
             }
 
             // remove the last comma
@@ -98,13 +116,27 @@ namespace Slimsy
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
+            var flag = false;
 
             while (w <= MaxWidth(publishedContent))
             {
-                var h = (int)Math.Round(w * heightRatio);
-                outputStringBuilder.Append(
-                    $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+
+                if (width < w && !flag && UseCropAsSrc())
+                {
+                    outputStringBuilder.Append(
+                        $"{urlHelper.GetCropUrl(publishedContent, width, height, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                    flag = true;
+                }
+                else
+                {
+                    var h = (int)Math.Round(w * heightRatio);
+                    outputStringBuilder.Append(
+                        $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                   
+                }
+
                 w += WidthStep();
+                
             }
 
             // remove the last comma
@@ -184,6 +216,8 @@ namespace Slimsy
 
                 while (w <= MaxWidth(publishedContent))
                 {
+
+
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
                         $"{urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, cropAlias, quality: q, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
@@ -391,6 +425,11 @@ namespace Slimsy
             }
 
             return defaultQuality;
+        }
+
+        public static bool UseCropAsSrc()
+        {
+            return Convert.ToBoolean(ConfigurationManager.AppSettings["Slimsy:UseCropAsSrc"]);
         }
 
         private static int WidthStep()
