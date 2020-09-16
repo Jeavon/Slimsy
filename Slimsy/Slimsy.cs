@@ -81,12 +81,12 @@ namespace Slimsy
                 
                 
 
-                if (width < w && !flag && UseCropAsSrc())
+                if (width < w && !IsMultiple(width, w) && !flag && UseCropAsSrc())
                 {
                     var cropString = urlHelper.GetCropUrl(publishedContent, width, height, propertyAlias, quality: q, preferFocalPoint: true,
                         furtherOptions: Format(outputFormat), htmlEncode: false).ToString();
 
-                    outputStringBuilder.Append($"{cropString} {w}w,");
+                    outputStringBuilder.Append($"{cropString} {width}w,");
                     flag = true;
                 }
                 else
@@ -121,10 +121,10 @@ namespace Slimsy
             while (w <= MaxWidth(publishedContent))
             {
 
-                if (width < w && !flag && UseCropAsSrc())
+                if (width < w && !IsMultiple(width, w) && !flag && UseCropAsSrc())
                 {
                     outputStringBuilder.Append(
-                        $"{urlHelper.GetCropUrl(publishedContent, width, height, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
+                        $"{urlHelper.GetCropUrl(publishedContent, width, height, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {width}w,");
                     flag = true;
                 }
                 else
@@ -430,6 +430,11 @@ namespace Slimsy
         public static bool UseCropAsSrc()
         {
             return Convert.ToBoolean(ConfigurationManager.AppSettings["Slimsy:UseCropAsSrc"]);
+        }
+
+        private static bool IsMultiple(int x, int n)
+        {
+            return (x % n) == 0;
         }
 
         private static int WidthStep()
