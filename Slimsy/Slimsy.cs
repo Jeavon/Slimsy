@@ -66,7 +66,7 @@ namespace Slimsy
         {
             return urlHelper.GetSrcSetUrls(publishedContent, width, height, propertyAlias, null);
         }
-        
+
         public static IHtmlString GetSrcSetUrls(this UrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias, string outputFormat, int quality = 90)
         {
             var w = WidthStep();
@@ -83,17 +83,14 @@ namespace Slimsy
                     var cropString1 = urlHelper.GetCropUrl(publishedContent, width, height, propertyAlias, quality: q, preferFocalPoint: true,
                         furtherOptions: Format(outputFormat), htmlEncode: false).ToString();
 
-                    outputStringBuilder.Append($"{cropString1} {width}w,\n");
+                    outputStringBuilder.Append($"{cropString1} {width}w,");
                 }
-
 
                 var h = (int)Math.Round(w * heightRatio);
                 var cropString = urlHelper.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: Format(outputFormat), htmlEncode: false).ToString();
 
-                outputStringBuilder.Append($"{cropString} {w}w,\n");
-
-
+                outputStringBuilder.Append($"{cropString} {w}w,");
 
                 w += WidthStep();
             }
