@@ -108,27 +108,27 @@ namespace Slimsy
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
-            var flag = false;
 
             while (w <= MaxWidth(publishedContent))
             {
 
-                if (width < w && !IsMultiple(width, w) && !flag && UseCropAsSrc())
+                // insert crop as url src
+                if (!IsMultiple(width, w) && UseCropAsSrc() && width < w && width > w - WidthStep())
                 {
-                    outputStringBuilder.Append(
-                        $"{urlHelper.GetCropUrl(publishedContent, width, height, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {width}w,");
-                    flag = true;
-                }
-                else
-                {
-                    var h = (int)Math.Round(w * heightRatio);
-                    outputStringBuilder.Append(
-                        $"{urlHelper.GetCropUrl(publishedContent, w, h, imageCropMode: imageCropMode, quality: q, preferFocalPoint: true, furtherOptions: Format(outputFormat), htmlEncode: false)} {w}w,");
-                   
+                    var cropString1 = urlHelper.GetCropUrl(publishedContent, width, height, quality: q, preferFocalPoint: true,
+                        furtherOptions: Format(outputFormat), htmlEncode: false).ToString();
+
+                    outputStringBuilder.Append($"{cropString1} {width}w,");
                 }
 
+                var h = (int)Math.Round(w * heightRatio);
+                var cropString = urlHelper.GetCropUrl(publishedContent, w, h, quality: q, preferFocalPoint: true,
+                    furtherOptions: Format(outputFormat), htmlEncode: false).ToString();
+
+                outputStringBuilder.Append($"{cropString} {w}w,");
+
                 w += WidthStep();
-                
+
             }
 
             // remove the last comma
