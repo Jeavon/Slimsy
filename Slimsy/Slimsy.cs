@@ -241,7 +241,7 @@ namespace Slimsy
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
         {
             CheckObsoleteMethodUsageAndLog();
-            return ConvertImgToSrcSetInternal(htmlHelper, html, generateLqip, removeStyleAttribute, removeUdiAttribute, roundWidthHeight);
+            return ConvertImgToResponsiveInternal(htmlHelper, html, generateLqip, removeStyleAttribute, removeUdiAttribute, roundWidthHeight);
         }
 
         [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
@@ -249,7 +249,7 @@ namespace Slimsy
         {
             CheckObsoleteMethodUsageAndLog();
             var htmlString = html.ToString();
-            return ConvertImgToSrcSetInternal(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
+            return ConvertImgToResponsiveInternal(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
         }
 
         /// <summary>
@@ -262,10 +262,10 @@ namespace Slimsy
         /// <param name="removeStyleAttribute">If you don't want the inline sytle attribute added by TinyMce to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true)
+        public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = false, bool roundWidthHeight = true, bool renderPicture = false, string[] pictureSources = null)
         {
             var dataValue = publishedContent.GetProperty(propertyAlias).DataValue.ToString();
-            var source = ConvertImgToSrcSetInternal(htmlHelper, dataValue, generateLqip, removeStyleAttribute, true, roundWidthHeight);
+            var source = ConvertImgToResponsiveInternal(htmlHelper, dataValue, generateLqip, removeStyleAttribute, true, roundWidthHeight, renderPicture, pictureSources);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
             var rteConverter = new RteMacroRenderingValueConverter();
@@ -284,12 +284,29 @@ namespace Slimsy
         /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        private static IHtmlString ConvertImgToSrcSetInternal(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
+        private static IHtmlString ConvertImgToResponsiveInternal(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true, bool renderPicture = false, string[] pictureSources = null)
         {
             var urlHelper = new UrlHelper();
-
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
+
+            // https://stackoverflow.com/questions/759355/image-tag-not-closing-with-htmlagilitypack
+            if (HtmlNode.ElementsFlags.ContainsKey("img"))
+            {
+                HtmlNode.ElementsFlags["img"] = HtmlElementFlag.Closed;
+            }
+            else
+            {
+                HtmlNode.ElementsFlags.Add("img", HtmlElementFlag.Closed);
+            }
+            if (HtmlNode.ElementsFlags.ContainsKey("source"))
+            {
+                HtmlNode.ElementsFlags["source"] = HtmlElementFlag.Closed;
+            }
+            else
+            {
+                HtmlNode.ElementsFlags.Add("source", HtmlElementFlag.Closed);
+            }
 
             if (!doc.ParseErrors.Any() && doc.DocumentNode != null)
             {
@@ -300,8 +317,21 @@ namespace Slimsy
                 {
                     var modified = false;
 
-                    foreach (var img in imgNodes)
+                    foreach (var imgElement in imgNodes)
                     {
+                        var img = imgElement;
+
+                        if (renderPicture)
+                        {
+                            var newImg = img.CloneNode(true);
+
+                            // change img to picture and add new img as child
+                            imgElement.Name = "picture";
+                            imgElement.RemoveAll();
+                            imgElement.ChildNodes.Add(newImg);
+                            img = imgElement.FirstChild;
+                        }
+
                         var srcAttr = img.Attributes.FirstOrDefault(x => x.Name == "src");
                         var udiAttr = img.Attributes.FirstOrDefault(x => x.Name == "data-udi");
                         var classAttr = img.Attributes.FirstOrDefault(x => x.Name == "class");
@@ -329,62 +359,116 @@ namespace Slimsy
                                     {
                                         var node = nodeId.ToPublishedContent();
 
-                                        var qsWidth = queryString["width"];
-                                        var qsHeight = queryString["height"];
-
-                                        // TinyMce sometimes adds decimals to image resize commands, we need to fix those
-                                        if (decimal.TryParse(qsWidth, out decimal decWidth) && decimal.TryParse(qsHeight, out decimal decHeight))
+                                        // add null check
+                                        if (node != null)
                                         {
-                                            var width = (int)Math.Round(decWidth);
-                                            var height = (int)Math.Round(decHeight);
-
-                                            // if width is 0 (I don't know why it would be but it has been seen) then we can't do anything
-                                            if (width > 0)
+                                            var qsWidth = queryString["width"];
+                                            var qsHeight = "0";
+                                            if (queryString.ContainsKey("height"))
                                             {
-                                                // change the src attribute to data-src
-                                                srcAttr.Name = "data-src";
-                                                if (roundWidthHeight)
+                                                qsHeight = queryString["height"];
+                                            }
+
+                                            // TinyMce sometimes adds decimals to image resize commands, we need to fix those
+                                            if (decimal.TryParse(qsWidth, out decimal decWidth) && decimal.TryParse(qsHeight, out decimal decHeight))
+                                            {
+                                                var width = (int)Math.Round(decWidth);
+                                                var height = (int)Math.Round(decHeight);
+
+                                                // if width is 0 (I don't know why it would be but it has been seen) then we can't do anything
+                                                if (width > 0)
                                                 {
-                                                    var roundedUrl = urlHelper.GetCropUrl(node, width, height,
-                                                        imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
-                                                    srcAttr.Value = roundedUrl.ToString();
-                                                }
+                                                    // change the src attribute to data-src
+                                                    srcAttr.Name = "data-src";
+                                                    if (roundWidthHeight)
+                                                    {
+                                                        var roundedUrl = urlHelper.GetCropUrl(node, width, height,
+                                                            imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
+                                                        srcAttr.Value = roundedUrl.ToString();
+                                                    }
 
-                                                var srcSet = GetSrcSetUrls(urlHelper, node, width, height);
+                                                    var srcSet = urlHelper.GetSrcSetUrls(node, width, height);
 
-                                                img.Attributes.Add("data-srcset", srcSet.ToString());
-                                                img.Attributes.Add("data-sizes", "auto");
-
-                                                if (generateLqip)
-                                                {
-                                                    var imgLqip =
-                                                        urlHelper.GetCropUrl(node, width, height, quality: 30,
+                                                    IHtmlString defaultLqip = null;
+                                                    if (generateLqip)
+                                                    {
+                                                        defaultLqip = urlHelper.GetCropUrl(node, width, height, quality: 30,
                                                             furtherOptions: "&format=auto", preferFocalPoint: true);
-                                                    img.Attributes.Add("src", imgLqip.ToString());
-                                                }
+                                                    }
 
-                                                if (classAttr != null)
-                                                {
-                                                    classAttr.Value = $"{classAttr.Value} lazyload";
-                                                }
-                                                else
-                                                {
-                                                    img.Attributes.Add("class", "lazyload");
-                                                }
+                                                    if (renderPicture)
+                                                    {
+                                                        var umbracoExtension = node.GetPropertyValue<string>(Constants.Conventions.Media.Extension);
 
-                                                if (removeStyleAttribute)
-                                                {
-                                                    img.Attributes.Remove("style");
-                                                }
+                                                        if (pictureSources == null || !pictureSources.Contains(umbracoExtension))
+                                                        {
+                                                            var defaultSource = HtmlNode.CreateNode($"<source data-srcset=\"{srcSet.ToString()}\" type=\"{MimeType(umbracoExtension)}\" data-sizes=\"auto\" />");
+                                                            if (generateLqip)
+                                                            {
+                                                                defaultSource.Attributes.Add("srcset", defaultLqip.ToString());
+                                                            }
 
-                                                if (removeUdiAttribute)
-                                                {
-                                                    img.Attributes.Remove("data-udi");
-                                                }
+                                                            imgElement.ChildNodes.Insert(0, defaultSource);
+                                                        }
 
-                                                modified = true;
+                                                        if (pictureSources != null)
+                                                        {
+                                                            foreach (var source in pictureSources.Reverse())
+                                                            {
+                                                                var srcSetForSource = GetSrcSetUrls(urlHelper, node, width,
+                                                                    height, null, outputFormat: source);
+                                                                var sourceElement =
+                                                                    HtmlNode.CreateNode(
+                                                                        $"<source data-srcset=\"{srcSetForSource.ToString()}\" type=\"{MimeType(source)}\" data-sizes=\"auto\" />");
+
+                                                                if (generateLqip)
+                                                                {
+                                                                    var sourceLqip = urlHelper.GetCropUrl(node, width, height, quality: 30,
+                                                                        furtherOptions: $"&format={source}", preferFocalPoint: true);
+                                                                    sourceElement.Attributes.Add("srcset", sourceLqip.ToString());
+                                                                }
+
+                                                                imgElement.ChildNodes.Insert(0, sourceElement);
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        img.Attributes.Add("data-srcset", srcSet.ToString());
+                                                    }
+
+                                                    img.Attributes.Add("data-sizes", "auto");
+
+                                                    if (generateLqip)
+                                                    {
+                                                        img.Attributes.Add("src", defaultLqip.ToString());
+                                                    }
+
+                                                    if (classAttr != null)
+                                                    {
+                                                        classAttr.Value = $"{classAttr.Value} lazyload";
+                                                    }
+                                                    else
+                                                    {
+                                                        img.Attributes.Add("class", "lazyload");
+                                                    }
+
+                                                    if (removeStyleAttribute)
+                                                    {
+                                                        img.Attributes.Remove("style");
+                                                    }
+
+                                                    if (removeUdiAttribute)
+                                                    {
+                                                        img.Attributes.Remove("data-udi");
+                                                    }
+
+                                                    modified = true;
+                                                }
                                             }
                                         }
+
+                                        
                                     }
                                 }
                             }
@@ -401,12 +485,38 @@ namespace Slimsy
                     }
                 }
             }
+
             return new HtmlString(html);
         }
 
         #endregion
 
         #region Internal Functions
+
+        private static string MimeType(string fileExtension)
+        {
+            var defaultMimeType = "";
+            switch (fileExtension)
+            {
+                case "jpg":
+                    defaultMimeType = "image/jpeg";
+                    break;
+                case "png":
+                    defaultMimeType = "image/png";
+                    break;
+                case "gif":
+                    defaultMimeType = "image/gif";
+                    break;
+                case "webp":
+                    defaultMimeType = "image/webp";
+                    break;
+                default:
+                    defaultMimeType = "image/jpeg";
+                    break;
+            }
+
+            return defaultMimeType;
+        }
 
         private static int DefaultQuality()
         {

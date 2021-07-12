@@ -31,7 +31,7 @@
                             <h3>Obsolete method!</h3>
                             @Html.ConvertImgToSrcSet(bodyText, true, true, removeUdiAttribute:true)
                             <h3>Current method!</h3>
-                            @Html.ConvertImgToSrcSet(Model.Content, "bodyText", true, true)
+                            @Html.ConvertImgToSrcSet(Model.Content, "bodyText", true, true, renderPicture: true, pictureSources: new []{"webp"})
                         </section>
                     </article>
                     <!-- /Content -->
