@@ -237,17 +237,13 @@ namespace Slimsy
         /// <param name="removeUdiAttribute">If you don't want the inline data-udi attribute to render</param>
         /// <param name="roundWidthHeight">Round width & height values as sometimes TinyMce adds decimal points</param>
         /// <returns>HTML Markup</returns>
-        [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, string html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false, bool roundWidthHeight = true)
         {
-            CheckObsoleteMethodUsageAndLog();
             return ConvertImgToResponsiveInternal(htmlHelper, html, generateLqip, removeStyleAttribute, removeUdiAttribute, roundWidthHeight);
         }
 
-        [Obsolete("Use the ConvertImgToSrcSet method with the IPublishedContent parameter instead")]
         public static IHtmlString ConvertImgToSrcSet(this HtmlHelper htmlHelper, IHtmlString html, bool generateLqip = true, bool removeStyleAttribute = false, bool removeUdiAttribute = false)
         {
-            CheckObsoleteMethodUsageAndLog();
             var htmlString = html.ToString();
             return ConvertImgToResponsiveInternal(htmlHelper, htmlString, generateLqip, removeStyleAttribute, removeUdiAttribute);
         }
@@ -610,71 +606,6 @@ namespace Slimsy
             }
 
             return null;
-        }
-
-        private static void CheckObsoleteMethodUsageAndLog()
-        {
-            // This method can be removed if/when we make Umbraco 7.13 the minimum version
-            var stripUdiAttributesCacheKey = "Slimsy.StripUdiAttributes";
-            var hasBeenWarnedCacheKey = "Slimsy.HasBeenWarned";
-
-            var hasStripUdiSetting = GetLocalCacheItem<bool?>(stripUdiAttributesCacheKey);
-
-            if (hasStripUdiSetting == null)
-            {
-                hasStripUdiSetting = GetStripUdiAttributes();
-                if (hasStripUdiSetting != null)
-                {
-                    InsertLocalCacheItem(stripUdiAttributesCacheKey, GetStripUdiAttributes);
-                }
-                else
-                {
-                    // Version of Umbraco before stripping was added so set to false
-                    InsertLocalCacheItem(stripUdiAttributesCacheKey, () => false);
-                    hasStripUdiSetting = false;
-                }
-            }
-
-            if ((bool)hasStripUdiSetting)
-            {
-                var hasBeenWarned = GetLocalCacheItem<bool>(hasBeenWarnedCacheKey);
-                if (!hasBeenWarned)
-                {
-                    InsertLocalCacheItem(hasBeenWarnedCacheKey, () => true);
-                    LogHelper.Warn(typeof(Slimsy),
-                        "Obsolete Slimsy method in use! This method is not able to convert, please update to current methods (recommended) or disable the StripUdiAttributes in UmbracoSettings.config");
-                }
-            }
-        }
-
-        private static bool? GetStripUdiAttributes()
-        {
-            // try, catch as we are getting values from Umbraco internals and we don't want it to break in the future
-            try
-            {
-                var obj = UmbracoConfig.For.UmbracoSettings().Content;
-                const string name = "StripUdiAttributes";
-
-                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                PropertyInfo field = null;
-                var objType = obj.GetType();
-                while (objType != null && field == null)
-                {
-                    field = objType.GetProperty(name, flags);
-                    objType = objType.BaseType;
-                }
-
-                if (field == null) return null;
-
-                var fieldValue = field.GetValue(obj, null);
-                var propertyValue = fieldValue.GetType().GetProperty("Value")?.GetValue(fieldValue, null);
-                return propertyValue != null && (bool) propertyValue;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(typeof(Slimsy), "Error whilst getting value of StripUdiAttributes UmbracoSetting", ex);
-                return null;
-            }
         }
 
         private static T GetLocalCacheItem<T>(string cacheKey)
