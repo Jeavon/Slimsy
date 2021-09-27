@@ -525,7 +525,7 @@ namespace Slimsy
             return defaultQuality;
         }
 
-        public static bool UseCropAsSrc()
+        private static bool UseCropAsSrc()
         {
             return Convert.ToBoolean(ConfigurationManager.AppSettings["Slimsy:UseCropAsSrc"]);
         }
