@@ -29,7 +29,7 @@ A test site is included in the solution, the username and password for Umbraco a
 
 This project includes [LazySizes](https://github.com/aFarkas/lazysizes) and [Picturefill](https://github.com/scottjehl/picturefill) Both projects are MIT licensed.
 
-Without the amazing [ImageProcessor](http://imageprocessor.org) this package wouldn't exist, so many thanks go to [James](https://github.com/JimBobSquarePants) for creating ImageProcessor!
+Without the amazing [ImageSharp](https://github.com/SixLabors/ImageSharp) this package wouldn't exist, so many thanks go to [James](https://github.com/JimBobSquarePants) and all the [SixLabors](https://github.com/SixLabors) team for creating  ImageSharp!
 
 Many thanks to Douglas Robar for naming Slimsy.
 
