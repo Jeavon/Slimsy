@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="SixLabors.ImageSharp.Web" Version="2.0.0-alpha.0.3" />
         <PackageReference Include="Umbraco.Cms" Version="9.2.0" />
         <PackageReference Include="Umbraco.Cms.SqlCe" Version="9.2.0" />
         <PackageReference Include="Umbraco.SqlServerCE" Version="4.0.0.1" />
