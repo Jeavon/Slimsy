@@ -9,6 +9,8 @@ using Umbraco.Extensions;
 
 namespace Slimsy.TestSite
 {
+    using Slimsy.Configuration;
+
     public class Startup
     {
         private readonly IWebHostEnvironment _env;
@@ -45,7 +47,7 @@ namespace Slimsy.TestSite
                 .AddComposers()
                 .Build();
 #pragma warning restore IDE0022 // Use expression body for methods
-
+            services.Configure<SlimsyConfig>(_config.GetSection("SlimsyConfiguration"));
         }
 
         /// <summary>
