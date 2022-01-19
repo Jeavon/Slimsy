@@ -1,32 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29201.188
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildPackage", "BuildPackage", "{2B65A62A-CC2F-449E-BB0D-C77D0C20FFFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slimsy.TestSite", "src\Slimsy.TestSite\Slimsy.TestSite.csproj", "{7A7703CB-6729-4722-A46C-9CE4F1244F4B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slimsy", "src\Slimsy\Slimsy.csproj", "{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F41AA125-80DD-4D70-96DF-991941A4EFB7}"
 	ProjectSection(SolutionItems) = preProject
+		build\appveyor-semver.ps1 = build\appveyor-semver.ps1
 		appveyor.yml = appveyor.yml
-		BuildPackage\Build.bat = BuildPackage\Build.bat
-		BuildPackage\LocalBuild.bat = BuildPackage\LocalBuild.bat
-		NuGet.config = NuGet.config
-		BuildPackage\package.nuspec = BuildPackage\package.nuspec
-		BuildPackage\package.proj = BuildPackage\package.proj
-		BuildPackage\package.xml = BuildPackage\package.xml
-		BuildPackage\views.web.config.install.xdt = BuildPackage\views.web.config.install.xdt
-		BuildPackage\views.web.config.uninstall.xdt = BuildPackage\views.web.config.uninstall.xdt
+		build\check-release-version.ps1 = build\check-release-version.ps1
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{6C039EF3-4D34-455C-A5EA-EC1F35AD7B24}"
-	ProjectSection(SolutionItems) = preProject
-		Changelog.md = Changelog.md
-		README.md = README.md
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slimsy", "Slimsy\Slimsy.csproj", "{1692F565-129D-4C9C-9D6B-1894B77D26E4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite", "TestSite\TestSite.csproj", "{D85C17C6-1FD9-48F5-95F3-8AB17DE280D2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSite.Common", "TestSite.Common\TestSite.Common.csproj", "{70830D14-8EEE-40D5-9BCE-DDF54EF399B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,23 +20,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1692F565-129D-4C9C-9D6B-1894B77D26E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1692F565-129D-4C9C-9D6B-1894B77D26E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1692F565-129D-4C9C-9D6B-1894B77D26E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1692F565-129D-4C9C-9D6B-1894B77D26E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D85C17C6-1FD9-48F5-95F3-8AB17DE280D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D85C17C6-1FD9-48F5-95F3-8AB17DE280D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D85C17C6-1FD9-48F5-95F3-8AB17DE280D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D85C17C6-1FD9-48F5-95F3-8AB17DE280D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70830D14-8EEE-40D5-9BCE-DDF54EF399B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70830D14-8EEE-40D5-9BCE-DDF54EF399B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70830D14-8EEE-40D5-9BCE-DDF54EF399B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70830D14-8EEE-40D5-9BCE-DDF54EF399B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {67E24DDE-9F56-4F51-9BFE-C797D1C54C0E}
+		SolutionGuid = {E0E72C3B-506C-4A70-ABB3-158AAF482709}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <ContentTargetFolders>.</ContentTargetFolders>
+        <Product>Slimsy</Product>
+        <PackageId>Slimsy</PackageId>
+        <Title>Slimsy</Title>
+        <Description>...</Description>
+        <Product>Slimsy</Product>
+        <PackageTags>umbraco plugin package</PackageTags>
+        <RootNamespace>Slimsy</RootNamespace>
+		<AssemblyVersion>4.0.0.0</AssemblyVersion>
+        <FileVersion>4.0.0.0</FileVersion>
+        <InformationalVersion>4.0.0.0-alpha.0</InformationalVersion>
+		<PackageIcon>slimsy.png</PackageIcon>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Umbraco.Cms.Web.Website" Version="9.2.0" />
+        <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="9.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="App_Plugins\Slimsy\**\*.*">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
+        <None Include="build\**\*.*">
+            <Pack>True</Pack>
+            <PackagePath>buildTransitive</PackagePath>
+        </None>
+    </ItemGroup>
+</Project>

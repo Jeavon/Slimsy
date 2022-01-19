@@ -1,49 +1,51 @@
-os: Visual Studio 2019
+version: 4.0.0.{build}
 
-# version format
-version: 3.0.1.{build}
+os: Visual Studio 2022
 
-# UMBRACO_PACKAGE_PRERELEASE_SUFFIX will only be used for Release builds
-# example UMBRACO_PACKAGE_PRERELEASE_SUFFIX=beta
-init:
-  - set UMBRACO_PACKAGE_PRERELEASE_SUFFIX=
+configuration: Release
+
+branches:
+  only:
+    - dev-v4  
+    - /v*/
+
+environment:
+  # Version Suffix
+  version_suffix: alpha
+
+install:
+  - ps: .\build\appveyor-semver.ps1
+  - ps: .\build\check-release-version.ps1
+  - ps: Update-AppveyorBuild -Version $Env:semver
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '$(semver)'
+  assembly_version: '$(appveyor_file_version)'
+  file_version: '$(appveyor_file_version)'
+  informational_version: '$(semver)'
 
 build_script:
-  - cd BuildPackage
-  - Build.bat
+- cmd: >-
+    cd src
+
+    cd Slimsy
+
+    dotnet build
+
+    cd..
 
 artifacts:
-  - path: BuildPackage\artifacts\*.nupkg
-  - path: BuildPackage\artifacts\*.zip
+  - path: .\src\Slimsy\bin\$(CONFIGURATION)\*.nupkg
 
-deploy:
-  # Umbraco MyGet community feed
-  - provider: NuGet
-    server: https://www.myget.org/F/umbraco-packages/api/v2/package
-    symbol_server: https://www.myget.org/F/umbraco-packages/symbols/api/v2/package
-    api_key:
-      secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
-    artifact: /.*\.nupkg/
-    on:
-      branch: dev-v3
-
-     # GitHub Deployment for releases
-  - provider: GitHub
-    auth_token:
-      secure: c0LwOGqoFZIieyy8CHrUtYQOD0HL0rG5tV2DS+8FHv34BKs/LSGGtmWWep5O7GbV
-    artifact: /.*\.zip/            # upload all Zip packages to release assets
-    draft: false
-    prerelease: false
-    on:
-      branch: master-v3
-      appveyor_repo_tag: true        # deploy on tag push only
-
-     # NuGet Deployment for releases
-  - provider: NuGet
-    server: 
-    api_key:
-      secure: adk3pI9HCByZg2VRxplX9UR6qHf97bA3as6dusxLswCKI8BQQE8DO5a0frLrI+EO
-    artifact: /.*\.nupkg/
-    on:
-      branch: master-v3
-      appveyor_repo_tag: true
+#deploy:
+#    # Umbraco MyGet community feed
+#  - provider: NuGet
+#    server: https://www.myget.org/F/umbraco-packages/api/v2/package
+#    symbol_server: https://www.myget.org/F/umbraco-packages/symbols/api/v2/package
+#    api_key:
+#      secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
+#    artifact: /.*\.nupkg/
+#    on:
+#      branch: dev-v4
