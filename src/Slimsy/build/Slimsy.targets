@@ -1,0 +1,27 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <SlimsyContentFilesPath>$(MSBuildThisFileDirectory)..\App_Plugins\Slimsy\**\*.*</SlimsyContentFilesPath>
+    </PropertyGroup>
+
+    <Target Name="CopySlimsyAssets" BeforeTargets="Build">
+        <ItemGroup>
+            <SlimsyContentFiles Include="$(SlimsyContentFilesPath)" />
+        </ItemGroup>
+        <Message Text="Copying Slimsy files: $(SlimsyContentFilesPath) - #@(SlimsyContentFiles->Count()) files"  Importance="high" />
+        <Copy
+            SourceFiles="@(SlimsyContentFiles)"
+            DestinationFiles="@(SlimsyContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\Slimsy\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true" />
+
+    </Target>
+
+    <Target Name="ClearSlimsyAssets" BeforeTargets="Clean">
+        <ItemGroup>
+            <SlimsyDir Include="$(MSBuildProjectDirectory)\App_Plugins\Slimsy\" />
+        </ItemGroup>
+        <Message Text="Clear old Slimsy data"  Importance="high" />
+        <RemoveDir Directories="@(SlimsyDir)"  />
+    </Target>
+
+</Project>
