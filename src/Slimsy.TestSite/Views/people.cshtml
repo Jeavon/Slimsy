@@ -35,7 +35,15 @@
             {
 
                 <div class="employee-grid__item">
-                    <div class="employee-grid__item__image" style="background-image: url('@person.Photo?.Url()')"></div>
+
+                    <div class="employee-grid__item__image">
+                        @{
+                            var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
+                        }
+                        <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
+                        <div class="employee-grid__item__image"><img src="@imageUrl"/></div>
+
+                    </div>
                     <div class="employee-grid__item__details">
                         <h3 class="employee-grid__item__name">@person.Name</h3>
                         @if (!string.IsNullOrEmpty(person.Email))
