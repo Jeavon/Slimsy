@@ -39,13 +39,13 @@ build_script:
 artifacts:
   - path: .\src\Slimsy\bin\$(CONFIGURATION)\*.nupkg
 
-#deploy:
-#    # Umbraco MyGet community feed
-#  - provider: NuGet
-#    server: https://www.myget.org/F/umbraco-packages/api/v2/package
-#    symbol_server: https://www.myget.org/F/umbraco-packages/symbols/api/v2/package
-#    api_key:
-#      secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
-#    artifact: /.*\.nupkg/
-#    on:
-#      branch: dev-v4
+deploy:
+    # Umbraco MyGet community feed
+  - provider: NuGet
+    server: https://www.myget.org/F/umbraco-packages/api/v2/package
+    symbol_server: https://www.myget.org/F/umbraco-packages/symbols/api/v2/package
+    api_key:
+      secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
+    artifact: /.*\.nupkg/
+    on:
+      branch: dev-v4
