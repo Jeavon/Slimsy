@@ -3,11 +3,11 @@
         <TargetFramework>net5.0</TargetFramework>
         <ContentTargetFolders>.</ContentTargetFolders>
         <Product>Slimsy</Product>
-        <PackageId>Slimsy</PackageId>
+        <PackageId>Our.Umbraco.Slimsy</PackageId>
         <Title>Slimsy</Title>
         <Description>...</Description>
         <Product>Slimsy</Product>
-        <PackageTags>umbraco plugin package</PackageTags>
+        <PackageTags>umbraco plugin package images responsive</PackageTags>
         <RootNamespace>Slimsy</RootNamespace>
 		<Version>4.0.0-alpha.0</Version>
 		<AssemblyVersion>4.0.0.0</AssemblyVersion>
