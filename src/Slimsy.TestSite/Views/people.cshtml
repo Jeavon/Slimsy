@@ -42,7 +42,7 @@
 
                     <div class="employee-grid__item__image">
                         @{
-                            var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
+                            var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false, furtherOptions:"format=webp").ToString();
                         }
                         <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
                         <div class="employee-grid__item__image"><img src="@imageUrl"/></div>
