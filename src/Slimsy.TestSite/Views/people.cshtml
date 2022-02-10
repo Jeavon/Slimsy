@@ -32,7 +32,45 @@
             <a class="nav-link nav-link--black" href="">Designers</a>
             <a class="nav-link nav-link--black" href="">Other</a>
         </nav>
-        -->  
+        -->
+
+        <div class="employee-grid">
+          <h1>Using <code>Picture</code> with 2 x <code>Source</code> for WebP and default and LQIP</h1>
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+
+                    <div class="employee-grid__item__image">
+                        <picture>
+                            <!--[if IE 9]><video style="display: none"><![endif]-->
+                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 250, 250, "umbracoFile", 80, "webp")" type="image/webp" data-sizes="auto" />
+                            <source data-srcset="@Url.GetSrcSetUrls(person.Photo, 250, 250)" type="image/jpeg" data-sizes="auto" />
+                            <!--[if IE 9]></video><![endif]-->
+                            <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                                    data-src="@Url.GetCropUrl(person.Photo, 250, 250)"
+                                    class="lazyload"
+                                    alt="image"
+                                    data-sizes="auto" />
+                        </picture>
+
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
+                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
+                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
+                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                        </div>
+                    </div>
+                </div>
+            }
+
+
         <div class="employee-grid">
           
             @foreach (Person person in Model.Children<Person>())
