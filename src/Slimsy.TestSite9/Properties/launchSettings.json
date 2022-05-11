@@ -4,8 +4,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:57496",
-      "sslPort": 44386
+      "applicationUrl": "http://localhost:1258",
+      "sslPort": 44316
     }
   },
   "profiles": {
@@ -16,11 +16,11 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Slimsy.TestSite": {
+    "Umbraco.Web.UI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:44386;http://localhost:57496",
+      "applicationUrl": "https://localhost:44316;http://localhost:1258",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }      
