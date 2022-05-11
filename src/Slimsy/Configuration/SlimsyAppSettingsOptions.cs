@@ -3,9 +3,9 @@
     using Slimsy.Application;
     using Slimsy.Interfaces;
 
-    public class SlimsyWebConfigOptions : ISlimsyOptions
+    public class SlimsyAppSettingsOptions : ISlimsyOptions
     {
-        public SlimsyWebConfigOptions()
+        public SlimsyAppSettingsOptions()
         {
             Format = SlimsySettings.Instance.Format;
             BackgroundColor = SlimsySettings.Instance.BackgroundColor;

@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slimsy.TestSite9", "src\Slimsy.TestSite9\Slimsy.TestSite9.csproj", "{7A7703CB-6729-4722-A46C-9CE4F1244F4B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slimsy", "src\Slimsy\Slimsy.csproj", "{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F41AA125-80DD-4D70-96DF-991941A4EFB7}"
@@ -22,10 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A7703CB-6729-4722-A46C-9CE4F1244F4B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CB2B9A7-A9A0-4C46-89C4-E1C52B88D34A}.Release|Any CPU.ActiveCfg = Release|Any CPU

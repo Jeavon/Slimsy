@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Slimsy.Configuration;
 using System;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Extensions;
@@ -43,6 +44,9 @@ namespace Slimsy.TestSite
                 .AddWebsite()
                 .AddComposers()
                 .Build();
+
+            //services.Configure<SlimsyConfig>(_config.GetSection("SlimsyConfiguration"));
+
         }
 
         /// <summary>

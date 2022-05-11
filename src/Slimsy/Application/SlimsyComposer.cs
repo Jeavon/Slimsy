@@ -15,12 +15,12 @@
         public static ISlimsyOptions GetDefaultOptions(IServiceProvider serviceProvider)
         {
             var logger = serviceProvider.GetService<ILogger>();
-            return new SlimsyWebConfigOptions();
+            return new SlimsyAppSettingsOptions();
         }
         
         public void Compose(IUmbracoBuilder builder)
         {
-            //builder.Services.AddUnique<ISlimsyOptions, SlimsyWebConfigOptions>();
+            builder.Services.AddSingleton<ISlimsyOptions, SlimsyAppSettingsOptions>();
             builder.SetSlimsyOptions(GetDefaultOptions);
             builder.Services.AddSingleton<SlimsyService>();
         }
