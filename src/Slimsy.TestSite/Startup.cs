@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Slimsy.Configuration;
+using Slimsy.DependencyInjection;
 using System;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Extensions;
@@ -43,9 +44,14 @@ namespace Slimsy.TestSite
                 .AddBackOffice()
                 .AddWebsite()
                 .AddComposers()
+                .AddSlimsy()
+                .AddSlimsy(options =>
+                {
+                    options.DefaultQuality = 60;
+                    options.WidthStep = 60;
+                })
                 .Build();
 
-            //services.Configure<SlimsyConfig>(_config.GetSection("SlimsyConfiguration"));
 
         }
 

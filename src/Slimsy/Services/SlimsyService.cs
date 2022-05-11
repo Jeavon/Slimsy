@@ -10,7 +10,6 @@
     using Microsoft.AspNetCore.Html;
     using Newtonsoft.Json;
     using Slimsy.Enums;
-    using Slimsy.Interfaces;
     using Slimsy.Models;
     using Umbraco.Cms.Core;
     using Umbraco.Cms.Core.Strings;
@@ -20,17 +19,19 @@
     using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
     using Umbraco.Cms.Core.Web;
     using Umbraco.Extensions;
+    using Microsoft.Extensions.Options;
+    using Slimsy.Configuration;
 
     public class SlimsyService
     {
-        private readonly ISlimsyOptions _slimsyOptions;
+        private readonly SlimsyOptions _slimsyOptions;
         private readonly IUmbracoContextAccessor _umbracoContextAccessor;
         private static readonly HtmlString EmptyHtmlString = new HtmlString(string.Empty);
         private readonly RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
 
-        public SlimsyService(ISlimsyOptions slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
+        public SlimsyService(IOptionsMonitor<SlimsyOptions> slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
         {
-            this._slimsyOptions = slimsyOptions;
+            this._slimsyOptions = slimsyOptions.CurrentValue;
             this._umbracoContextAccessor = umbracoContextAccessor;
             this._rteMacroRenderingValueConverter = rteMacroRenderingValueConverter;
         }

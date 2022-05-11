@@ -10,16 +10,50 @@ __Release Downloads__
 
 NuGet Package: [![NuGet release](https://img.shields.io/nuget/vpre/Our.Umbraco.Slimsy.svg)](https://www.nuget.org/packages/Our.Umbraco.Slimsy/)
 
-Umbraco Package: [![Our Umbraco project page](https://img.shields.io/badge/our-umbraco-orange.svg)](https://our.umbraco.org/projects/website-utilities/slimsy)
-
 __Prerelease Downloads__
 
 NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpre/Our.Umbraco.Slimsy.svg)](https://www.myget.org/feed/umbraco-packages/package/nuget/Our.Umbraco.Slimsy)
 
-Umbraco Package (zip file): [![AppVeyor Artifacts](https://img.shields.io/badge/appveyor-umbraco-orange.svg)](https://ci.appveyor.com/project/CrumpledDog/slimsy/build/artifacts)
-
 [![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/CrumpledDog/slimsy)
 
+## Installation
+
+### 1. Install from NuGet
+
+### 2. Add to Startup.cs in the ConfigureServices method
+
+```c#
+.AddSlimsy()
+```
+
+### 3. Add lazysizes.min.js & picturefill.min.js to your templates
+
+In your template add the Javascript files
+
+```
+<script src="/scripts/picturefill.min.js"></script>
+<script src="/scripts/lazysizes.min.js" async=""></script>
+```
+
+### 4. Ensure all img elements are set to `display: block` or `display: inline-block;`
+
+e.g.
+
+```
+img {
+    display:block;
+}
+```
+
+### 5. Adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
+
+Use the `GetSrcSetUrls` UrlHelper extension methods to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
+
+```C#
+<div class="employee-grid__item__image">
+    <img data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" srcset="@Url.GetSrcSetUrls(person.Photo, 250, 250, quality: 40)" data-sizes="auto" class="lazyload"/>
+</div>
+```
 
 # Test Site & Source Code
 
