@@ -2,7 +2,7 @@ Slimsy v4 (WIP)
 ============
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
-# Slimsy v4 is made for Umbraco v9.2+!
+# Slimsy v4 is made for Umbraco v10!
 
 ![](Slimsy.png)
 
