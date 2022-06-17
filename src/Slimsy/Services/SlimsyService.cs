@@ -57,6 +57,16 @@
 
             while (w <= this.MaxWidth(publishedContent))
             {
+                // insert crop as url src
+                // Only insert it, if it is not going to be part of the existing srcset
+                if (!IsMultiple(width, w) && UseCropAsSrc() && width < w && width > w - WidthStep())
+                {
+                    var cropStringSpecific = this.GetCropUrl(publishedContent, width, height, propertyAlias, quality: q, preferFocalPoint: true,
+                        furtherOptions: this.AdditionalParams(outputFormat), htmlEncode: false).ToString();
+
+                    outputStringBuilder.Append($"{cropStringSpecific} {width}w,");
+                }
+
                 var h = (int)Math.Round(w * heightRatio);
                 var cropString = this.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: this.AdditionalParams(outputFormat, furtherOptions), htmlEncode: false).ToString();
@@ -94,6 +104,15 @@
 
             while (w <= this.MaxWidth(publishedContent))
             {
+                // insert crop as url src
+                if (!IsMultiple(width, w) && UseCropAsSrc() && width < w && width > w - WidthStep())
+                {
+                    var cropStringSpecific = this.GetCropUrl(publishedContent, width, height, propertyAlias, quality: q, preferFocalPoint: true,
+                        furtherOptions: this.AdditionalParams(outputFormat), htmlEncode: false).ToString();
+
+                    outputStringBuilder.Append($"{cropStringSpecific} {width}w,");
+                }
+
                 var h = (int)Math.Round(w * heightRatio);
                 var cropString = this.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, furtherOptions: this.AdditionalParams(outputFormat, furtherOptions), imageCropMode: imageCropMode, imageCropAnchor: imageCropAnchor, htmlEncode: false).ToString();
 
@@ -292,6 +311,16 @@
         private int WidthStep()
         {
             return this._slimsyOptions.WidthStep;
+        }
+
+        private bool UseCropAsSrc()
+        {
+            return this._slimsyOptions.UseCropAsSrc;
+        }
+
+        private static bool IsMultiple(int x, int n)
+        {
+            return (x % n) == 0;
         }
 
         private int MaxWidth(IPublishedContent publishedContent)

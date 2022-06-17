@@ -49,6 +49,7 @@ namespace Slimsy.TestSite
                 {
                     options.DefaultQuality = 60;
                     options.WidthStep = 60;
+                    options.UseCropAsSrc = true;
                 })
                 .Build();
 
