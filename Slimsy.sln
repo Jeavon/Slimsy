@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F41AA125
 		build\check-release-version.ps1 = build\check-release-version.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slimsy.TestSite", "src\Slimsy.TestSite\Slimsy.TestSite.csproj", "{1D6F7196-C134-4A0B-86B5-5DEF4EAD6CED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slimsy.TestSite", "src\Slimsy.TestSite\Slimsy.TestSite.csproj", "{1D6F7196-C134-4A0B-86B5-5DEF4EAD6CED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
