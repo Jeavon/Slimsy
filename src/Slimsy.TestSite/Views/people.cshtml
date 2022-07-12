@@ -33,6 +33,36 @@
             <a class="nav-link nav-link--black" href="">Other</a>
         </nav>
         -->
+        
+        <h2>No Slimsy, plain old GetCropUrl</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        @{
+                            var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
+                        }
+                        <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
+                        <div class="employee-grid__item__image"><img src="@imageUrl"/></div>
+
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
+                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
+                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
+                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
 
         <h2>Using Image Source Set with picture element, WebP and LQIP using Slimsy Picture Tag Helper</h2>
         <div class="employee-grid">          
@@ -61,42 +91,10 @@
             }
         </div>
 
-        <div class="employee-grid">
-          
-            @foreach (Person person in Model.Children<Person>())
-            {
-
-                <div class="employee-grid__item">
-
-                    <div class="employee-grid__item__image">
-                        @{
-                            var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
-                        }
-                        <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
-                        <div class="employee-grid__item__image"><img src="@imageUrl"/></div>
-
-                    </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-
+        <h2>Using Image Source Set using SlimsyService</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
             {
-
                 <div class="employee-grid__item">
 
                     <div class="employee-grid__item__image">
@@ -122,12 +120,11 @@
             }
         </div>
 
+        <h2>Using Image Source Set using UrlHelper Extension method</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
             {
-
                 <div class="employee-grid__item">
-
                     <div class="employee-grid__item__image">
                         @{
                             var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
