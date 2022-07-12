@@ -15,7 +15,9 @@ namespace Slimsy
         public int Width { get; set; }
         public int Height { get; set; }
         public string? AltText { get; set; }
-
+        public string CssClass { get; set; }
+        public bool RenderWebpAlternative { get; set; } = true;
+        public bool RenderLQIP { get; set; } = true;
 
         private readonly IUrlHelper _urlHelper;
         private readonly SlimsyService _slimsyService;
@@ -32,12 +34,12 @@ namespace Slimsy
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            var mediaFileAlias = global::Umbraco.Cms.Core.Constants.Conventions.Media.File;
+            var mediaFileAlias = Umbraco.Cms.Core.Constants.Conventions.Media.File;
+
+            CssClass = !string.IsNullOrEmpty(CssClass) ? $"lazyload {CssClass}" : "lazyload";
 
             if (Image != null)
             {
-                var renderWebPAlternative = true;
-
                 string defaultMimeType;
 
                 var umbracoExtension = Image.Value<string>(Umbraco.Cms.Core.Constants.Conventions.Media.Extension);
@@ -54,7 +56,7 @@ namespace Slimsy
                         break;
                     case "gif":
                         defaultMimeType = "image/gif";
-                        renderWebPAlternative = false;
+                        RenderWebpAlternative = false;
                         break;
                     default:
                         defaultMimeType = "image/jpeg";
@@ -79,25 +81,32 @@ namespace Slimsy
                     AltText = Image.Name;
                 }
 
-                var htmlContent = "<!--[if IE 9]><video style=\"display: none\"><![endif]-->";
+                var htmlContent = "";
 
-                if (renderWebPAlternative)
+                if (RenderWebpAlternative)
                 {
-                    htmlContent += $@"<source data-srcset=""{imgSrcSetWebP}"" srcset=""{imgLqipWebP}"" type=""image/webp"" data-sizes=""auto"" />";
+                    if (RenderLQIP)
+                    {
+                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{imgSrcSetWebP}"" srcset=""{imgLqipWebP}"" type=""image/webp"" data-sizes=""auto"" />" + Environment.NewLine;
+                    } else
+                    {
+                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{imgSrcSetWebP}"" type=""image/webp"" data-sizes=""auto"" />" + Environment.NewLine;
+                    }
                 }
-
-                htmlContent += $@"<source data-srcset=""{imgSrcSet}"" srcset=""{imgLqip}"" type=""{defaultMimeType}"" data-sizes=""auto"" />";
-
-                htmlContent += "<!--[if IE 9]></video><![endif]-->";
-                htmlContent += $@"<img src=""{imgLqip}""
-                         data-src=""{imgSrc}""
-                         class=""lazyload""
-                         data-sizes=""auto""
-                         alt=""{AltText}"" />";
-
-                output.TagName = "picture";
+      
+                if (RenderLQIP)
+                {
+                    htmlContent += $@"<source data-srcset=""{imgSrcSet}"" srcset=""{imgLqip}"" type=""{defaultMimeType}"" data-sizes=""auto"" />" + Environment.NewLine;
+                    htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" />" + Environment.NewLine;
+                }
+                else
+                {
+                    htmlContent += $@"<source data-srcset=""{imgSrcSet}"" type=""{defaultMimeType}"" data-sizes=""auto"" />" + Environment.NewLine;
+                    htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" />" + Environment.NewLine;
+                }
+                
+                output.TagName = "picture";                
                 output.Content.SetHtmlContent(htmlContent);
-
             }
         }
     }
