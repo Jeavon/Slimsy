@@ -7,7 +7,6 @@
         public int DefaultQuality { get; set; } = 90!;
         public int MaxWidth { get; set; } = 2048!;
         public int WidthStep { get; set; } = 160!;
-        public string DomainPrefix { get; set; } = null!;
         public bool UseCropAsSrc { get; set; }
 
     }

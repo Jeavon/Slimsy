@@ -712,7 +712,7 @@
         }
 
         /// <summary>
-        /// Gets the ImageSharp Url from the image path. This method will prepend the Slimsy DomainPrefix if set.
+        /// Gets the ImageSharp Url from the image path.
         /// </summary>
         /// <param name="imageUrl">
         /// The image url.
