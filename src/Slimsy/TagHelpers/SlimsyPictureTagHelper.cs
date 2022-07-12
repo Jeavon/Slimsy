@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Slimsy.Services;
 using System;
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Extensions;
 
-namespace Slimsy.TestSite
+namespace Slimsy
 {
     public class SlimsyPictureTagHelper : TagHelper
     {
