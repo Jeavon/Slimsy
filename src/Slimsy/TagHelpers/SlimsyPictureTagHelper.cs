@@ -11,7 +11,7 @@ namespace Slimsy
 {
     public class SlimsyPictureTagHelper : TagHelper
     {
-        public IPublishedContent Image { get; set; }
+        public IPublishedContent MediaItem { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public string? AltText { get; set; }
@@ -38,11 +38,11 @@ namespace Slimsy
 
             CssClass = !string.IsNullOrEmpty(CssClass) ? $"lazyload {CssClass}" : "lazyload";
 
-            if (Image != null)
+            if (MediaItem != null)
             {
                 string defaultMimeType;
 
-                var umbracoExtension = Image.Value<string>(Umbraco.Cms.Core.Constants.Conventions.Media.Extension);
+                var umbracoExtension = MediaItem.Value<string>(Umbraco.Cms.Core.Constants.Conventions.Media.Extension);
 
                 var defaultFormat = umbracoExtension;
 
@@ -67,18 +67,18 @@ namespace Slimsy
                 var lqipWidth = (int)Math.Round((decimal)Width / 2);
                 var lqipHeight = (int)Math.Round((decimal)Height / 2);
 
-                var imgSrcSet = _slimsyService.GetSrcSetUrls(Image, Width, Height, mediaFileAlias, outputFormat: defaultFormat);
-                var imgSrcSetWebP = _slimsyService.GetSrcSetUrls(Image, Width, Height, mediaFileAlias, 70, "webp");
+                var imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, mediaFileAlias, outputFormat: defaultFormat);
+                var imgSrcSetWebP = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, mediaFileAlias, 70, "webp");
 
-                var imgSrc = _urlHelper.GetCropUrl(Image, Width, Height, furtherOptions: "&format=" + defaultFormat);
+                var imgSrc = _urlHelper.GetCropUrl(MediaItem, Width, Height, furtherOptions: "&format=" + defaultFormat);
 
                 // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
-                var imgLqip = _urlHelper.GetCropUrl(Image, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + defaultFormat);
-                var imgLqipWebP = _urlHelper.GetCropUrl(Image, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=webp");
+                var imgLqip = _urlHelper.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + defaultFormat);
+                var imgLqipWebP = _urlHelper.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=webp");
 
                 if (AltText == null)
                 {
-                    AltText = Image.Name;
+                    AltText = MediaItem.Name;
                 }
 
                 var htmlContent = "";

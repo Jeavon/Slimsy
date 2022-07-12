@@ -63,7 +63,7 @@
     var width = item.Value<int>("umbracoWidth");
     var height = item.Value<int>("umbracoHeight");
 
-    <slimsy-picture image="@item" width="@width" height="@height" alt-text="@altText"/>
+    <slimsy-picture media-item="@item" width="@width" height="@height" alt-text="@altText"/>
 
     if (Model.value.caption != null)
     {
