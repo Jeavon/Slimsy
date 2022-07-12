@@ -9,7 +9,6 @@
     using HtmlAgilityPack;
     using Microsoft.AspNetCore.Html;
     using Newtonsoft.Json;
-    using Slimsy.Enums;
     using Slimsy.Models;
     using Umbraco.Cms.Core;
     using Umbraco.Cms.Core.Strings;
@@ -379,11 +378,6 @@
             return returnString.ToString();
         }
 
-        private string DomainPrefix()
-        {
-            return this._slimsyOptions.DomainPrefix;
-        }
-
         private HtmlString ConvertImgToResponsiveInternal(string html, bool generateLqip = true,
             bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true,
             bool renderPicture = false, string[] pictureSources = null)
@@ -589,7 +583,7 @@
         #region GetCropUrl proxies
 
             /// <summary>
-            /// Gets the ImageProcessor Url of a media item by the crop alias (using default media item property alias of "umbracoFile"). This method will prepend the Slimsy DomainPrefix if set.
+            /// Gets the ImageSharp Url of a media item by the crop alias (using default media item property alias of "umbracoFile").
             /// </summary>
             /// <param name="mediaItem">
             /// The IPublishedContent item.
@@ -607,12 +601,12 @@
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = this.DomainPrefix() + mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true);
+            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
         /// <summary>
-        /// Gets the ImageProcessor Url by the crop alias using the specified property containing the image cropper Json data on the IPublishedContent item. This method will prepend the Slimsy DomainPrefix if set.
+        /// Gets the ImageSharp Url by the crop alias using the specified property containing the image cropper Json data on the IPublishedContent item.
         /// </summary>
         /// <param name="mediaItem">
         /// The IPublishedContent item.
@@ -628,19 +622,19 @@
         /// set to false if using the result of this method for CSS.
         /// </param>
         /// <returns>
-        /// The ImageProcessor.Web Url.
+        /// The ImageSharp.Web Url.
         /// </returns>
         public HtmlString GetCropUrl(IPublishedContent mediaItem, string propertyAlias,
             string cropAlias, bool htmlEncode = true)
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = this.DomainPrefix() + mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true);
+            var url = mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
         /// <summary>
-        /// Gets the ImageProcessor Url from the image path. This method will prepend the Slimsy DomainPrefix if set.
+        /// Gets the ImageSharp Url from the image path.
         /// </summary>
         /// <param name="mediaItem">
         /// The IPublishedContent item.
@@ -676,7 +670,7 @@
         /// Add a serialized date of the last edit of the item to ensure client cache refresh when updated
         /// </param>
         /// <param name="furtherOptions">
-        /// These are any query string parameters (formatted as query strings) that ImageProcessor supports. For example:
+        /// These are any query string parameters (formatted as query strings) that ImageSharp supports. For example:
         /// <example>
         /// <![CDATA[
         /// furtherOptions: "&bgcolor=fff"
@@ -708,19 +702,17 @@
             bool useCropDimensions = false,
             bool cacheBuster = true,
             string furtherOptions = null,
-            ImageCropRatioMode? ratioMode = null,
-            bool upScale = true,
             bool htmlEncode = true)
         {
             if (mediaItem == null) return EmptyHtmlString;
-            //ImageCropRatioMode? ratioMode = null, bool upScale = true seem to be missing from v9
-            var url = this.DomainPrefix() + mediaItem.GetCropUrl(width: width, height: height, propertyAlias: propertyAlias, cropAlias: cropAlias, quality: quality, imageCropMode: imageCropMode,
+
+            var url = mediaItem.GetCropUrl(width: width, height: height, propertyAlias: propertyAlias, cropAlias: cropAlias, quality: quality, imageCropMode: imageCropMode,
                 imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: furtherOptions);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
         /// <summary>
-        /// Gets the ImageProcessor Url from the image path. This method will prepend the Slimsy DomainPrefix if set.
+        /// Gets the ImageSharp Url from the image path. This method will prepend the Slimsy DomainPrefix if set.
         /// </summary>
         /// <param name="imageUrl">
         /// The image url.
@@ -756,7 +748,7 @@
         /// Add a serialized date of the last edit of the item to ensure client cache refresh when updated
         /// </param>
         /// <param name="furtherOptions">
-        /// These are any query string parameters (formatted as query strings) that ImageProcessor supports. For example:
+        /// These are any query string parameters (formatted as query strings) that ImageSharp supports. For example:
         /// <example>
         /// <![CDATA[
         /// furtherOptions: "&bgcolor=fff"
@@ -789,12 +781,9 @@
             bool useCropDimensions = false,
             string cacheBusterValue = null,
             string furtherOptions = null,
-            ImageCropRatioMode? ratioMode = null,
-            bool upScale = true,
             bool htmlEncode = true)
         {
-            // ratioMode, upScale - MISSING FROM v9 EXTENSIONS
-            var url = this.DomainPrefix() + imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions);
+            var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -810,14 +799,12 @@
             bool useCropDimensions = false,
             string cacheBusterValue = null,
             string furtherOptions = null,
-            ImageCropRatioMode? ratioMode = null,
-            bool upScale = true,
             bool htmlEncode = true)
         {
             if (imageCropperValue == null) return EmptyHtmlString;
 
             var imageUrl = imageCropperValue.Src;
-            var url = this.DomainPrefix() + imageUrl.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
+            var url = imageUrl.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
                 imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }

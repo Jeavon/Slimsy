@@ -105,7 +105,8 @@ namespace Slimsy
                     htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" />" + Environment.NewLine;
                 }
                 
-                output.TagName = "picture";                
+                output.TagName = "picture";
+                output.TagMode = TagMode.StartTagAndEndTag;
                 output.Content.SetHtmlContent(htmlContent);
             }
         }

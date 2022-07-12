@@ -4,7 +4,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.DependencyInjection;
-    using Slimsy.Enums;
     using Slimsy.Models;
     using Slimsy.Services;
     using Umbraco.Cms.Core;
@@ -130,62 +129,5 @@
 
         #endregion
 
-        #region GetCropUrl
-
-        public static HtmlString GetCropUrl(IPublishedContent mediaItem, string cropAlias,
-            bool htmlEncode = true)
-        {
-            return SlimsyService.GetCropUrl(mediaItem, cropAlias, htmlEncode);
-        }
-
-        public static HtmlString GetCropUrl(IPublishedContent mediaItem, string propertyAlias,
-            string cropAlias, bool htmlEncode = true)
-        {
-            return SlimsyService.GetCropUrl(mediaItem, propertyAlias, cropAlias, htmlEncode);
-        }
-
-        public static HtmlString GetCropUrl(IPublishedContent mediaItem,
-            int? width = null,
-            int? height = null,
-            string propertyAlias = Constants.Conventions.Media.File,
-            string cropAlias = null,
-            int? quality = null,
-            ImageCropMode? imageCropMode = null,
-            ImageCropAnchor? imageCropAnchor = null,
-            bool preferFocalPoint = false,
-            bool useCropDimensions = false,
-            bool cacheBuster = true,
-            string furtherOptions = null,
-            ImageCropRatioMode? ratioMode = null,
-            bool upScale = true,
-            bool htmlEncode = true)
-        {
-            return SlimsyService.GetCropUrl(mediaItem, width, height, propertyAlias, cropAlias, quality, imageCropMode,
-                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, furtherOptions, ratioMode, upScale,
-                htmlEncode);
-        }
-
-        public static HtmlString GetCropUrl(
-            ImageCropperValue imageCropperValue,
-            int? width = null,
-            int? height = null,
-            string cropAlias = null,
-            int? quality = null,
-            ImageCropMode? imageCropMode = null,
-            ImageCropAnchor? imageCropAnchor = null,
-            bool preferFocalPoint = false,
-            bool useCropDimensions = false,
-            string cacheBusterValue = null,
-            string furtherOptions = null,
-            ImageCropRatioMode? ratioMode = null,
-            bool upScale = true,
-            bool htmlEncode = true)
-        {
-            return SlimsyService.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
-                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions, ratioMode,
-                upScale, htmlEncode);
-        }
-
-        #endregion
     }
 }

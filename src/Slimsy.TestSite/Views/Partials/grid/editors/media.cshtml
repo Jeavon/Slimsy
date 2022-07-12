@@ -1,4 +1,4 @@
-@model dynamic
+@inherits UmbracoViewPage<dynamic>
 @using Umbraco.Cms.Core.Media
 @using Umbraco.Cms.Core.PropertyEditors.ValueConverters
 @inject IImageUrlGenerator ImageUrlGenerator
@@ -56,6 +56,14 @@
     var altText = Model.value.altText ?? Model.value.caption ?? string.Empty;
 
     <img src="@url" alt="@altText">
+
+    // This will ignore a Grid editor focal point and will use the media item's focal point
+    var udi = Model.value.udi.ToString();
+    var item = Umbraco.Media((string)udi);
+    var width = item.Value<int>("umbracoWidth");
+    var height = item.Value<int>("umbracoHeight");
+
+    <slimsy-picture image="@item" width="@width" height="@height" alt-text="@altText"/>
 
     if (Model.value.caption != null)
     {
