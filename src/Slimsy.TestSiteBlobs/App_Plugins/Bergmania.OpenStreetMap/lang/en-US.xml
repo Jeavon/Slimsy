@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<language alias="en" intName="English (US)" localName="English (US)" lcid="" culture="en-US">
+	<area alias="bergmania">
+		<key alias="latitude">Latitude</key>
+		<key alias="longitude">Longitude</key>
+	</area>
+</language>

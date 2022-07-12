@@ -57,7 +57,11 @@ Use the `GetSrcSetUrls` UrlHelper extension methods to generate your `data-srcse
 
 # Test Site & Source Code
 
-A test site is included in the solution, the username and password for Umbraco are admin@admin.com/password1234567890.
+A test site is included in the solution, the username and password for Umbraco are `admin@admin.com/password1234567890.`
+
+To run the Blob Test site you will need a Azure storage account, to set the connection string in a local user secret with the TestSite.TestSiteBlobs folder run
+
+    dotnet user-secrets set "Umbraco:Storage:AzureBlob:Media:ConnectionString" "DefaultEndpointsProtocol=https;AccountName=;AccountKey=;EndpointSuffix=core.windows.net"
 
 # Credits and references
 

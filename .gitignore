@@ -11,15 +11,3 @@ x64/
 build/
 [Oo]bj/
 
-
-src/Slimsy.TestSite9/App_Plugins/
-src/Slimsy.TestSite9/umbraco/Data/TEMP/*
-src/Slimsy.TestSite9/umbraco/Logs/*
-src/Slimsy.TestSite9/umbraco/mediacache/*
-src/Slimsy.TestSite9/umbraco/PartialViewMacros/
-src/Slimsy.TestSite9/umbraco/UmbracoBackOffice/
-src/Slimsy.TestSite9/umbraco/UmbracoInstall/
-src/Slimsy.TestSite9/umbraco/UmbracoWebsite/
-src/Slimsy.TestSite9/umbraco/config/
-
-src/Slimsy.TestSite9/wwwroot/umbraco/
