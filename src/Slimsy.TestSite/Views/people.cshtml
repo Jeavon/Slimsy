@@ -13,7 +13,7 @@
         if (!string.IsNullOrEmpty(content))
         {
             ; //semicolon needed otherwise <a> cannot be resolved
-            <a class="employee-grid__item__contact-item" href="http://@(service).com/@content">@service</a>
+    <a class="employee-grid__item__contact-item" href="http://@(service).com/@content">@service</a>
         }
     }
 }
@@ -32,7 +32,35 @@
             <a class="nav-link nav-link--black" href="">Designers</a>
             <a class="nav-link nav-link--black" href="">Other</a>
         </nav>
-        -->  
+        -->
+
+        <h2>Using Image Source Set with picture element, WebP and LQIP using Slimsy Picture Tag Helper</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture image="@person.Photo" width="323" height="300"></slimsy-picture>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__details">
+                        <h3 class="employee-grid__item__name">@person.Name</h3>
+                        @if (!string.IsNullOrEmpty(person.Email))
+                        {
+                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+                        }
+                        <div class="employee-grid__item__contact">
+                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
+                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
+                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
+                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
         <div class="employee-grid">
           
             @foreach (Person person in Model.Children<Person>())
@@ -126,6 +154,7 @@
                 </div>
             }
         </div>
+
     </div>
 
 </section>
