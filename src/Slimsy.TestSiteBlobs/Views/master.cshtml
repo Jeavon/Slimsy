@@ -22,6 +22,10 @@
 
     <link rel="stylesheet" href="@Url.Content("~/css/umbraco-starterkit-style.css")" />
     @RenderSection("Header", required: false)
+
+    <style>
+        .employee-grid__item__image img { width: 100%;}
+    </style>
 </head>
 
 <body class="frontpage theme-font-@font theme-color-@colorTheme">
@@ -80,7 +84,8 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>	
     <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.3/jquery.validate.unobtrusive.min.js"></script>
     <script src="@Url.Content("~/scripts/umbraco-starterkit-app.js")"></script>
-
+    <script src="/scripts/picturefill.min.js"></script>
+    <script src="/scripts/lazysizes.min.js"></script>
 </body>
 
 </html>

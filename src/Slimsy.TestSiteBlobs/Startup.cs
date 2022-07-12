@@ -1,3 +1,4 @@
+using Slimsy.DependencyInjection;
 using Umbraco.StorageProviders.AzureBlob.IO;
 
 namespace Slimsy.TestSiteBlobs
@@ -39,6 +40,7 @@ namespace Slimsy.TestSiteBlobs
                 {
                     AzureBlobFileSystem.CreateIfNotExists(options);
                 })
+                .AddSlimsy()
                 .Build();
         }
 

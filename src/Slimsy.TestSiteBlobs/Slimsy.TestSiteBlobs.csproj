@@ -27,6 +27,10 @@
     <Folder Include="wwwroot" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Slimsy\Slimsy.csproj" />
+  </ItemGroup>
+
   <!-- Keep this as false if ModelsBuilder mode is InMemoryAuto -->
   <PropertyGroup>
     <RazorCompileOnBuild>false</RazorCompileOnBuild>
