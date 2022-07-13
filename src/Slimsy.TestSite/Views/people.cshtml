@@ -4,6 +4,24 @@
     Layout = "master.cshtml";
 }
 @{
+    void ContactDetails(Person person)
+    {
+    <div class="employee-grid__item__details">
+                <h3 class="employee-grid__item__name">@person.Name</h3>
+                @if (!string.IsNullOrEmpty(person.Email))
+            {
+                    <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+            }
+                <div class="employee-grid__item__contact">
+                    @{ SocialLink(person.FacebookUsername, "Facebook"); }
+                    @{ SocialLink(person.TwitterUsername, "Twitter"); }
+                    @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
+                    @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                </div>
+    </div>
+    }
+}
+@{
     void SocialLink(string content, string service)
     {
         if (!string.IsNullOrEmpty(content))
@@ -43,20 +61,8 @@
                         <div class="employee-grid__item__image"><img src="@imageUrl"/></div>
 
                     </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
-                        </div>
-                    </div>
-                </div>
+                    @{ContactDetails(person);}
+                </div>                              
             }
         </div>
 
@@ -70,19 +76,7 @@
                             <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true"></slimsy-picture>
                         </div>
                     </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
-                        </div>
-                    </div>
+                    @{ContactDetails(person);}
                 </div>
             }
         </div>
@@ -97,21 +91,8 @@
                         <div class="employee-grid__item__image">
                             <img data-srcset="@SlimsyService.GetSrcSetUrls(person.Photo, 323, 300)" srcset="@SlimsyService.GetSrcSetUrls(person.Photo, 250, 250, quality: 40)" data-sizes="auto" class="lazyload"/>
                         </div>
-
                     </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
-                        </div>
-                    </div>
+                    @{ContactDetails(person);}
                 </div>
             }
         </div>
@@ -131,19 +112,69 @@
                         </div>
 
                     </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>LocalCrops</h2>
+                <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                var cacheBusterValue = person.Photo.UpdateDate.ToFileTimeUtc().ToString();
+
+                var imageUrlLocalCropUrlHelper = Url.GetCropUrl(person.Photo.LocalCrops, "square", cacheBusterValue:cacheBusterValue, htmlEncode: false).ToString();
+                var imageUrlLocalCrop = person.Photo.GetCropUrl("square");
+
+                var imageUrlLocalFocalUrlHelper = Url.GetCropUrl(person.Photo.LocalCrops, cropAlias:"", width:323, height:300, preferFocalPoint:true, useCropDimensions:false, cacheBusterValue:cacheBusterValue, htmlEncode: false).ToString();
+                // https://github.com/umbraco/Umbraco-CMS/blob/v10/contrib/src/Umbraco.Web.Common/Extensions/FriendlyImageCropperTemplateExtensions.cs#L201
+                var imageUrlLocalFocal = person.Photo.GetCropUrl(323, 300);
+
+                var imageUrlLocalCropMediaWithCrops = person.Photo.GetCropUrl("square");
+                // Theres no UrlHelper that expects MediaWithCrops
+
+                // Uses local focal point if enabled otherwise media item focal point
+                var imageUrlLocalCropFocalMediaWithCrops = person.Photo.GetCropUrl(323, 300);
+
+                var imageUrlFocal = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
+
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCropUrlHelper"/><figcaption>LocalCrop UrlHelper</figcaption></figure>
                         </div>
                     </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCrop"/><figcaption>LocalCrop</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalFocalUrlHelper"/><figcaption>LocalCrop FocalPoint UrlHelper</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalFocal"/><figcaption>LocalCrop FocalPoint</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCropMediaWithCrops"/><figcaption>LocalCrop from MediaWithCrops</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCropFocalMediaWithCrops"/><figcaption>LocalCrop Focal from MediaWithCrops</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlFocal"/><figcaption>Media Item Focal</figcaption></figure>
+                        </div>
+                    </div>
+                    @{ContactDetails(person);}
                 </div>
             }
         </div>
