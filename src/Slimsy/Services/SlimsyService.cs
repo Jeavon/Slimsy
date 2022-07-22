@@ -216,8 +216,15 @@
             var outputString = string.Empty;
 
             var cropperJson = publishedContent.Value<string>(propertyAlias);
-            var imageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
-            var crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
+
+            ImageCropperValue imageCrops = null;
+            ImageCropperValue.ImageCropperCrop crop = null;
+            if (cropperJson.DetectIsJson())
+            {
+                imageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
+                crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
+            }
+
             var additionalParams = this.AdditionalParams(outputFormat, furtherOptions);
 
             if (crop != null)
@@ -238,12 +245,21 @@
             {
                 // this code would execute if a predefined crop has been added to the data type but this media item hasn't been re-saved
                 var cropperConfiguration = (ImageCropperConfiguration)publishedContent.Properties.FirstOrDefault(x => x.Alias == propertyAlias)?.PropertyType.DataType.Configuration;
-                var cropConfiguration = cropperConfiguration?.Crops.FirstOrDefault(c => c.Alias == cropAlias);
+                ImageCropperConfiguration.Crop cropConfiguration = null;
+                if (cropperConfiguration.Crops!= null) {
+                    cropConfiguration = cropperConfiguration?.Crops.FirstOrDefault(c => c.Alias == cropAlias);
+                }
+                
                 if (cropConfiguration != null)
                 {
                     // auto generate using focal point
                     return this.GetSrcSetUrls(publishedContent, cropConfiguration.Width,
                         cropConfiguration.Height, propertyAlias, outputFormat: outputFormat, quality: q, furtherOptions: additionalParams);
+                }
+                else
+                {
+                    //  crop doesn't exist, return a square
+                    return this.GetSrcSetUrls(publishedContent, 100, 100, propertyAlias, outputFormat: outputFormat, quality: q, furtherOptions: additionalParams);
                 }
             }
 
