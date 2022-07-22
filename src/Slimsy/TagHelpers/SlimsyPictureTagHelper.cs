@@ -65,7 +65,7 @@ namespace Slimsy
                 int lqipWidth;
                 int lqipHeight;
 
-                HtmlString imgSrcSet, imgSrcSetWebP;
+                IHtmlContent imgSrcSet, imgSrcSetWebP;
                 IHtmlContent imgSrc, imgLqip, imgLqipWebP;
 
                 if (!string.IsNullOrEmpty(CropAlias))

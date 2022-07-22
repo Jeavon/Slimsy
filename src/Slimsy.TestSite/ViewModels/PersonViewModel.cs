@@ -10,7 +10,7 @@
         {
         }
 
-        public HtmlString PictureSrc { get; set; }
-        public HtmlString PictureSrcSet { get; set; }
+        public IHtmlContent PictureSrc { get; set; }
+        public IHtmlContent PictureSrcSet { get; set; }
     }
 }

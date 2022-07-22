@@ -31,7 +31,7 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url</returns>
-        public static HtmlString GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public static IHtmlContent GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             return SlimsyService.GetSrcSetUrls(publishedContent, width, height, propertyAlias, quality, outputFormat, furtherOptions);
         }
@@ -50,7 +50,7 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public static HtmlString GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, string propertyAlias = Constants.Conventions.Media.File, ImageCropAnchor imageCropAnchor = ImageCropAnchor.Center, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public static IHtmlContent GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, string propertyAlias = Constants.Conventions.Media.File, ImageCropAnchor imageCropAnchor = ImageCropAnchor.Center, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             return SlimsyService.GetSrcSetUrls(publishedContent, width, height, imageCropMode, imageCropAnchor,
                 propertyAlias, quality, outputFormat, furtherOptions);
@@ -67,7 +67,7 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>HTML Markup</returns>
-        public static HtmlString GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public static IHtmlContent GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             return SlimsyService.GetSrcSetUrls(publishedContent, aspectRatio, propertyAlias, quality, outputFormat, furtherOptions);
         }
@@ -87,12 +87,12 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>HTML Markup</returns>
-        public static HtmlString GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public static IHtmlContent GetSrcSetUrls(this IUrlHelper urlHelper, IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             return SlimsyService.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, quality, outputFormat, furtherOptions);
         }
 
-        public static HtmlString GetSrcSetUrls(this IUrlHelper urlHelper, MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public static IHtmlContent GetSrcSetUrls(this IUrlHelper urlHelper, MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             return SlimsyService.GetSrcSetUrls(mediaWithCrops, cropAlias, propertyAlias, quality, outputFormat, furtherOptions);
         }

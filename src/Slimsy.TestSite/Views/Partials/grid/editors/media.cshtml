@@ -1,5 +1,6 @@
 @inherits UmbracoViewPage<dynamic>
 @using Umbraco.Cms.Core.Media
+@using Umbraco.Cms.Core.Models
 @using Umbraco.Cms.Core.PropertyEditors.ValueConverters
 @inject IImageUrlGenerator ImageUrlGenerator
 
@@ -63,7 +64,9 @@
     var width = item.Value<int>("umbracoWidth");
     var height = item.Value<int>("umbracoHeight");
 
-    <slimsy-picture media-item="@item" width="@width" height="@height" alt-text="@altText"/>
+    var itemWithCrops = new MediaWithCrops(item, null, null);
+
+    <slimsy-picture media-item="@itemWithCrops" width="@width" height="@height" alt-text="@altText" />
 
     if (Model.value.caption != null)
     {

@@ -46,7 +46,7 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public HtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -93,7 +93,7 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public HtmlString GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, ImageCropAnchor imageCropAnchor = ImageCropAnchor.Center, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, ImageCropAnchor imageCropAnchor = ImageCropAnchor.Center, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -136,7 +136,7 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>HTML Markup</returns>
-        public HtmlString GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -173,7 +173,7 @@
         /// <param name="imageCropAnchor"></param>
         /// <param name="outputFormat"></param>
         /// <returns>Url of image</returns>
-        public HtmlString GetSrcSetUrls(string url, int width, int height, int maxWidth, int quality = 90, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null, string outputFormat = "")
+        public IHtmlContent GetSrcSetUrls(string url, int width, int height, int maxWidth, int quality = 90, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null, string outputFormat = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -207,7 +207,7 @@
         /// <param name="furtherOptions"></param>
         /// <param name="quality">Default is 90</param>
         /// <returns>Url of image</returns>
-        public HtmlString GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -266,7 +266,7 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        public HtmlString GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -538,7 +538,7 @@
 
                                                 var srcSet = this.GetSrcSetUrls(node, width, height);
 
-                                                HtmlString defaultLqip = null;
+                                                IHtmlContent defaultLqip = null;
                                                 if (generateLqip)
                                                 {
                                                     defaultLqip = this.GetCropUrl(node, width, height, quality: 30,
@@ -653,7 +653,7 @@
             /// set to false if using the result of this method for CSS.
             /// </param>
             /// <returns></returns>
-            public HtmlString GetCropUrl(IPublishedContent mediaItem, string cropAlias,
+            public IHtmlContent GetCropUrl(IPublishedContent mediaItem, string cropAlias,
             bool htmlEncode = true)
         {
             if (mediaItem == null) return EmptyHtmlString;
@@ -681,7 +681,7 @@
         /// <returns>
         /// The ImageSharp.Web Url.
         /// </returns>
-        public HtmlString GetCropUrl(IPublishedContent mediaItem, string propertyAlias,
+        public IHtmlContent GetCropUrl(IPublishedContent mediaItem, string propertyAlias,
             string cropAlias, bool htmlEncode = true)
         {
             if (mediaItem == null) return EmptyHtmlString;
@@ -747,7 +747,7 @@
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public HtmlString GetCropUrl(IPublishedContent mediaItem,
+        public IHtmlContent GetCropUrl(IPublishedContent mediaItem,
             int? width = null,
             int? height = null,
             string propertyAlias = Constants.Conventions.Media.File,
@@ -825,7 +825,7 @@
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public HtmlString GetCropUrl(
+        public IHtmlContent GetCropUrl(
             string imageUrl,
             int? width = null,
             int? height = null,
@@ -844,7 +844,7 @@
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
-        public HtmlString GetCropUrl(
+        public IHtmlContent GetCropUrl(
             ImageCropperValue imageCropperValue,
             int? width = null,
             int? height = null,
@@ -866,7 +866,7 @@
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
-        public HtmlString GetCropUrl(
+        public IHtmlContent GetCropUrl(
             MediaWithCrops mediaWithCrops,
             int? width = null,
             int? height = null,
