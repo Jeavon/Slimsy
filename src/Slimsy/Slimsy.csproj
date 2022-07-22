@@ -9,13 +9,13 @@
         <Product>Slimsy</Product>
         <PackageTags>umbraco plugin package images responsive</PackageTags>
         <RootNamespace>Slimsy</RootNamespace>
-		<Version>4.0.0-alpha.0</Version>
-		<AssemblyVersion>4.0.0.0</AssemblyVersion>
+		    <Version>4.0.0-alpha.0</Version>
+		    <AssemblyVersion>4.0.0.0</AssemblyVersion>
         <FileVersion>4.0.0.0</FileVersion>
         <InformationalVersion>4.0.0.0-alpha.0</InformationalVersion>
-		<PackageIcon>slimsy.png</PackageIcon>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		    <PackageIcon>slimsy.png</PackageIcon>
+		    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,14 +23,21 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="App_Plugins\Slimsy\**\*.*">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-        </Content>
         <None Include="build\**\*.*">
             <Pack>True</Pack>
             <PackagePath>buildTransitive</PackagePath>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Scripts\lazysizes.min.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Scripts\lazysizes.min.js">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>

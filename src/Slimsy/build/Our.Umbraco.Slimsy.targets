@@ -1,0 +1,17 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <SlimsyContentFilesPath>$(MSBuildThisFileDirectory)..\Scripts\**\*.*</SlimsyContentFilesPath>
+    </PropertyGroup>
+
+    <Target Name="CopySlimsyAssets" BeforeTargets="Build">
+        <ItemGroup>
+            <SlimsyContentFiles Include="$(SlimsyContentFilesPath)" />
+        </ItemGroup>
+        <Message Text="Copying Slimsy files: $(SlimsyContentFilesPath) - #@(SlimsyContentFiles->Count()) files"  Importance="high" />
+        <Copy
+            SourceFiles="@(SlimsyContentFiles)"
+            DestinationFiles="@(SlimsyContentFiles->'$(MSBuildProjectDirectory)\wwwroot\scripts\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true" />
+    </Target>
+</Project>
