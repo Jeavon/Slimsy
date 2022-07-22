@@ -266,6 +266,47 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
+        public HtmlString GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        {
+            var w = this.WidthStep();
+            var q = quality == 90 ? this.DefaultQuality() : quality;
+
+            var outputStringBuilder = new StringBuilder();
+            var outputString = string.Empty;
+
+            var cropperJson = mediaWithCrops.Value<string>(propertyAlias);
+
+            ImageCropperValue globalImageCrops = null;
+            ImageCropperValue.ImageCropperCrop crop = null;
+            if (cropperJson.DetectIsJson())
+            {
+                globalImageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
+            }
+            ImageCropperValue mergedImageCrops = null;
+            mergedImageCrops = globalImageCrops.Merge(mediaWithCrops.LocalCrops);
+
+            crop = mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
+
+            var additionalParams = this.AdditionalParams(outputFormat, furtherOptions);
+
+            if (crop != null)
+            {
+                var heightRatio = (decimal)crop.Height / crop.Width;
+                while (w <= this.MaxWidth(mediaWithCrops.Content))
+                {
+                    var h = (int)Math.Round(w * heightRatio);
+                    outputStringBuilder.Append(
+                        $"{this.GetCropUrl(mediaWithCrops, w, h, propertyAlias, cropAlias, q, furtherOptions: additionalParams, htmlEncode: false)} {w}w,");
+                    w += this.WidthStep();
+                }
+
+                // remove the last comma
+                outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+            }
+
+            return new HtmlString(HttpUtility.HtmlEncode(outputString));
+        }
+
         #endregion
 
         #region Internal Functions
@@ -825,6 +866,25 @@
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
+        public HtmlString GetCropUrl(
+            MediaWithCrops mediaWithCrops,
+            int? width = null,
+            int? height = null,
+            string propertyAlias = Constants.Conventions.Media.File,
+            string? cropAlias = null,
+            int? quality = null,
+            ImageCropMode? imageCropMode = null,
+            ImageCropAnchor? imageCropAnchor = null,
+            bool preferFocalPoint = false,
+            bool useCropDimensions = false,
+            bool cacheBuster = true,
+            string? furtherOptions = null,
+            UrlMode urlMode = UrlMode.Default,
+            bool htmlEncode = true)
+        {
+            var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, furtherOptions, urlMode);
+            return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
+        }
         #endregion
 
         #region HTML Helpers

@@ -92,6 +92,11 @@
             return SlimsyService.GetSrcSetUrls(publishedContent, cropAlias, propertyAlias, quality, outputFormat, furtherOptions);
         }
 
+        public static HtmlString GetSrcSetUrls(this IUrlHelper urlHelper, MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        {
+            return SlimsyService.GetSrcSetUrls(mediaWithCrops, cropAlias, propertyAlias, quality, outputFormat, furtherOptions);
+        }
+
         #endregion
 
         #region Html Helpers

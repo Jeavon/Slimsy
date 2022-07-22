@@ -124,11 +124,31 @@
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
                         @{
-                            var imageUrl = Url.GetCropUrl(person.Photo, "GlobalSquare", htmlEncode: false).ToString();
+                            var imageUrl = Url.GetCropUrl((IPublishedContent)person.Photo, "GlobalSquare", htmlEncode: false).ToString();
                         }
                         <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
                         <div class="employee-grid__item__image">
-                            <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "GlobalSquare")" srcset="@Url.GetSrcSetUrls(person.Photo, "GlobalSquare", quality: 40)" data-sizes="auto" class="lazyload"/>
+                            <img data-srcset="@Url.GetSrcSetUrls((IPublishedContent)person.Photo, "GlobalSquare")" srcset="@Url.GetSrcSetUrls((IPublishedContent)person.Photo, "GlobalSquare", quality: 40)" data-sizes="auto" class="lazyload"/>
+                        </div>
+
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set using UrlHelper Extension method and local crop</h2>
+        <div class="employee-grid">
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        @{
+                            var imageUrl = Url.GetCropUrl(person.Photo, "square", htmlEncode: false).ToString();
+                        }
+                        <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
+                        <div class="employee-grid__item__image">
+                            <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "square")" srcset="@Url.GetSrcSetUrls(person.Photo, "square", quality: 40)" data-sizes="auto" class="lazyload"/>
                         </div>
 
                     </div>
