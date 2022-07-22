@@ -26,12 +26,11 @@ NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpr
 .AddSlimsy()
 ```
 
-### 3. Add lazysizes.min.js & picturefill.min.js to your templates
+### 3. Add lazysizes.min.js & to your templates/views
 
-In your template add the Javascript files
+In your template add the JavaScript files
 
 ```
-<script src="/scripts/picturefill.min.js"></script>
 <script src="/scripts/lazysizes.min.js" async=""></script>
 ```
 
@@ -45,7 +44,11 @@ img {
 }
 ```
 
-### 5. Adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
+### 5. Use the `<slimsy-picture>` tag helper or manually adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
+
+```C#
+<slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true"></slimsy-picture>
+```
 
 Use the `GetSrcSetUrls` UrlHelper extension methods to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
@@ -65,7 +68,8 @@ To run the Blob Test site you will need a Azure storage account, to set the conn
 
 # Credits and references
 
-This project includes [LazySizes](https://github.com/aFarkas/lazysizes) and [Picturefill](https://github.com/scottjehl/picturefill) Both projects are MIT licensed.
+This project includes [LazySizes](https://github.com/aFarkas/lazysizes) 
+which is MIT licensed.
 
 Without the amazing [ImageSharp](https://github.com/SixLabors/ImageSharp) this package wouldn't exist, so many thanks go to [James](https://github.com/JimBobSquarePants) and all the [SixLabors](https://github.com/SixLabors) team for creating  ImageSharp!
 
