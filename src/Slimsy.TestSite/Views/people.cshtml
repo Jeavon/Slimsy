@@ -81,6 +81,36 @@
             }
         </div>
 
+        <h2>Using Image Source Set with picture element, WebP and LQIP using Slimsy Picture Tag Helper and a Local Crop</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true" crop-alias="square"></slimsy-picture>
+                        </div>
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set with picture element, WebP and LQIP using Slimsy Picture Tag Helper and a Global Crop</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true" crop-alias="GlobalSquare"></slimsy-picture>
+                        </div>
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
         <h2>Using Image Source Set using SlimsyService</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
@@ -117,7 +147,7 @@
             }
         </div>
 
-         <h2>Using Image Source Set using UrlHelper Extension method and global crop</h2>
+        <h2>Using Image Source Set using UrlHelper Extension method and global crop</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
             {
@@ -157,7 +187,7 @@
             }
         </div>
 
-        <h2>LocalCrops</h2>
+        <h2>LocalCrops - Examples</h2>
                 <div class="employee-grid">          
             @foreach (Person person in Model.Children<Person>())
             {
