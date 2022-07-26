@@ -16,6 +16,7 @@
 		    <PackageIcon>slimsy.png</PackageIcon>
 		    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+		    <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

@@ -8,7 +8,6 @@
     using System.Web;
     using HtmlAgilityPack;
     using Microsoft.AspNetCore.Html;
-    using Newtonsoft.Json;
     using Slimsy.Models;
     using Umbraco.Cms.Core;
     using Umbraco.Cms.Core.Strings;
@@ -215,15 +214,8 @@
             var outputStringBuilder = new StringBuilder();
             var outputString = string.Empty;
 
-            var cropperJson = publishedContent.Value<string>(propertyAlias);
-
-            ImageCropperValue imageCrops = null;
-            ImageCropperValue.ImageCropperCrop crop = null;
-            if (cropperJson.DetectIsJson())
-            {
-                imageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
-                crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
-            }
+            var imageCrops = publishedContent.Value<ImageCropperValue>(propertyAlias);
+            var crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));            
 
             var additionalParams = this.AdditionalParams(outputFormat, furtherOptions);
 
@@ -274,18 +266,12 @@
             var outputStringBuilder = new StringBuilder();
             var outputString = string.Empty;
 
-            var cropperJson = mediaWithCrops.Value<string>(propertyAlias);
+            var globalImageCrops = mediaWithCrops.Value<ImageCropperValue>(propertyAlias);
 
-            ImageCropperValue globalImageCrops = null;
-            ImageCropperValue.ImageCropperCrop crop = null;
-            if (cropperJson.DetectIsJson())
-            {
-                globalImageCrops = JsonConvert.DeserializeObject<ImageCropperValue>(cropperJson);
-            }
             ImageCropperValue mergedImageCrops = null;
             mergedImageCrops = globalImageCrops.Merge(mediaWithCrops.LocalCrops);
 
-            crop = mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
+            var crop = mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
 
             var additionalParams = this.AdditionalParams(outputFormat, furtherOptions);
 
@@ -338,7 +324,7 @@
 
         private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
         {
-            if (_umbracoContextAccessor.TryGetUmbracoContext(out IUmbracoContext context))
+            if (_umbracoContextAccessor.TryGetUmbracoContext(out var context))
             {
                 switch (guidUdi.EntityType)
                 {
