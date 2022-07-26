@@ -390,7 +390,7 @@
             return maxWidth;
         }
 
-        private string AdditionalParams(string outputFormat = null, string furtherOptions = null)
+        private string AdditionalParams(string? outputFormat = null, string? furtherOptions = null)
         {
             if (outputFormat == null)
             {
@@ -423,7 +423,7 @@
 
         private HtmlString ConvertImgToResponsiveInternal(string html, bool generateLqip = true,
             bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true,
-            bool renderPicture = false, string[] pictureSources = null)
+            bool renderPicture = false, string[]? pictureSources = null)
         {
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
@@ -492,7 +492,7 @@
                                 if (udiAttr != null)
                                 {
                                     // Umbraco media
-                                    GuidUdi guidUdi;
+                                    GuidUdi? guidUdi;
                                     if (UdiParser.TryParse(udiAttr.Value, out guidUdi))
                                     {
                                         var node = this.GetAnyTypePublishedContent(guidUdi);
@@ -524,7 +524,7 @@
 
                                                 var srcSet = this.GetSrcSetUrls(node, width, height);
 
-                                                IHtmlContent defaultLqip = null;
+                                                IHtmlContent? defaultLqip = null;
                                                 if (generateLqip)
                                                 {
                                                     defaultLqip = this.GetCropUrl(node, width, height, quality: 30,
@@ -737,14 +737,14 @@
             int? width = null,
             int? height = null,
             string propertyAlias = Constants.Conventions.Media.File,
-            string cropAlias = null,
+            string? cropAlias = null,
             int? quality = null,
             ImageCropMode? imageCropMode = null,
             ImageCropAnchor? imageCropAnchor = null,
             bool preferFocalPoint = false,
             bool useCropDimensions = false,
             bool cacheBuster = true,
-            string furtherOptions = null,
+            string? furtherOptions = null,
             bool htmlEncode = true)
         {
             if (mediaItem == null) return EmptyHtmlString;
@@ -815,15 +815,15 @@
             string imageUrl,
             int? width = null,
             int? height = null,
-            string imageCropperValue = null,
-            string cropAlias = null,
+            string? imageCropperValue = null,
+            string? cropAlias = null,
             int? quality = null,
             ImageCropMode? imageCropMode = null,
             ImageCropAnchor? imageCropAnchor = null,
             bool preferFocalPoint = false,
             bool useCropDimensions = false,
-            string cacheBusterValue = null,
-            string furtherOptions = null,
+            string? cacheBusterValue = null,
+            string? furtherOptions = null,
             bool htmlEncode = true)
         {
             var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions);
@@ -834,14 +834,14 @@
             ImageCropperValue imageCropperValue,
             int? width = null,
             int? height = null,
-            string cropAlias = null,
+            string? cropAlias = null,
             int? quality = null,
             ImageCropMode? imageCropMode = null,
             ImageCropAnchor? imageCropAnchor = null,
             bool preferFocalPoint = false,
             bool useCropDimensions = false,
-            string cacheBusterValue = null,
-            string furtherOptions = null,
+            string? cacheBusterValue = null,
+            string? furtherOptions = null,
             bool htmlEncode = true)
         {
             if (imageCropperValue == null) return EmptyHtmlString;
@@ -884,7 +884,7 @@
         /// <param name="renderPicture"></param>
         /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        public IHtmlEncodedString ConvertImgToResponsive(string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
+        public IHtmlEncodedString ConvertImgToResponsive(string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
             var source = this.ConvertImgToResponsiveInternal(sourceValueHtml, generateLqip, removeStyleAttribute, renderPicture: renderPicture, pictureSources: pictureSources);
 
@@ -904,7 +904,7 @@
         /// <param name="renderPicture"></param>
         /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        public IHtmlEncodedString ConvertImgToResponsive(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
+        public IHtmlEncodedString ConvertImgToResponsive(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
             var sourceValue = publishedContent.GetProperty(propertyAlias).GetSourceValue();
 

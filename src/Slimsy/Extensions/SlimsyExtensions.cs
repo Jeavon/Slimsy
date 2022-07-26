@@ -111,7 +111,7 @@
         /// <param name="renderPicture"></param>
         /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlEncodedString ConvertImgToResponsive(this IHtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
+        public static IHtmlEncodedString ConvertImgToResponsive(this IHtmlHelper htmlHelper, string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
             return SlimsyService.ConvertImgToResponsive(sourceValueHtml, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
         }
@@ -127,7 +127,7 @@
         /// <param name="renderPicture"></param>
         /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        public static IHtmlEncodedString ConvertImgToResponsive(this IHtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[] pictureSources = null)
+        public static IHtmlEncodedString ConvertImgToResponsive(this IHtmlHelper htmlHelper, IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
             return SlimsyService.ConvertImgToResponsive(publishedContent, propertyAlias, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
         }
