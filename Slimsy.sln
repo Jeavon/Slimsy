@@ -16,6 +16,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slimsy.TestSite", "src\Slim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Slimsy.TestSiteBlobs", "src\Slimsy.TestSiteBlobs\Slimsy.TestSiteBlobs.csproj", "{A7BD2B77-8B13-4553-AC18-B33F50A8EC0F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{0784A2B3-3BCF-41F9-8C5E-A9B3BD47C3C0}"
+	ProjectSection(SolutionItems) = preProject
+		Changelog.md = Changelog.md
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
