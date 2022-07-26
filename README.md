@@ -38,9 +38,20 @@ In your template add the JavaScript files
 
 e.g.
 
-```
+```css
 img {
     display:block;
+}
+```
+
+If you are using LQIP then you will also need to ensure img elements are set to `width:100%;`
+
+e.g.
+
+```css
+img {
+    display:block;
+    width:100%;
 }
 ```
 
