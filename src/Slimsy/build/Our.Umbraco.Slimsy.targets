@@ -8,10 +8,11 @@
         <ItemGroup>
             <SlimsyContentFiles Include="$(SlimsyContentFilesPath)" />
         </ItemGroup>
-        <Message Text="Copying Slimsy files: $(SlimsyContentFilesPath) - #@(SlimsyContentFiles->Count()) files"  Importance="high" />
+        <Message Text="Copying Slimsy files: $(SlimsyContentFilesPath) - #@(SlimsyContentFiles->Count()) files" Importance="high" />
         <Copy
             SourceFiles="@(SlimsyContentFiles)"
             DestinationFiles="@(SlimsyContentFiles->'$(MSBuildProjectDirectory)\wwwroot\scripts\%(RecursiveDir)%(Filename)%(Extension)')"
+            Condition="Exists('$(MSBuildProjectDirectory)\wwwroot\')"
             SkipUnchangedFiles="true" />
     </Target>
 </Project>
