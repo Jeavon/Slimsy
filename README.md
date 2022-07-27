@@ -25,8 +25,14 @@ NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpr
 ```c#
 .AddSlimsy()
 ```
+### 3. Add to _ViewImports.cshtml
 
-### 3. Add lazysizes.min.js & to your templates/views
+```c#
+@addTagHelper *, Slimsy
+@inject Slimsy.Services.SlimsyService SlimsyService
+```
+
+### 4. Add lazysizes.min.js & to your templates/views
 
 In your template add the JavaScript files
 
@@ -34,7 +40,7 @@ In your template add the JavaScript files
 <script src="/scripts/lazysizes.min.js" async=""></script>
 ```
 
-### 4. Ensure all img elements are set to `display: block` or `display: inline-block;`
+### 5. Ensure all img elements are set to `display: block` or `display: inline-block;`
 
 e.g.
 
@@ -55,7 +61,7 @@ img {
 }
 ```
 
-### 5. Use the `<slimsy-picture>` tag helper or manually adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
+### 6. Use the `<slimsy-picture>` tag helper or manually adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
 
 ```C#
 <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true"></slimsy-picture>

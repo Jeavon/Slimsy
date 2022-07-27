@@ -45,7 +45,7 @@
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -258,7 +258,7 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
@@ -268,8 +268,7 @@
 
             var globalImageCrops = mediaWithCrops.Value<ImageCropperValue>(propertyAlias);
 
-            ImageCropperValue mergedImageCrops = null;
-            mergedImageCrops = globalImageCrops.Merge(mediaWithCrops.LocalCrops);
+            var mergedImageCrops = globalImageCrops != null ? globalImageCrops.Merge(mediaWithCrops.LocalCrops) : mediaWithCrops.LocalCrops;
 
             var crop = mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
 
@@ -847,7 +846,7 @@
             if (imageCropperValue == null) return EmptyHtmlString;
 
             var imageUrl = imageCropperValue.Src;
-            var url = imageUrl.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
+            var url = imageUrl?.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
                 imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }

@@ -62,30 +62,32 @@ namespace Slimsy
                         break;
                 }
 
-                int lqipWidth;
-                int lqipHeight;
+                int? lqipWidth;
+                int? lqipHeight;
 
-                IHtmlContent imgSrcSet, imgSrcSetWebP;
-                IHtmlContent imgSrc, imgLqip, imgLqipWebP;
+                IHtmlContent? imgSrcSet = null, imgSrcSetWebP = null;
+                IHtmlContent? imgSrc = null, imgLqip = null, imgLqipWebP = null;
 
                 if (!string.IsNullOrEmpty(CropAlias))
-                {  
+                {
                     var globalImageCrops = MediaItem.Value<ImageCropperValue>(PropertyAlias);
                     var mergedImageCrops = globalImageCrops != null ? globalImageCrops.Merge(MediaItem.LocalCrops) : MediaItem.LocalCrops;
 
                     var crop = mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(CropAlias));
 
-                    lqipWidth = (int)Math.Round((decimal)crop.Width / 2);
-                    lqipHeight = (int)Math.Round((decimal)crop.Height / 2);
+                    if (crop != null) { 
+                        lqipWidth = (int)Math.Round((decimal)crop.Width / 2);
+                        lqipHeight = (int)Math.Round((decimal)crop.Height / 2);
 
-                    imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat);
-                    imgSrcSetWebP = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, 70, "webp");
+                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat);
+                        imgSrcSetWebP = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, 70, "webp");
 
-                    imgSrc = _slimsyService.GetCropUrl(MediaItem, cropAlias: CropAlias, useCropDimensions: true, furtherOptions: "&format=" + defaultFormat);
+                        imgSrc = _slimsyService.GetCropUrl(MediaItem, cropAlias: CropAlias, useCropDimensions: true, furtherOptions: "&format=" + defaultFormat);
 
-                    // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
-                    imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, cropAlias: CropAlias, furtherOptions: "&format=" + defaultFormat);
-                    imgLqipWebP = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: CropAlias, quality: 20, furtherOptions: "&format=webp");
+                        // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
+                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, cropAlias: CropAlias, furtherOptions: "&format=" + defaultFormat);
+                        imgLqipWebP = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: CropAlias, quality: 20, furtherOptions: "&format=webp");
+                    }
                 } else
                 {
                     lqipWidth = (int)Math.Round((decimal)Width / 2);
