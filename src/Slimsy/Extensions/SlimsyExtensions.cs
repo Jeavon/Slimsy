@@ -37,6 +37,23 @@
         }
 
         /// <summary>
+        /// Generate SrcSet markup based on a width and height for the image cropped around the focal point
+        /// </summary>
+        /// <param name="urlHelper"></param>
+        /// <param name="mediaWithCrops"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="quality">Default is 90</param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
+        /// <returns>Url</returns>
+        public static IHtmlContent GetSrcSetUrls(this IUrlHelper urlHelper, MediaWithCrops mediaWithCrops, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
+        {
+            return SlimsyService.GetSrcSetUrls(mediaWithCrops, width, height, propertyAlias, quality, outputFormat, furtherOptions);
+        }
+
+        /// <summary>
         /// Generate SrcSet attribute value based on a width and height for the image cropped using a specific mode and using a specific image cropper property alias, output format and optional quality
         /// </summary>
         /// <param name="urlHelper"></param>

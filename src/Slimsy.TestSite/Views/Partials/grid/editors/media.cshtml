@@ -31,15 +31,14 @@
                             Height = (int)Model.editor.config.size.height
                         }
                 };
-            }
-
-            gridImageCroppper.FocalPoint = new ImageCropperValue.ImageCropperFocalPoint
-                        {
-                            Top = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.top,
-                            Left = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.left
-                        };
-            
+            }            
         }
+
+        gridImageCroppper.FocalPoint = new ImageCropperValue.ImageCropperFocalPoint
+            {
+                Top = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.top,
+                Left = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.left
+            };
 
     // This will ignore a Grid editor focal point and will use the media item's focal point
     var udi = Model.value.udi.ToString();

@@ -47,26 +47,42 @@
         /// <returns>Url of image</returns>
         public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
         {
+            return this.GetSrcSetUrls(new MediaWithCrops(publishedContent, null, null), width, height, propertyAlias, quality, outputFormat, furtherOptions);
+        }
+
+        /// <summary>
+        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point using a specific image cropper property alias, output format and optional quality
+        /// </summary>
+        /// <param name="mediaWithCrops"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="quality">Default is 90</param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
+        /// <returns>Url of image</returns>
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
+        {
             var w = this.WidthStep();
             var q = quality == 90 ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
 
-            while (w <= this.MaxWidth(publishedContent))
+            while (w <= this.MaxWidth(mediaWithCrops))
             {
                 // insert crop as url src
                 // Only insert it, if it is not going to be part of the existing srcset
                 if (!IsMultiple(width, w) && UseCropAsSrc() && width < w && width > w - WidthStep())
                 {
-                    var cropStringSpecific = this.GetCropUrl(publishedContent, width, height, propertyAlias, quality: q, preferFocalPoint: true,
+                    var cropStringSpecific = this.GetCropUrl(mediaWithCrops, width, height, propertyAlias, quality: q, preferFocalPoint: true,
                         furtherOptions: this.AdditionalParams(outputFormat), htmlEncode: false).ToString();
 
                     outputStringBuilder.Append($"{cropStringSpecific} {width}w,");
                 }
 
                 var h = (int)Math.Round(w * heightRatio);
-                var cropString = this.GetCropUrl(publishedContent, w, h, propertyAlias, quality: q, preferFocalPoint: true,
+                var cropString = this.GetCropUrl(mediaWithCrops, w, h, propertyAlias, quality: q, preferFocalPoint: true,
                     furtherOptions: this.AdditionalParams(outputFormat, furtherOptions), htmlEncode: false).ToString();
 
                 outputStringBuilder.Append($"{cropString} {w}w,");
@@ -78,6 +94,7 @@
 
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
+
 
         /// <summary>
         /// Generate SrcSet attribute value based on a width and height for the image cropped using a specific mode and using a specific image cropper property alias, output format and optional quality
