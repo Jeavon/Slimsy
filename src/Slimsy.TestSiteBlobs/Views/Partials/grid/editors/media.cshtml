@@ -1,25 +1,21 @@
-@model dynamic
+@inherits UmbracoViewPage<dynamic>
 @using Umbraco.Cms.Core.Media
+@using Umbraco.Cms.Core.Models
 @using Umbraco.Cms.Core.PropertyEditors.ValueConverters
 @inject IImageUrlGenerator ImageUrlGenerator
 
 @if (Model?.value is not null)
 {
-    var url = Model.value.image;
+    var altText = Model.value.altText ?? Model.value.caption ?? string.Empty;
 
-    if (Model.editor.config != null && Model.editor.config.size != null)
-    {
-        if (Model.value.coordinates != null)
+    ImageCropperValue gridImageCroppper = new ImageCropperValue();
+
+        if (Model.editor.config != null && Model.editor.config.size != null)
         {
-            url = ImageCropperTemplateCoreExtensions.GetCropUrl(
-                (string)url,
-                ImageUrlGenerator,
-                width: (int)Model.editor.config.size.width,
-                height: (int)Model.editor.config.size.height,
-                cropAlias: "default",
-                cropDataSet: new ImageCropperValue
-                {
-                    Crops = new[]
+            if (Model.value.coordinates != null)
+            {
+                gridImageCroppper.Crops =
+                 new[]
                     {
                         new ImageCropperValue.ImageCropperCrop
                         {
@@ -30,32 +26,36 @@
                                 Y1 = (decimal)Model.value.coordinates.y1,
                                 X2 = (decimal)Model.value.coordinates.x2,
                                 Y2 = (decimal)Model.value.coordinates.y2
-                            }
+                            },
+                            Width =(int)Model.editor.config.size.width,
+                            Height = (int)Model.editor.config.size.height
                         }
-                    }
-                });
+                };
+            }            
         }
-        else
-        {
-            url = ImageCropperTemplateCoreExtensions.GetCropUrl(
-                (string)url,
-                ImageUrlGenerator,
-                width: (int)Model.editor.config.size.width,
-                height: (int)Model.editor.config.size.height,
-                cropDataSet: new ImageCropperValue
-                {
-                    FocalPoint = new ImageCropperValue.ImageCropperFocalPoint
-                    {
-                        Top = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.top,
-                        Left = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.left
-                    }
-                });
-        }
-    }
 
-    var altText = Model.value.altText ?? Model.value.caption ?? string.Empty;
+        gridImageCroppper.FocalPoint = new ImageCropperValue.ImageCropperFocalPoint
+            {
+                Top = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.top,
+                Left = Model.value.focalPoint == null ? 0.5m : Model.value.focalPoint.left
+            };
 
-    <img src="@url" alt="@altText">
+    // This will ignore a Grid editor focal point and will use the media item's focal point
+    var udi = Model.value.udi.ToString();
+    var item = Umbraco.Media((string)udi);
+    var width = item.Value<int>("umbracoWidth");
+    var height = item.Value<int>("umbracoHeight");
+
+    var itemWithCrops = new MediaWithCrops(item, null, gridImageCroppper);
+
+    string? cropAlias = null;
+    if (Model.value.coordinates != null)
+    {
+        <slimsy-picture media-item="@itemWithCrops" alt-text="@altText" crop-alias="default" />
+    } else
+    {
+        <slimsy-picture media-item="@itemWithCrops" width="@width" height="@height" alt-text="@altText" />
+    }      
 
     if (Model.value.caption != null)
     {

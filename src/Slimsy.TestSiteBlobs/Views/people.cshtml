@@ -1,11 +1,25 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels;
-@using Umbraco.Extensions
-@using Slimsy.Services
-@using Slimsy.Extensions
-@inject SlimsyService _slimsyService;
+﻿@using Slimsy.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<People>
 @{
     Layout = "master.cshtml";
+}
+@{
+    void ContactDetails(Person person)
+    {
+    <div class="employee-grid__item__details">
+                <h3 class="employee-grid__item__name">@person.Name</h3>
+                @if (!string.IsNullOrEmpty(person.Email))
+            {
+                    <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
+            }
+                <div class="employee-grid__item__contact">
+                    @{ SocialLink(person.FacebookUsername, "Facebook"); }
+                    @{ SocialLink(person.TwitterUsername, "Twitter"); }
+                    @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
+                    @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                </div>
+    </div>
+    }
 }
 @{
     void SocialLink(string content, string service)
@@ -13,7 +27,7 @@
         if (!string.IsNullOrEmpty(content))
         {
             ; //semicolon needed otherwise <a> cannot be resolved
-            <a class="employee-grid__item__contact-item" href="http://@(service).com/@content">@service</a>
+    <a class="employee-grid__item__contact-item" href="http://@(service).com/@content">@service</a>
         }
     }
 }
@@ -32,14 +46,13 @@
             <a class="nav-link nav-link--black" href="">Designers</a>
             <a class="nav-link nav-link--black" href="">Other</a>
         </nav>
-        -->  
-        <div class="employee-grid">
-          
+        -->
+        
+        <h2>No Slimsy, plain old GetCropUrl</h2>
+        <div class="employee-grid">          
             @foreach (Person person in Model.Children<Person>())
             {
-
                 <div class="employee-grid__item">
-
                     <div class="employee-grid__item__image">
                         @{
                             var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
@@ -48,58 +61,77 @@
                         <div class="employee-grid__item__image"><img src="@imageUrl"/></div>
 
                     </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                    @{ContactDetails(person);}
+                </div>                              
+            }
+        </div>
+
+        <h2>Using Image Source Set with picture element, WebP and LQIP using Slimsy Picture Tag Helper</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true"></slimsy-picture>
                         </div>
                     </div>
+                    @{ContactDetails(person);}
                 </div>
             }
         </div>
 
+        <h2>Using Image Source Set with picture element, WebP and LQIP using Slimsy Picture Tag Helper and a Local Crop</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true" crop-alias="square"></slimsy-picture>
+                        </div>
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set with picture element, WebP and LQIP using Slimsy Picture Tag Helper and a Global Crop</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true" crop-alias="GlobalSquare"></slimsy-picture>
+                        </div>
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set using SlimsyService</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
             {
-
                 <div class="employee-grid__item">
 
                     <div class="employee-grid__item__image">
                         <div class="employee-grid__item__image">
-                            <img data-srcset="@_slimsyService.GetSrcSetUrls(person.Photo, 323, 300)" srcset="@_slimsyService.GetSrcSetUrls(person.Photo, 250, 250, quality: 40)" data-sizes="auto" class="lazyload"/>
-                        </div>
-
-                    </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
+                            <img data-srcset="@SlimsyService.GetSrcSetUrls(person.Photo, 323, 300)" srcset="@SlimsyService.GetSrcSetUrls(person.Photo, 250, 250, quality: 40)" data-sizes="auto" class="lazyload"/>
                         </div>
                     </div>
+                    @{ContactDetails(person);}
                 </div>
             }
         </div>
 
+        <h2>Using Image Source Set using UrlHelper Extension method</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
             {
-
                 <div class="employee-grid__item">
-
                     <div class="employee-grid__item__image">
                         @{
                             var imageUrl = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
@@ -110,22 +142,113 @@
                         </div>
 
                     </div>
-                    <div class="employee-grid__item__details">
-                        <h3 class="employee-grid__item__name">@person.Name</h3>
-                        @if (!string.IsNullOrEmpty(person.Email))
-                        {
-                            <a href="mailto:@person.Email" class="employee-grid__item__email">@person.Email</a>
-                        }
-                        <div class="employee-grid__item__contact">
-                            @{ SocialLink(person.FacebookUsername, "Facebook"); }
-                            @{ SocialLink(person.TwitterUsername, "Twitter"); }
-                            @{ SocialLink(person.LinkedInUsername, "LinkedIn"); }
-                            @{ SocialLink(person.InstagramUsername, "Instagram"); }
-                        </div>
-                    </div>
+                    @{ContactDetails(person);}
                 </div>
             }
         </div>
+
+        <h2>Using Image Source Set using UrlHelper Extension method and global crop</h2>
+        <div class="employee-grid">
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        @{
+                            var imageUrl = Url.GetCropUrl((IPublishedContent)person.Photo, "GlobalSquare", htmlEncode: false).ToString();
+                        }
+                        <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
+                        <div class="employee-grid__item__image">
+                            <img data-srcset="@Url.GetSrcSetUrls((IPublishedContent)person.Photo, "GlobalSquare")" srcset="@Url.GetSrcSetUrls((IPublishedContent)person.Photo, "GlobalSquare", quality: 40)" data-sizes="auto" class="lazyload"/>
+                        </div>
+
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>Using Image Source Set using UrlHelper Extension method and local crop</h2>
+        <div class="employee-grid">
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        @{
+                            var imageUrl = Url.GetCropUrl(person.Photo, "square", htmlEncode: false).ToString();
+                        }
+                        <!-- <div class="employee-grid__item__image" style="background-image: url('@Html.Raw(imageUrl))')"></div> -->
+                        <div class="employee-grid__item__image">
+                            <img data-srcset="@Url.GetSrcSetUrls(person.Photo, "square")" srcset="@Url.GetSrcSetUrls(person.Photo, "square", quality: 40)" data-sizes="auto" class="lazyload"/>
+                        </div>
+
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>LocalCrops - Examples</h2>
+                <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                var cacheBusterValue = person.Photo.UpdateDate.ToFileTimeUtc().ToString();
+
+                var imageUrlLocalCropUrlHelper = Url.GetCropUrl(person.Photo.LocalCrops, "square", cacheBusterValue:cacheBusterValue, htmlEncode: false).ToString();
+                var imageUrlLocalCrop = person.Photo.GetCropUrl("square");
+
+                var imageUrlLocalFocalUrlHelper = Url.GetCropUrl(person.Photo.LocalCrops, cropAlias:"", width:323, height:300, preferFocalPoint:true, useCropDimensions:false, cacheBusterValue:cacheBusterValue, htmlEncode: false).ToString();
+                // https://github.com/umbraco/Umbraco-CMS/blob/v10/contrib/src/Umbraco.Web.Common/Extensions/FriendlyImageCropperTemplateExtensions.cs#L201
+                var imageUrlLocalFocal = person.Photo.GetCropUrl(323, 300);
+
+                var imageUrlLocalCropMediaWithCrops = person.Photo.GetCropUrl("square");
+                // Theres no UrlHelper that expects MediaWithCrops
+
+                // Uses local focal point if enabled otherwise media item focal point
+                var imageUrlLocalCropFocalMediaWithCrops = person.Photo.GetCropUrl(323, 300);
+
+                var imageUrlFocal = Url.GetCropUrl(person.Photo, 323, 300, htmlEncode: false).ToString();
+
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCropUrlHelper"/><figcaption>LocalCrop UrlHelper</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCrop"/><figcaption>LocalCrop</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalFocalUrlHelper"/><figcaption>LocalCrop FocalPoint UrlHelper</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalFocal"/><figcaption>LocalCrop FocalPoint</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCropMediaWithCrops"/><figcaption>LocalCrop from MediaWithCrops</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlLocalCropFocalMediaWithCrops"/><figcaption>LocalCrop Focal from MediaWithCrops</figcaption></figure>
+                        </div>
+                    </div>
+                    <div class="employee-grid__item__image">                         
+                        <div class="employee-grid__item__image">
+                            <figure><img src="@imageUrlFocal"/><figcaption>Media Item Focal</figcaption></figure>
+                        </div>
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
     </div>
 
 </section>

@@ -1,3 +1,4 @@
+@using Slimsy.Services
 @using Umbraco.Extensions
 @using Slimsy.TestSiteBlobs
 @using Umbraco.Cms.Web.Common.PublishedModels
@@ -6,4 +7,6 @@
 @using Microsoft.AspNetCore.Html
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Smidge
+@addTagHelper *, Slimsy
 @inject Smidge.SmidgeHelper SmidgeHelper
+@inject SlimsyService SlimsyService
