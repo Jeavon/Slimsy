@@ -101,8 +101,19 @@ There's quite a lot to this - so check it out in the demo site [here](https://gi
 
 # Advanced Options
 
-Edit `Startup.cs` to modify SlimsyOptions
+Add/Edit `appsettings.json`
 
+```json
+  "Slimsy": {
+    "WidthStep": 180,
+    "UseCropAsSrc": false,
+    "DefaultQuality": 70,
+    "Format": "",
+    "BGColor": ""
+  }
+```
+
+or edit `Startup.cs` to modify SlimsyOptions
 ```c#
 .AddSlimsy(options =>
 {
