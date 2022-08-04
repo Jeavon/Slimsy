@@ -75,6 +75,47 @@ Use the `GetSrcSetUrls` UrlHelper extension methods to generate your `data-srcse
 </div>
 ```
 
+Or inject SlimsyService into your ViewComponents
+
+```C#
+private readonly SlimsyService _slimsyService;
+public ResponsiveImageViewComponent(SlimsyService slimsyService)
+{
+	_slimsyService = slimsyService;
+}
+```
+
+### 7 (optional). Adjust the rendering of your TinyMce Richtext editors
+
+```C#
+<div class="col-md-9">
+    <article>
+        @SlimsyService.ConvertImgToResponsive(Model, "richTextBody", renderPicture:true, pictureSources: new []{"webp"})
+    </article>
+</div>
+```
+
+### 8 (optional). Adjust the renderer of media within the Grid editor
+
+There's quite a lot to this - so check it out in the demo site [here](https://github.com/Jeavon/Slimsy/blob/dev-v4/src/Slimsy.TestSite/Views/Partials/grid/editors/media.cshtml)
+
+# Advanced Options
+
+Edit `Startup.cs` to modify SlimsyOptions
+
+```c#
+.AddSlimsy(options =>
+{
+    options.DefaultQuality = 60;
+    options.WidthStep = 60;
+    options.UseCropAsSrc = true;
+})
+```
+
+# Lazysizes.js
+
+Lazysizes.js is awesome and it's part of what makes Slimsy so easy to implement. If you need to find out more information about it or how to hook into it's Javascript events be sure to check out it's [GitHub](https://github.com/aFarkas/lazysizes)
+
 # Test Site & Source Code
 
 A test site is included in the solution, the username and password for Umbraco are `admin@admin.com/password1234567890.`
