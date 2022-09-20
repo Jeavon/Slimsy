@@ -5,7 +5,7 @@
         <Product>Slimsy</Product>
         <PackageId>Our.Umbraco.Slimsy</PackageId>
         <Title>Slimsy</Title>
-        <Description>...</Description>
+        <Description>Effortless Responsive Images with Umbraco using LazySizes.js</Description>
         <Product>Slimsy</Product>
         <PackageTags>umbraco plugin package images responsive umbraco-marketplace</PackageTags>
         <RootNamespace>Slimsy</RootNamespace>
