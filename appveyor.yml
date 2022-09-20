@@ -11,7 +11,7 @@ branches:
 
 environment:
   # Version Suffix
-  version_suffix: beta2
+  version_suffix: 
 
 install:
   - ps: .\build\appveyor-semver.ps1
