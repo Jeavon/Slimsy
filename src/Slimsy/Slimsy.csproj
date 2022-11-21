@@ -6,7 +6,6 @@
         <PackageId>Our.Umbraco.Slimsy</PackageId>
         <Title>Slimsy</Title>
         <Description>Effortless Responsive Images with Umbraco using LazySizes.js</Description>
-        <Product>Slimsy</Product>
         <PackageTags>umbraco plugin package images responsive umbraco-marketplace</PackageTags>
         <RootNamespace>Slimsy</RootNamespace>
 		    <Version>4.0.0-alpha.0</Version>
@@ -17,6 +16,9 @@
 		    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 		    <Nullable>enable</Nullable>
+		    <PackageProjectUrl>https://github.com/Jeavon/Slimsy</PackageProjectUrl>
+		    <Authors>Jeavon Leopold, Marc Stöcker, William Phillips</Authors>
+		    <RepositoryUrl>https://github.com/Jeavon/Slimsy</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
