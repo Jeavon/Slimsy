@@ -4,7 +4,7 @@ Slimsy v4
 
 # Slimsy v4 is made for Umbraco v10 & v11!
 
-![](Slimsy.png)
+![](https://raw.githubusercontent.com/Jeavon/Slimsy/master/Slimsy.png)
 
 __Release Downloads__
 
@@ -146,4 +146,4 @@ Many thanks to Douglas Robar for naming Slimsy.
 
 # Change log
 
-[Here](Changelog.md)
+[Here](https://github.com/Jeavon/Slimsy/blob/dev-v4/Changelog.md)
