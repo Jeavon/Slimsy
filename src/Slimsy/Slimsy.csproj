@@ -19,6 +19,7 @@
 		    <PackageProjectUrl>https://github.com/Jeavon/Slimsy</PackageProjectUrl>
 		    <Authors>Jeavon Leopold, Marc Stöcker, William Phillips</Authors>
 		    <RepositoryUrl>https://github.com/Jeavon/Slimsy</RepositoryUrl>
+		    <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -44,6 +45,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Include="..\..\README.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
       <None Include="slimsy.png">
 		 <Pack>True</Pack>
 	   <PackagePath></PackagePath>

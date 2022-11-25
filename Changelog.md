@@ -27,3 +27,5 @@ Slimsy Change log
 - 3.0.0-beta5 - SlimsyService, GetCropUrl methods & removal of overloads
 - 3.0.0 - Beta5 promoted to release!
 - 4.0.0-beta1 - Umbraco v10 support!
+- 4.0.0 - Umbraco v10 support
+- 4.0.1 & 4.0.2 - Changes to NuGet package for Umbraco marketplace support
