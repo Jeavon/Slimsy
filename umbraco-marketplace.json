@@ -1,17 +1,24 @@
 {
-    "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
-    "Category": "Developer Tools",
-    "Tags": ["Responsive Images","Responsive","Image","Images","Picture","Lazy Load"],
-    "PackageType": "Package",
-    "LicenseTypes": ["Free"],
-    "AuthorDetails": {
-        "Description": "Umbraco MVP, CMS and documentation contributor",
-        "Url": "https://github.com/Jeavon",
-        "ImageUrl": "https://github.com/jeavon.png",
-        "Contributors": [
-            {"Name":"Marc Stöcker", "Url":"https://github.com/MarcStoecker"},
-            {"Name":"William Phillips", "Url":"https://github.com/Will-i-am-"}
-        ]
-    },
-    "IssueTrackerUrl": "https://github.com/Jeavon/Slimsy/issues"
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
+  "Category": "Developer Tools",
+  "Tags": [ "Responsive Images", "Responsive", "Image", "Images", "Picture", "Lazy Load" ],
+  "PackageType": "Package",
+  "LicenseTypes": [ "Free" ],
+  "AuthorDetails": {
+    "Name": "Jeavon Leopold",
+    "Description": "Umbraco MVP, CMS and documentation contributor",
+    "Url": "https://github.com/Jeavon",
+    "ImageUrl": "https://github.com/jeavon.png",
+    "Contributors": [
+      {
+        "Name": "Marc Stöcker",
+        "Url": "https://github.com/MarcStoecker"
+      },
+      {
+        "Name": "William Phillips",
+        "Url": "https://github.com/Will-i-am-"
+      }
+    ]
+  },
+  "IssueTrackerUrl": "https://github.com/Jeavon/Slimsy/issues"
 }
