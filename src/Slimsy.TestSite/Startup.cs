@@ -8,6 +8,8 @@ using Slimsy.DependencyInjection;
 using System;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Extensions;
+using Umbraco.Cms.Core.Media;
+using Slimsy.ImageUrlGenerators;
 
 namespace Slimsy.TestSite
 {
@@ -53,6 +55,8 @@ namespace Slimsy.TestSite
                 })
                 .Build();
 
+            services.AddUnique<IImageUrlGenerator, CloudflareImageUrlGenerator>();
+ 
 
         }
 
