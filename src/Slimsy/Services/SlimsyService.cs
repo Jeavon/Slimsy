@@ -314,29 +314,32 @@
 
         #region Internal Functions
 
-        private string MimeType(string fileExtension)
+        internal string MimeType(string fileExtension)
         {
-            var defaultMimeType = "";
+            var mimeType = "";
             switch (fileExtension)
             {
                 case "jpg":
-                    defaultMimeType = "image/jpeg";
+                    mimeType = "image/jpeg";
                     break;
                 case "png":
-                    defaultMimeType = "image/png";
+                    mimeType = "image/png";
                     break;
                 case "gif":
-                    defaultMimeType = "image/gif";
+                    mimeType = "image/gif";
                     break;
                 case "webp":
-                    defaultMimeType = "image/webp";
+                    mimeType = "image/webp";
                     break;
-                default:
-                    defaultMimeType = "image/jpeg";
+                case "avif":
+                    mimeType = "image/avif";
+                    break;
+                case "jxl":
+                    mimeType = "image/jxl";
                     break;
             }
 
-            return defaultMimeType;
+            return mimeType;
         }
 
         private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)

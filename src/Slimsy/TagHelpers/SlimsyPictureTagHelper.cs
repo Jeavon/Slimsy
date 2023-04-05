@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Slimsy.Models;
 using Slimsy.Services;
 using System;
 using System.Collections.Generic;
@@ -85,10 +86,10 @@ namespace Slimsy
                 int? lqipWidth;
                 int? lqipHeight;
 
-                IHtmlContent? imgSrcSet = null, imgSrcSetWebP = null;
-                IHtmlContent? imgSrc = null, imgLqip = null, imgLqipWebP = null ;
+                IHtmlContent? imgSrcSet = null;
+                IHtmlContent? imgSrc = null, imgLqip = null;
 
-                var htmlContent = "";
+                List<SourceSet> sources = new();
 
                 if (!string.IsNullOrEmpty(CropAlias))
                 {
@@ -101,28 +102,53 @@ namespace Slimsy
                         lqipWidth = (int)Math.Round((decimal)crop.Width / 2);
                         lqipHeight = (int)Math.Round((decimal)crop.Height / 2);
 
-                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat);
-                        imgSrcSetWebP = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, 70, "webp");
-
                         imgSrc = _slimsyService.GetCropUrl(MediaItem, cropAlias: CropAlias, useCropDimensions: true, furtherOptions: "&format=" + defaultFormat);
+                        
+                        foreach (var source in pictureSources)
+                        {
+                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, 70, source);
+                            imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: CropAlias, quality: 20, furtherOptions: "&format=" + source);
+                            var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source };
+                            sources.Add(newSource);
+                        }
 
-                        // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
-                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, cropAlias: CropAlias, furtherOptions: "&format=" + defaultFormat);
-                        imgLqipWebP = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: CropAlias, quality: 20, furtherOptions: "&format=webp");
+                        // native format not included in sources so we add it as the last option
+                        if (!pictureSources.InvariantContains(defaultFormat))
+                        {
+                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat);
+                            // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
+                            imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, cropAlias: CropAlias, furtherOptions: "&format=" + defaultFormat);
+
+                            var nativeSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = defaultFormat };
+                            sources.Add(nativeSource);
+                        }
+
                     }
                 } else
                 {
                     lqipWidth = (int)Math.Round((decimal)Width / 2);
                     lqipHeight = (int)Math.Round((decimal)Height / 2);
-
-                    imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, outputFormat: defaultFormat);
-                    imgSrcSetWebP = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, 70, "webp");
-
+                                                      
                     imgSrc = _slimsyService.GetCropUrl(MediaItem, Width, Height, furtherOptions: "&format=" + defaultFormat);
 
+                    foreach (var source in pictureSources)
+                    {
+                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, 70, source);
+                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + source);
+                        var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source };
+                        sources.Add(newSource);
+                    }
+
+                    imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, outputFormat: defaultFormat);
                     // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
                     imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + defaultFormat);
-                    imgLqipWebP = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=webp");
+
+                    // native format not included in sources so we add it as the last option
+                    if (!pictureSources.InvariantContains(defaultFormat))
+                    {
+                        var nativeSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = defaultFormat };
+                        sources.Add(nativeSource);
+                    }                                       
                 }
                
                 if (AltText == null)
@@ -130,25 +156,25 @@ namespace Slimsy
                     AltText = MediaItem.Name;
                 }
 
-                if (RenderWebpAlternative)
+                var htmlContent = "";
+
+                foreach (var source in sources)
                 {
                     if (RenderLQIP)
                     {
-                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{imgSrcSetWebP}"" srcset=""{imgLqipWebP}"" type=""image/webp"" data-sizes=""auto"" />" + Environment.NewLine;
+                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{_slimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
                     } else
                     {
-                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{imgSrcSetWebP}"" type=""image/webp"" data-sizes=""auto"" />" + Environment.NewLine;
+                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" type=""{_slimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
                     }
                 }
       
                 if (RenderLQIP)
                 {
-                    htmlContent += $@"<source data-srcset=""{imgSrcSet}"" srcset=""{imgLqip}"" type=""{defaultMimeType}"" data-sizes=""auto"" />" + Environment.NewLine;
                     htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" />" + Environment.NewLine;
                 }
                 else
                 {
-                    htmlContent += $@"<source data-srcset=""{imgSrcSet}"" type=""{defaultMimeType}"" data-sizes=""auto"" />" + Environment.NewLine;
                     htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" />" + Environment.NewLine;
                 }
                 
