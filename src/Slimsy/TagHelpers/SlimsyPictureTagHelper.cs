@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Slimsy.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
@@ -20,7 +21,9 @@ namespace Slimsy
         public int Height { get; set; }
         public string? AltText { get; set; }
         public string? CssClass { get; set; }
+        [Obsolete("This property is obsolete, Use RenderPictureSources instead.", false)]
         public bool RenderWebpAlternative { get; set; } = true;
+        public string[]? RenderPictureSources { get; set; } = Array.Empty<string>();
         public bool RenderLQIP { get; set; } = true;
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
 
@@ -33,6 +36,20 @@ namespace Slimsy
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+
+            List<string>? pictureSources = new List<string>();
+            
+            if (RenderPictureSources != null)
+            {
+                pictureSources = RenderPictureSources.ToList();
+                
+            }
+
+            // supporting upgrades
+            if (RenderWebpAlternative && !pictureSources.InvariantContains("webp"))
+            {
+                pictureSources.Add("webp");
+            }
 
             CssClass = !string.IsNullOrEmpty(CssClass) ? $"lazyload {CssClass}" : "lazyload";
 
@@ -52,6 +69,9 @@ namespace Slimsy
                     case "png":
                         defaultMimeType = "image/png";
                         break;
+                    case "webp":
+                        defaultMimeType = "image/webp";
+                        break;
                     case "gif":
                         defaultMimeType = "image/gif";
                         RenderWebpAlternative = false;
@@ -66,7 +86,9 @@ namespace Slimsy
                 int? lqipHeight;
 
                 IHtmlContent? imgSrcSet = null, imgSrcSetWebP = null;
-                IHtmlContent? imgSrc = null, imgLqip = null, imgLqipWebP = null;
+                IHtmlContent? imgSrc = null, imgLqip = null, imgLqipWebP = null ;
+
+                var htmlContent = "";
 
                 if (!string.IsNullOrEmpty(CropAlias))
                 {
@@ -107,8 +129,6 @@ namespace Slimsy
                 {
                     AltText = MediaItem.Name;
                 }
-
-                var htmlContent = "";
 
                 if (RenderWebpAlternative)
                 {
