@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.Options;
+using Slimsy.Configuration;
 using Slimsy.Models;
 using Slimsy.Services;
 using System;
@@ -8,6 +10,7 @@ using System.Linq;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Extensions;
+using TagHelper = Microsoft.AspNetCore.Razor.TagHelpers.TagHelper;
 
 namespace Slimsy
 {
@@ -22,29 +25,22 @@ namespace Slimsy
         public int Height { get; set; }
         public string? AltText { get; set; }
         public string? CssClass { get; set; }
-        [Obsolete("This property is obsolete, Use RenderPictureSources instead.", false)]
+        [Obsolete("This property is obsolete, Use PictureSources Options instead.", false)]
         public bool RenderWebpAlternative { get; set; } = true;
-        public string[]? RenderPictureSources { get; set; } = Array.Empty<string>();
         public bool RenderLQIP { get; set; } = true;
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
-
         private readonly SlimsyService _slimsyService;
+        private readonly SlimsyOptions _slimsyOptions;
 
-        public SlimsyPictureTagHelper(SlimsyService slimsyService)
+        public SlimsyPictureTagHelper(SlimsyService slimsyService, IOptionsMonitor<SlimsyOptions> slimsyOptions)
         {
             _slimsyService = slimsyService;
+            _slimsyOptions = slimsyOptions.CurrentValue;
         }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-
-            List<string>? pictureSources = new List<string>();
-            
-            if (RenderPictureSources != null)
-            {
-                pictureSources = RenderPictureSources.ToList();
-                
-            }
+            List<string>? pictureSources = _slimsyOptions.TagHelper.PictureSources.ToList();
 
             // supporting upgrades
             if (RenderWebpAlternative && !pictureSources.InvariantContains("webp"))
@@ -56,31 +52,20 @@ namespace Slimsy
 
             if (MediaItem != null)
             {
-                string defaultMimeType;
-
                 var umbracoExtension = MediaItem.Value<string>(Umbraco.Cms.Core.Constants.Conventions.Media.Extension);
 
-                var defaultFormat = umbracoExtension;
-
-                switch (umbracoExtension)
+                if (_slimsyOptions.TagHelper.SingleSources != null && _slimsyOptions.TagHelper.SingleSources.Contains(umbracoExtension))
                 {
-                    case "jpg":
-                        defaultMimeType = "image/jpeg";
-                        break;
-                    case "png":
-                        defaultMimeType = "image/png";
-                        break;
-                    case "webp":
-                        defaultMimeType = "image/webp";
-                        break;
-                    case "gif":
-                        defaultMimeType = "image/gif";
-                        RenderWebpAlternative = false;
-                        break;                    
-                    default:
-                        defaultMimeType = "image/jpeg";
-                        defaultFormat = "jpg";
-                        break;
+                    // empty the sources as this should render a single source
+                    pictureSources = new List<string>();
+                }
+
+                var defaultFormat = umbracoExtension;
+                string? defaultMimeType = SlimsyService.MimeType(umbracoExtension);
+
+                if (defaultMimeType == null)
+                {
+                    // not supported format
                 }
 
                 int? lqipWidth;
@@ -162,10 +147,10 @@ namespace Slimsy
                 {
                     if (RenderLQIP)
                     {
-                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{_slimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
+                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
                     } else
                     {
-                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" type=""{_slimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
+                        htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
                     }
                 }
       

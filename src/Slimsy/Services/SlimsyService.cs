@@ -314,9 +314,9 @@
 
         #region Internal Functions
 
-        internal string MimeType(string fileExtension)
+        internal static string? MimeType(string fileExtension)
         {
-            var mimeType = "";
+            string? mimeType = null;
             switch (fileExtension)
             {
                 case "jpg":
