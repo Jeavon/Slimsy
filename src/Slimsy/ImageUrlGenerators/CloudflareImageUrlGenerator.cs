@@ -17,13 +17,14 @@ using Umbraco.Cms.Web.Common.Media;
 
 namespace Slimsy.ImageUrlGenerators
 {
-    public sealed class CloudflareImageUrlGenerator : IImageUrlGenerator 
+    public sealed class HybridCloudflareImageSharpImageUrlGenerator : IImageUrlGenerator 
     {
+        public IEnumerable<string> CloudFlareSupportedImageFileTypes { get; } = (new string[]{"webp", "avif"}).ToList();
  
         public IEnumerable<string> SupportedImageFileTypes { get; }
         private SixLabors.ImageSharp.Configuration _configuration { get; }
 
-        public CloudflareImageUrlGenerator(SixLabors.ImageSharp.Configuration configuration) {
+        public HybridCloudflareImageSharpImageUrlGenerator(SixLabors.ImageSharp.Configuration configuration) {
 
             SupportedImageFileTypes = configuration.ImageFormats.SelectMany(f => f.FileExtensions).ToArray();
             _configuration = configuration;
@@ -45,7 +46,13 @@ namespace Slimsy.ImageUrlGenerators
             // remove format from ImageSharp and add it to Cloudflare
             if (imageSharpCommands.Remove(FormatWebProcessor.Format, out StringValues format))
             {
-                cfCommands.Add(FormatWebProcessor.Format, format[0]);
+                if (CloudFlareSupportedImageFileTypes.Contains(format[0]))
+                {
+                    cfCommands.Add(FormatWebProcessor.Format, format[0]);
+                } else
+                {
+                    return imageSharpString;
+                }
             }
 
             string cfCommandString = string.Empty;

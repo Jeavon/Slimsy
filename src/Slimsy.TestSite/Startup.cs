@@ -56,7 +56,7 @@ namespace Slimsy.TestSite
                 //    options.TagHelper.SingleSourceExtensions = new string[] { "gif" };
                 //})
                 .Build();
-            services.AddUnique<IImageUrlGenerator, CloudflareImageUrlGenerator>();
+            services.AddUnique<IImageUrlGenerator, HybridCloudflareImageSharpImageUrlGenerator>();
  
         }
 
