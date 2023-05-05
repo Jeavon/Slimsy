@@ -1,4 +1,6 @@
-﻿namespace Slimsy.Configuration
+﻿using System;
+
+namespace Slimsy.Configuration
 {
     public sealed class SlimsyOptions 
     {
@@ -8,6 +10,12 @@
         public int MaxWidth { get; set; } = 2048!;
         public int WidthStep { get; set; } = 160!;
         public bool UseCropAsSrc { get; set; }
+        public TagHelper TagHelper { get; set; } = new TagHelper();
+    }
 
+    public sealed class TagHelper
+    {
+        public string[]? SingleSources { get; set; } = Array.Empty<string>();
+        public string[]? PictureSources { get; set; } = Array.Empty<string>();
     }
 }

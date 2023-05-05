@@ -7,17 +7,28 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
 using Umbraco.Cms.Core.Media;
 using Umbraco.Cms.Core.Models;
 using static Umbraco.Cms.Core.Models.ImageUrlGenerationOptions;
 using Umbraco.Cms.Web.Common.ImageProcessors;
+using System.Drawing.Drawing2D;
+using Umbraco.Cms.Web.Common.Media;
 
 namespace Slimsy.ImageUrlGenerators
 {
-    public sealed class CloudflareImageUrlGenerator : IImageUrlGenerator
+    public sealed class CloudflareImageUrlGenerator : IImageUrlGenerator 
     {
-        public IEnumerable<string> SupportedImageFileTypes { get; } = (new string[]{"jpg", "png"}).ToList();
+ 
+        public IEnumerable<string> SupportedImageFileTypes { get; }
+        private SixLabors.ImageSharp.Configuration _configuration { get; }
 
+        public CloudflareImageUrlGenerator(SixLabors.ImageSharp.Configuration configuration) {
+
+            SupportedImageFileTypes = configuration.ImageFormats.SelectMany(f => f.FileExtensions).ToArray();
+            _configuration = configuration;
+        }
+     
         public string? GetImageUrl(ImageUrlGenerationOptions? options)
         {
             if (options?.ImageUrl == null)
@@ -25,76 +36,34 @@ namespace Slimsy.ImageUrlGenerators
                 return null;
             }
 
-            var queryString = new Dictionary<string, string?>();
-            var commands = new Dictionary<string, string?>();
-            Dictionary<string, StringValues> furtherOptions = QueryHelpers.ParseQuery(options.FurtherOptions);
+            var cfCommands = new Dictionary<string, string?>();
+            Uri fakeBaseUri = new Uri("https://localhost/");
+            var imageSharpString = new ImageSharpImageUrlGenerator(_configuration).GetImageUrl(options);
 
-            if (options.Crop is not null)
+            Dictionary<string, StringValues> imageSharpCommands = QueryHelpers.ParseQuery(new Uri(fakeBaseUri, imageSharpString).Query);
+
+            // remove format from ImageSharp and add it to Cloudflare
+            if (imageSharpCommands.Remove(FormatWebProcessor.Format, out StringValues format))
             {
-                CropCoordinates? crop = options.Crop;
-                queryString.Add(
-                    CropWebProcessor.Coordinates,
-                    FormattableString.Invariant($"{crop.Left},{crop.Top},{crop.Right},{crop.Bottom}"));
+                cfCommands.Add(FormatWebProcessor.Format, format[0]);
             }
 
-            if (options.FocalPoint is not null)
+            string cfCommandString = string.Empty;
+            foreach (KeyValuePair<string, string?> command in cfCommands)
             {
-                queryString.Add(ResizeWebProcessor.Xy, FormattableString.Invariant($"{options.FocalPoint.Left},{options.FocalPoint.Top}"));
-            }
-
-            if (options.ImageCropMode is not null)
-            {
-                queryString.Add(ResizeWebProcessor.Mode, options.ImageCropMode.ToString()?.ToLowerInvariant());
-            }
-
-            if (options.ImageCropAnchor is not null)
-            {
-                queryString.Add(ResizeWebProcessor.Anchor, options.ImageCropAnchor.ToString()?.ToLowerInvariant());
-            }
-
-            if (options.Width is not null)
-            {
-                queryString.Add(ResizeWebProcessor.Width, options.Width?.ToString(CultureInfo.InvariantCulture));
-                commands.Add("width", options.Width?.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (options.Height is not null)
-            {
-                queryString.Add(ResizeWebProcessor.Height, options.Height?.ToString(CultureInfo.InvariantCulture));
-                commands.Add("height", options.Height?.ToString(CultureInfo.InvariantCulture));
-            }
-
-            if (furtherOptions.Remove(FormatWebProcessor.Format, out StringValues format))
-            {
-                queryString.Add(FormatWebProcessor.Format, format[0]);
-            }
-
-            if (options.Quality is not null)
-            {
-                queryString.Add(QualityWebProcessor.Quality, options.Quality?.ToString(CultureInfo.InvariantCulture));
-            }
-
-            foreach (KeyValuePair<string, StringValues> kvp in furtherOptions)
-            {
-                queryString.Add(kvp.Key, kvp.Value);
-            }
-
-            if (options.CacheBusterValue is not null && !string.IsNullOrWhiteSpace(options.CacheBusterValue))
-            {
-                queryString.Add("rnd", options.CacheBusterValue);
-            }
-
-            string cfcommand = string.Empty;
-            foreach (KeyValuePair<string, string?> command in commands)
-            {
-                cfcommand += command.Key + "=" + command.Value;
-                if (!command.Equals(commands.Last()))
+                cfCommandString += command.Key + "=" + command.Value;
+                if (!command.Equals(cfCommands.Last()))
                 {
-                    cfcommand += ",";
+                    cfCommandString += ",";
                 }
             }
 
-            return QueryHelpers.AddQueryString( "/cdn-cgi/image/"+ cfcommand + options.ImageUrl, queryString);
+            if (cfCommandString == string.Empty)
+            {
+                return imageSharpString;
+            }
+
+            return  QueryHelpers.AddQueryString("/cdn-cgi/image/" + cfCommandString + options.ImageUrl, imageSharpCommands);
         }
     }
 }

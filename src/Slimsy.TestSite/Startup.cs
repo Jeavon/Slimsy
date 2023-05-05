@@ -47,17 +47,17 @@ namespace Slimsy.TestSite
                 .AddWebsite()
                 .AddComposers()
                 .AddSlimsy()
-                .AddSlimsy(options =>
-                {
-                    options.DefaultQuality = 60;
-                    options.WidthStep = 60;
-                    options.UseCropAsSrc = true;
-                })
+                //.AddSlimsy(options =>
+                //{
+                //    options.DefaultQuality = 60;
+                //    options.WidthStep = 60;
+                //    options.UseCropAsSrc = true;
+                //    options.TagHelper.RenderPictureSources = new string[] { "jxl" };
+                //    options.TagHelper.SingleSourceExtensions = new string[] { "gif" };
+                //})
                 .Build();
-
             services.AddUnique<IImageUrlGenerator, CloudflareImageUrlGenerator>();
  
-
         }
 
         /// <summary>

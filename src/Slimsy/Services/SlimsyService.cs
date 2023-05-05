@@ -232,7 +232,7 @@
             var outputString = string.Empty;
 
             var imageCrops = publishedContent.Value<ImageCropperValue>(propertyAlias);
-            var crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));            
+            var crop = imageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(cropAlias));
 
             var additionalParams = this.AdditionalParams(outputFormat, furtherOptions);
 
@@ -255,10 +255,11 @@
                 // this code would execute if a predefined crop has been added to the data type but this media item hasn't been re-saved
                 var cropperConfiguration = (ImageCropperConfiguration)publishedContent.Properties.FirstOrDefault(x => x.Alias == propertyAlias)?.PropertyType.DataType.Configuration;
                 ImageCropperConfiguration.Crop cropConfiguration = null;
-                if (cropperConfiguration.Crops!= null) {
+                if (cropperConfiguration.Crops != null)
+                {
                     cropConfiguration = cropperConfiguration?.Crops.FirstOrDefault(c => c.Alias == cropAlias);
                 }
-                
+
                 if (cropConfiguration != null)
                 {
                     // auto generate using focal point
@@ -313,29 +314,32 @@
 
         #region Internal Functions
 
-        private string MimeType(string fileExtension)
+        internal static string? MimeType(string fileExtension)
         {
-            var defaultMimeType = "";
+            string? mimeType = null;
             switch (fileExtension)
             {
                 case "jpg":
-                    defaultMimeType = "image/jpeg";
+                    mimeType = "image/jpeg";
                     break;
                 case "png":
-                    defaultMimeType = "image/png";
+                    mimeType = "image/png";
                     break;
                 case "gif":
-                    defaultMimeType = "image/gif";
+                    mimeType = "image/gif";
                     break;
                 case "webp":
-                    defaultMimeType = "image/webp";
+                    mimeType = "image/webp";
                     break;
-                default:
-                    defaultMimeType = "image/jpeg";
+                case "avif":
+                    mimeType = "image/avif";
+                    break;
+                case "jxl":
+                    mimeType = "image/jxl";
                     break;
             }
 
-            return defaultMimeType;
+            return mimeType;
         }
 
         private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
@@ -358,7 +362,7 @@
             {
                 return null;
             }
-            
+
         }
 
         private int DefaultQuality()
@@ -408,10 +412,9 @@
 
         private string AdditionalParams(string? outputFormat = null, string? furtherOptions = null)
         {
-            if (outputFormat == null)
+            if (string.IsNullOrEmpty(outputFormat) && _slimsyOptions.Format != null)
             {
-                var slimsyFormat = this._slimsyOptions.Format;
-                outputFormat = slimsyFormat ?? "auto";
+                outputFormat = this._slimsyOptions.Format;
             }
 
             var slimsyBgColor = this._slimsyOptions.BackgroundColor;
@@ -641,22 +644,22 @@
 
         #region GetCropUrl proxies
 
-            /// <summary>
-            /// Gets the ImageSharp Url of a media item by the crop alias (using default media item property alias of "umbracoFile").
-            /// </summary>
-            /// <param name="mediaItem">
-            /// The IPublishedContent item.
-            /// </param>
-            /// <param name="cropAlias">
-            /// The crop alias e.g. thumbnail
-            /// </param>
-            /// <param name="htmlEncode">
-            /// Whether to HTML encode this URL - default is true - w3c standards require HTML attributes to be HTML encoded but this can be
-            /// set to false if using the result of this method for CSS.
-            /// </param>
-            /// <returns></returns>
-            public IHtmlContent GetCropUrl(IPublishedContent mediaItem, string cropAlias,
-            bool htmlEncode = true)
+        /// <summary>
+        /// Gets the ImageSharp Url of a media item by the crop alias (using default media item property alias of "umbracoFile").
+        /// </summary>
+        /// <param name="mediaItem">
+        /// The IPublishedContent item.
+        /// </param>
+        /// <param name="cropAlias">
+        /// The crop alias e.g. thumbnail
+        /// </param>
+        /// <param name="htmlEncode">
+        /// Whether to HTML encode this URL - default is true - w3c standards require HTML attributes to be HTML encoded but this can be
+        /// set to false if using the result of this method for CSS.
+        /// </param>
+        /// <returns></returns>
+        public IHtmlContent GetCropUrl(IPublishedContent mediaItem, string cropAlias,
+        bool htmlEncode = true)
         {
             if (mediaItem == null) return EmptyHtmlString;
 
