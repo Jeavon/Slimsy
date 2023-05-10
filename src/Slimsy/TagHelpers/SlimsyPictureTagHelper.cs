@@ -28,6 +28,8 @@ namespace Slimsy
         [Obsolete("This property is obsolete, Use PictureSources Options instead.", false)]
         public bool RenderWebpAlternative { get; set; } = true;
         public bool RenderLQIP { get; set; } = true;
+        public bool IsDecorational { get; set; }
+        public bool RenderImageDimensions { get; set; }
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
         private readonly SlimsyService _slimsyService;
         private readonly SlimsyOptions _slimsyOptions;
@@ -135,11 +137,17 @@ namespace Slimsy
                         sources.Add(nativeSource);
                     }                                       
                 }
-               
-                if (AltText == null)
+
+                if (!this.IsDecorational)
                 {
-                    AltText = MediaItem.Name;
+                    AltText ??= MediaItem.Name;
                 }
+                else
+                {
+                    AltText = "";
+                }
+
+                var imgDimensions = this.RenderImageDimensions ? $"width={this.Width} height={this.Height}" : string.Empty;
 
                 var htmlContent = "";
 
@@ -156,11 +164,11 @@ namespace Slimsy
       
                 if (RenderLQIP)
                 {
-                    htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" />" + Environment.NewLine;
+                    htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.IsDecorational ? "role=presentation" : string.Empty)} />" + Environment.NewLine;
                 }
                 else
                 {
-                    htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" />" + Environment.NewLine;
+                    htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.IsDecorational ? "role=presentation" : string.Empty)} />" + Environment.NewLine;
                 }
                 
                 output.TagName = "picture";
