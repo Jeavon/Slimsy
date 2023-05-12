@@ -43,12 +43,15 @@ namespace Slimsy.ImageUrlGenerators
 
             Dictionary<string, StringValues> imageSharpCommands = QueryHelpers.ParseQuery(new Uri(fakeBaseUri, imageSharpString).Query);
 
-            // remove format from ImageSharp and add it to Cloudflare
+            // remove format from ImageSharp and add it to Cloudflare, additionally set ImageSharp quality to 100 (as source) and add quality parameter to Cloudflare 
             if (imageSharpCommands.Remove(FormatWebProcessor.Format, out StringValues format))
             {
                 if (CloudFlareSupportedImageFileTypes.Contains(format[0]))
                 {
+                    var quality = imageSharpCommands[QualityWebProcessor.Quality];
+                    imageSharpCommands[QualityWebProcessor.Quality] = "100";
                     cfCommands.Add(FormatWebProcessor.Format, format[0]);
+                    cfCommands.Add(QualityWebProcessor.Quality, quality);
                 } else
                 {
                     return imageSharpString;
