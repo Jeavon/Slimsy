@@ -1,18 +1,11 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using SixLabors.ImageSharp.Web.Processors;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SixLabors.ImageSharp;
 using Umbraco.Cms.Core.Media;
 using Umbraco.Cms.Core.Models;
-using static Umbraco.Cms.Core.Models.ImageUrlGenerationOptions;
-using Umbraco.Cms.Web.Common.ImageProcessors;
-using System.Drawing.Drawing2D;
 using Umbraco.Cms.Web.Common.Media;
 
 namespace Slimsy.ImageUrlGenerators
