@@ -1,4 +1,4 @@
-﻿namespace Slimsy.Services
+namespace Slimsy.Services
 {
     using System;
     using System.Collections.Generic;
@@ -513,11 +513,20 @@
                                     {
                                         var node = this.GetAnyTypePublishedContent(guidUdi);
 
-                                        var qsWidth = queryString["width"];
+                                        // if width is not in query string (I don't know why it would be but it has been seen) then use if we have height ok, else fall back to max width - don't throw
                                         var qsHeight = "0";
                                         if (queryString.ContainsKey("height"))
                                         {
                                             qsHeight = queryString["height"];
+                                        }
+                                        string qsWidth;
+                                        if (queryString.ContainsKey("width"))
+                                        {
+                                            qsWidth = queryString["width"];
+                                        }
+                                        else
+                                        {
+                                            qsWidth = qsHeight != "0" ? "0" : _slimsyOptions.MaxWidth.ToString();
                                         }
 
                                         // TinyMce sometimes adds decimals to image resize commands, we need to fix those
