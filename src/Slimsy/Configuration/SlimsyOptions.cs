@@ -2,7 +2,7 @@
 
 namespace Slimsy.Configuration
 {
-    public sealed class SlimsyOptions 
+    public sealed class SlimsyOptions
     {
         public string Format { get; set; } = null!;
         public string BackgroundColor { get; set; } = null!;
@@ -17,5 +17,12 @@ namespace Slimsy.Configuration
     {
         public string[]? SingleSources { get; set; } = Array.Empty<string>();
         public string[]? PictureSources { get; set; } = Array.Empty<string>();
+        public PictureSource[] DefaultPictureSources { get; set; } = Array.Empty<PictureSource>();
+
+        public sealed class PictureSource
+        {
+            public string Extension { get; set; } = null!;
+            public int Quality { get; set; } = 90;
+        }
     }
 }

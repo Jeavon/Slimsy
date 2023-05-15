@@ -10,6 +10,7 @@ using System.Linq;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Extensions;
+using static Slimsy.Configuration.TagHelper;
 using TagHelper = Microsoft.AspNetCore.Razor.TagHelpers.TagHelper;
 
 namespace Slimsy
@@ -42,12 +43,13 @@ namespace Slimsy
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            List<string>? pictureSources = _slimsyOptions.TagHelper.PictureSources.ToList();
+
+            List<PictureSource> pictureSources = _slimsyOptions.TagHelper.DefaultPictureSources.ToList();
 
             // supporting upgrades
-            if (RenderWebpAlternative && !pictureSources.InvariantContains("webp"))
+            if (RenderWebpAlternative && !pictureSources.Select(s => s.Extension).Contains("webp"))
             {
-                pictureSources.Add("webp");
+                pictureSources.Add(new PictureSource(){Extension="webp", Quality=70});
             }
 
             CssClass = !string.IsNullOrEmpty(CssClass) ? $"lazyload {CssClass}" : "lazyload";
@@ -59,7 +61,7 @@ namespace Slimsy
                 if (_slimsyOptions.TagHelper.SingleSources != null && _slimsyOptions.TagHelper.SingleSources.Contains(umbracoExtension))
                 {
                     // empty the sources as this should render a single source
-                    pictureSources = new List<string>();
+                    pictureSources = new List<PictureSource>();
                 }
 
                 var defaultFormat = umbracoExtension;
@@ -93,14 +95,14 @@ namespace Slimsy
                         
                         foreach (var source in pictureSources)
                         {
-                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, 70, source);
-                            imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: CropAlias, quality: 20, furtherOptions: "&format=" + source);
-                            var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source };
+                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, source.Quality, source.Extension);
+                            imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: CropAlias, quality: 20, furtherOptions: "&format=" + source.Extension);
+                            var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source.Extension };
                             sources.Add(newSource);
                         }
 
-                        // native format not included in sources so we add it as the last option
-                        if (!pictureSources.InvariantContains(defaultFormat))
+                        // native format not included in sources so we add it as the last option, it will use the Slimsy default quality
+                        if (!pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
                         {
                             imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat);
                             // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
@@ -120,9 +122,9 @@ namespace Slimsy
 
                     foreach (var source in pictureSources)
                     {
-                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, 70, source);
-                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + source);
-                        var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source };
+                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, source.Quality, source.Extension);
+                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + source.Extension);
+                        var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source.Extension };
                         sources.Add(newSource);
                     }
 
@@ -131,7 +133,7 @@ namespace Slimsy
                     imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + defaultFormat);
 
                     // native format not included in sources so we add it as the last option
-                    if (!pictureSources.InvariantContains(defaultFormat))
+                    if (!pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
                     {
                         var nativeSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = defaultFormat };
                         sources.Add(nativeSource);
