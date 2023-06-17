@@ -30,7 +30,6 @@ namespace Slimsy
         public bool RenderWebpAlternative { get; set; } = true;
         public bool RenderLQIP { get; set; } = true;
         public bool IsDecorational { get; set; }
-        public bool RenderImageDimensions { get; set; }
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
         private readonly SlimsyService _slimsyService;
         private readonly SlimsyOptions _slimsyOptions;
@@ -149,7 +148,7 @@ namespace Slimsy
                     AltText = "";
                 }
 
-                var imgDimensions = this.RenderImageDimensions ? $"width={this.Width} height={this.Height}" : string.Empty;
+                var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $"width={this.Width} height={this.Height}" : string.Empty;
 
                 var htmlContent = "";
 

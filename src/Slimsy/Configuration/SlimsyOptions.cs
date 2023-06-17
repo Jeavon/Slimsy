@@ -18,11 +18,11 @@ namespace Slimsy.Configuration
         public string[]? SingleSources { get; set; } = Array.Empty<string>();
         public string[]? PictureSources { get; set; } = Array.Empty<string>();
         public PictureSource[] DefaultPictureSources { get; set; } = Array.Empty<PictureSource>();
-
-        public sealed class PictureSource
-        {
-            public string Extension { get; set; } = null!;
-            public int Quality { get; set; } = 90;
-        }
+        public bool ImageDimensions { get; set; } = false;
+    }
+    public sealed class PictureSource
+    {
+        public string Extension { get; set; } = null!;
+        public int Quality { get; set; } = 90;
     }
 }
