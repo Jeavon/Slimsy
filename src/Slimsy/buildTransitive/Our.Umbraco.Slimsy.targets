@@ -15,4 +15,8 @@
             Condition="Exists('$(MSBuildProjectDirectory)\wwwroot\')"
             SkipUnchangedFiles="true" />
     </Target>
+
+  <ItemGroup>
+    <UmbracoJsonSchemaFiles Include="$(MSBuildThisFileDirectory)..\content\appsettings-schema.Slimsy.json" Weight="-50" />
+  </ItemGroup>
 </Project>
