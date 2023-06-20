@@ -10,7 +10,6 @@ using System.Linq;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Extensions;
-using static Slimsy.Configuration.TagHelper;
 using TagHelper = Microsoft.AspNetCore.Razor.TagHelpers.TagHelper;
 
 namespace Slimsy
@@ -19,7 +18,7 @@ namespace Slimsy
     {
         public MediaWithCrops? MediaItem { get; set; }
         /// <summary>
-        /// Crop Alias to use, when this attribute is passed, width and height attributes are ignored
+        /// Crop Alias to use, when this attribute is passed, width and height parameters are ignored
         /// </summary>
         public string? CropAlias { get; set; }
         public int Width { get; set; }
@@ -29,7 +28,7 @@ namespace Slimsy
         [Obsolete("This property is obsolete, Use PictureSources Options instead.", false)]
         public bool RenderWebpAlternative { get; set; } = true;
         public bool RenderLQIP { get; set; } = true;
-        public bool IsDecorational { get; set; }
+        public bool IsDecorative { get; set; } = false;
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
         private readonly SlimsyService _slimsyService;
         private readonly SlimsyOptions _slimsyOptions;
@@ -139,7 +138,7 @@ namespace Slimsy
                     }                                       
                 }
 
-                if (!this.IsDecorational)
+                if (!this.IsDecorative)
                 {
                     AltText ??= MediaItem.Name;
                 }
@@ -165,11 +164,11 @@ namespace Slimsy
       
                 if (RenderLQIP)
                 {
-                    htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.IsDecorational ? "role=presentation" : string.Empty)} />" + Environment.NewLine;
+                    htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.IsDecorative ? "role=presentation" : string.Empty)} />" + Environment.NewLine;
                 }
                 else
                 {
-                    htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.IsDecorational ? "role=presentation" : string.Empty)} />" + Environment.NewLine;
+                    htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.IsDecorative ? "role=presentation" : string.Empty)} />" + Environment.NewLine;
                 }
                 
                 output.TagName = "picture";
