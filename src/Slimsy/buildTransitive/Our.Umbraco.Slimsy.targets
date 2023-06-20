@@ -17,6 +17,6 @@
     </Target>
 
   <ItemGroup>
-    <UmbracoJsonSchemaFiles Include="$(MSBuildThisFileDirectory)..\content\appsettings-schema.Slimsy.json" Weight="-50" />
+    <UmbracoJsonSchemaFiles Include="$(MSBuildThisFileDirectory)..\appsettings-schema.Slimsy.json" Weight="-50" />
   </ItemGroup>
 </Project>
