@@ -95,7 +95,6 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-
         /// <summary>
         /// Generate SrcSet attribute value based on a width and height for the image cropped using a specific mode and using a specific image cropper property alias, output format and optional quality
         /// </summary>
@@ -151,7 +150,7 @@
         /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
-        /// <returns>HTML Markup</returns>
+        /// <returns>Url of image</returns>
         public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
@@ -219,9 +218,9 @@
         /// <param name="publishedContent"></param>
         /// <param name="cropAlias"></param>
         /// <param name="propertyAlias"></param>
+        /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
-        /// <param name="quality"></param>
         /// <returns>Url of image</returns>
         public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string outputFormat = "", string furtherOptions = "")
         {
@@ -276,6 +275,16 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
+        /// <summary>
+        /// Generate SrcSet attribute value based on a predefined crop using a specific image cropper property alias, output format and optional quality
+        /// </summary>
+        /// <param name="mediaWithCrops"></param>
+        /// <param name="cropAlias"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="quality"></param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
+        /// <returns>Url of image</returns>
         public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
         {
             var w = this.WidthStep();
