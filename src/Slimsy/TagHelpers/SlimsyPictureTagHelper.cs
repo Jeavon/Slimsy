@@ -7,6 +7,7 @@ using Slimsy.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Extensions;
@@ -147,7 +148,20 @@ namespace Slimsy
                     AltText = "";
                 }
 
-                var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $"width={this.Width} height={this.Height}" : string.Empty;
+                var renderHeight = Height;
+                if (_slimsyOptions.TagHelper.ImageDimensions)
+                {
+                    // if only a width parameter we can calculate the height
+                    if (renderHeight == 0)
+                    {
+                        var sourceWidth = MediaItem.Value<int>(Constants.Conventions.Media.Width);
+                        var sourceHeight = MediaItem.Value<int>(Constants.Conventions.Media.Height);                        
+                        decimal ratio = (decimal)Width / (decimal)sourceWidth;
+                        int calculatedHeight = (int)Math.Round(sourceHeight * ratio, 0);
+                        renderHeight = calculatedHeight;
+                    }
+                }
+                var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $"width=\"{this.Width}\" height=\"{renderHeight}\"" : string.Empty;
 
                 var htmlContent = "";
 
