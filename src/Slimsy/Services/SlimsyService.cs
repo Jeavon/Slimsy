@@ -524,8 +524,13 @@
                                     if (UdiParser.TryParse(udiAttr.Value, out guidUdi))
                                     {
                                         var node = this.GetAnyTypePublishedContent(guidUdi);
+                                        
+                                        var qsWidth = "0";
+                                        if (queryString.ContainsKey("width"))
+                                        {
+                                            qsWidth = queryString["width"];
+                                        }
 
-                                        var qsWidth = queryString["width"];
                                         var qsHeight = "0";
                                         if (queryString.ContainsKey("height"))
                                         {
