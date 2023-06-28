@@ -155,10 +155,12 @@ namespace Slimsy
                     if (renderHeight == 0)
                     {
                         var sourceWidth = MediaItem.Value<int>(Constants.Conventions.Media.Width);
-                        var sourceHeight = MediaItem.Value<int>(Constants.Conventions.Media.Height);                        
-                        decimal ratio = (decimal)Width / (decimal)sourceWidth;
-                        int calculatedHeight = (int)Math.Round(sourceHeight * ratio, 0);
-                        renderHeight = calculatedHeight;
+                        var sourceHeight = MediaItem.Value<int>(Constants.Conventions.Media.Height);
+                        if (sourceHeight != 0 && sourceWidth != 0) {
+                            decimal ratio = (decimal)Width / (decimal)sourceWidth;
+                            int calculatedHeight = (int)Math.Round(sourceHeight * ratio, 0);
+                            renderHeight = calculatedHeight;
+                        }                        
                     }
                 }
                 var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $"width=\"{this.Width}\" height=\"{renderHeight}\"" : string.Empty;
