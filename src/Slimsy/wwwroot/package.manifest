@@ -1,5 +1,6 @@
 {
-  "name": "Our.Umbraco.Slimsy",
+  "id": "Our.Umbraco.Slimsy",
+  "name": "Slimsy",
   "version": "",
   "allowPackageTelemetry": true
 }

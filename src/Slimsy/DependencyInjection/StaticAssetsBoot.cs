@@ -19,7 +19,7 @@ namespace Slimsy.DependencyInjection
 
     public static class uSyncStaticAssetsExtensions
     {
-        public static IUmbracoBuilder AddSlimsyStaticAssets(this IUmbracoBuilder builder)
+        internal static IUmbracoBuilder AddSlimsyStaticAssets(this IUmbracoBuilder builder)
         {
             if (builder.ManifestFilters().Has<SlimsyAssetManifestFilter>())
                 return builder;
