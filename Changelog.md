@@ -29,3 +29,4 @@ Slimsy Change log
 - 4.0.0-beta1 - Umbraco v10 support!
 - 4.0.0 - Umbraco v10 support
 - 4.0.1 & 4.0.2 - Changes to NuGet package for Umbraco marketplace support
+- 4.1.0-beta1 - New TagHelper options and Decorative parameter

@@ -2,7 +2,7 @@ Slimsy v4
 ============
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
-# Slimsy v4 is made for Umbraco v10 & v11!
+# Slimsy v4 is made for Umbraco v10, v11 & v12!
 
 ![](https://raw.githubusercontent.com/Jeavon/Slimsy/main-v4/Slimsy.png)
 
@@ -99,7 +99,7 @@ public ResponsiveImageViewComponent(SlimsyService slimsyService)
 
 There's quite a lot to this - so check it out in the demo site [here](https://github.com/Jeavon/Slimsy/blob/dev-v4/src/Slimsy.TestSite/Views/Partials/grid/editors/media.cshtml)
 
-# Advanced Options
+# Options
 
 Add/Edit `appsettings.json`
 
@@ -122,6 +122,89 @@ or edit `Startup.cs` to modify SlimsyOptions
     options.UseCropAsSrc = true;
 })
 ```
+
+## Available in v4.1+
+
+TagHelper has some options in `appsettings.json`
+
+- SingleSources - allows specific file extensions to only render a single source
+- DefaultPictureSources - allows multiple picture sources to be defined, example below is for both avif and webp formats
+- ImageDimensions - defines if width and height attributes should be rendered on the `img` tag
+
+e.g.
+
+```json
+  "Slimsy": {
+    "WidthStep": 180,
+    "UseCropAsSrc": true,
+    "DefaultQuality": 70,
+    "TagHelper": {
+      "SingleSources": [ "gif" ],
+      "DefaultPictureSources": [
+        {
+          "Extension": "avif",
+          "Quality": 60
+        },
+        {
+          "Extension": "webp",
+          "Quality": 70
+        }
+      ],
+      "ImageDimensions": true
+    }
+  }
+```
+
+TagHelper has a new parameter called `Decorative` which renders `role="presentation"` on the `img` tag 
+
+# How to use AVIF format in v4.1+
+
+There is not currently a AVIF encoder for ImageSharp, keep an eye on https://github.com/hey-red/ImageSharp.Heif which has amditions of adding a encoder in the future.
+
+Cloudflare Image Resizing does support AVIF encoding and this can be used by Slimsy.
+
+### 1. Install the CloudflareImageUrlGenerator package
+
+See https://github.com/Jeavon/CloudflareImageUrlGenerator for full details.
+
+```
+dotnet add package Umbraco.Community.CloudflareImageUrlGenerator
+```
+
+### 2. Add to Startup.cs in the ConfigureServices method
+
+```c#
+.AddCloudflareImageUrlGenerator()
+```
+
+### 3. Enable Image Resizing on Cloudflare
+
+https://developers.cloudflare.com/images/image-resizing/enable-image-resizing/
+
+### 4. Set the avif format as a DefaultPictureSources in appsettings.json
+
+e.g.
+
+```json
+  "Slimsy": {
+    "TagHelper": {
+      "DefaultPictureSources": [
+        {
+          "Extension": "avif",
+          "Quality": 60
+        },
+        {
+          "Extension": "webp",
+          "Quality": 70
+        }
+      ]
+    }
+  }
+```
+
+### 5. Check the rendered sources
+
+Image paths for avif and webp should begin with `/cdn-cgi/image/format=avif,quality=70`
 
 # Lazysizes.js
 

@@ -41,11 +41,11 @@
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="propertyAlias"></param>
-        /// <param name="quality">Default is 90</param>
+        /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
         {
             return this.GetSrcSetUrls(new MediaWithCrops(publishedContent, null, null), width, height, propertyAlias, quality, outputFormat, furtherOptions);
         }
@@ -57,14 +57,14 @@
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="propertyAlias"></param>
-        /// <param name="quality">Default is 90</param>
+        /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
         {
             var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var q = quality == null ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -95,7 +95,6 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-
         /// <summary>
         /// Generate SrcSet attribute value based on a width and height for the image cropped using a specific mode and using a specific image cropper property alias, output format and optional quality
         /// </summary>
@@ -105,14 +104,14 @@
         /// <param name="propertyAlias"></param>
         /// <param name="imageCropMode"></param>
         /// <param name="imageCropAnchor"></param>
-        /// <param name="quality">Default is 90</param>
+        /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, ImageCropAnchor imageCropAnchor = ImageCropAnchor.Center, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, ImageCropMode imageCropMode, ImageCropAnchor imageCropAnchor = ImageCropAnchor.Center, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var q = quality == null ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -148,14 +147,14 @@
         /// <param name="publishedContent"></param>
         /// <param name="aspectRatio"></param>
         /// <param name="propertyAlias"></param>
-        /// <param name="quality">Default is 90</param>
+        /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
-        /// <returns>HTML Markup</returns>
-        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        /// <returns>Url of image</returns>
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, AspectRatio aspectRatio, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var q = quality == null ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
 
@@ -184,15 +183,15 @@
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="maxWidth">The maximum width to generate urls for, this should be the actual width of the source image</param>
-        /// <param name="quality">Default is 90</param>
+        /// <param name="quality"></param>
         /// <param name="imageCropMode"></param>
         /// <param name="imageCropAnchor"></param>
         /// <param name="outputFormat"></param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(string url, int width, int height, int maxWidth, int quality = 90, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null, string outputFormat = "")
+        public IHtmlContent GetSrcSetUrls(string url, int width, int height, int maxWidth, int? quality = null, ImageCropMode? imageCropMode = null, ImageCropAnchor? imageCropAnchor = null, string outputFormat = "")
         {
             var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var q = quality == null ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var heightRatio = (decimal)height / width;
@@ -219,14 +218,14 @@
         /// <param name="publishedContent"></param>
         /// <param name="cropAlias"></param>
         /// <param name="propertyAlias"></param>
+        /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
-        /// <param name="quality">Default is 90</param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string outputFormat = "", string furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string outputFormat = "", string furtherOptions = "")
         {
             var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var q = quality == null ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var outputString = string.Empty;
@@ -276,10 +275,20 @@
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
         }
 
-        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int quality = 90, string? outputFormat = "", string? furtherOptions = "")
+        /// <summary>
+        /// Generate SrcSet attribute value based on a predefined crop using a specific image cropper property alias, output format and optional quality
+        /// </summary>
+        /// <param name="mediaWithCrops"></param>
+        /// <param name="cropAlias"></param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="quality"></param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
+        /// <returns>Url of image</returns>
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
         {
             var w = this.WidthStep();
-            var q = quality == 90 ? this.DefaultQuality() : quality;
+            var q = quality == null ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
             var outputString = string.Empty;
@@ -314,29 +323,32 @@
 
         #region Internal Functions
 
-        private string MimeType(string fileExtension)
+        internal static string? MimeType(string fileExtension)
         {
-            var defaultMimeType = "";
+            string? mimeType = null;
             switch (fileExtension)
             {
                 case "jpg":
-                    defaultMimeType = "image/jpeg";
+                    mimeType = "image/jpeg";
                     break;
                 case "png":
-                    defaultMimeType = "image/png";
+                    mimeType = "image/png";
                     break;
                 case "gif":
-                    defaultMimeType = "image/gif";
+                    mimeType = "image/gif";
                     break;
                 case "webp":
-                    defaultMimeType = "image/webp";
+                    mimeType = "image/webp";
                     break;
-                default:
-                    defaultMimeType = "image/jpeg";
+                case "avif":
+                    mimeType = "image/avif";
+                    break;
+                case "jxl":
+                    mimeType = "image/jxl";
                     break;
             }
 
-            return defaultMimeType;
+            return mimeType;
         }
 
         private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
@@ -512,8 +524,13 @@
                                     if (UdiParser.TryParse(udiAttr.Value, out guidUdi))
                                     {
                                         var node = this.GetAnyTypePublishedContent(guidUdi);
+                                        
+                                        var qsWidth = "0";
+                                        if (queryString.ContainsKey("width"))
+                                        {
+                                            qsWidth = queryString["width"];
+                                        }
 
-                                        var qsWidth = queryString["width"];
                                         var qsHeight = "0";
                                         if (queryString.ContainsKey("height"))
                                         {

@@ -1,0 +1,16 @@
+{
+	"name": "appveyorpatch",
+	"description": "All NodeJs stuff needed to be cool",
+	"repository": "",
+	"license": "UNLICENSED",
+	"version": "1.0.0",
+	"dependencies": {
+		"jsonfile": "^6.1.0",
+		"semver": "^7.3.5",
+		"@xmldom/xmldom": "^0.8.8",
+		"read-file": "^0.2.0",
+		"write": "^2.0.0",
+		"js-yaml": "^3.7.0",
+		"comment-json": "^4.2.3"
+	}
+}

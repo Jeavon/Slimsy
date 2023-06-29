@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ContentTargetFolders>.</ContentTargetFolders>
         <Product>Slimsy</Product>
@@ -20,20 +20,19 @@
 		    <Authors>Jeavon Leopold, Marc Stöcker, William Phillips</Authors>
 		    <RepositoryUrl>https://github.com/Jeavon/Slimsy</RepositoryUrl>
 		    <PackageReadmeFile>README.md</PackageReadmeFile>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <StaticWebAssetBasePath>App_Plugins/Slimsy</StaticWebAssetBasePath>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Umbraco.Cms.Web.Common" Version="10.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-        <None Include="build\**\*.*">
-            <Pack>True</Pack>
-            <PackagePath>buildTransitive</PackagePath>
-        </None>
-    </ItemGroup>
+  <ItemGroup>
+    <Content Include="buildTransitive\**" PackagePath="buildTransitive" />
+  </ItemGroup>
 
-    <ItemGroup>
+  <ItemGroup>
       <None Remove="Scripts\lazysizes.min.js" />
     </ItemGroup>
 
