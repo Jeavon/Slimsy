@@ -121,7 +121,7 @@
         /// Convert img to img srcset, extracts width and height from querystrings
         /// </summary>
         /// <param name="htmlHelper"></param>
-        /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
+        /// <param name="sourceValueHtml">This html value should be the source value from an Umbraco property or a raw grid RTE value</param>
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <param name="renderPicture"></param>
@@ -148,6 +148,54 @@
             return SlimsyService.ConvertImgToResponsive(publishedContent, propertyAlias, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
         }
 
+
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="htmlHelper"></param>
+        /// <param name="publishedContent"></param>
+        /// <param name="propertyAlias">Alias of the TinyMce property</param>
+        /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlEncodedString? ConvertImgToResponsive(this IHtmlHelper htmlHelper, PublishedContentWrapped publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
+        {
+            return htmlHelper.ConvertImgToResponsive(publishedContent.Unwrap(), propertyAlias, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
+        }
+
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="htmlHelper"></param>
+        /// <param name="publishedElement"></param>
+        /// <param name="propertyAlias">Alias of the TinyMce property</param>
+        /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlEncodedString? ConvertImgToResponsive(this IHtmlHelper htmlHelper, IPublishedElement publishedElement, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
+        {
+            return SlimsyService.ConvertImgToResponsive(publishedElement, propertyAlias, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
+        }
+
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="htmlHelper"></param>
+        /// <param name="publishedElement"></param>
+        /// <param name="propertyAlias">Alias of the TinyMce property</param>
+        /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
+        /// <returns>HTML Markup</returns>
+        public static IHtmlEncodedString? ConvertImgToResponsive(this IHtmlHelper htmlHelper, PublishedElementWrapped publishedElement, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
+        {
+            return htmlHelper.ConvertImgToResponsive(publishedElement.Unwrap(), propertyAlias, generateLqip, removeStyleAttribute, renderPicture, pictureSources);
+        }
         #endregion
 
     }
