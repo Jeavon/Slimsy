@@ -524,7 +524,7 @@
                                     if (UdiParser.TryParse(udiAttr.Value, out guidUdi))
                                     {
                                         var node = this.GetAnyTypePublishedContent(guidUdi);
-                                        
+
                                         var qsWidth = "0";
                                         if (queryString.ContainsKey("width"))
                                         {
@@ -939,13 +939,31 @@
         /// <returns>HTML Markup</returns>
         public IHtmlEncodedString ConvertImgToResponsive(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
-            var sourceValue = publishedContent.GetProperty(propertyAlias).GetSourceValue();
+            var sourceValue = publishedContent.GetProperty(propertyAlias)?.GetSourceValue();
 
             return sourceValue != null ?
                 this.ConvertImgToResponsive(sourceValue.ToString(), generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlEncodedString("");
         }
 
+        /// <summary>
+        /// Convert img to img srcset, extracts width and height from querystrings
+        /// </summary>
+        /// <param name="publishedElement"></param>
+        /// <param name="propertyAlias">Alias of the TinyMce property</param>
+        /// <param name="generateLqip">Set to true if you want LQIP markup to be generated</param>
+        /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
+        /// <param name="renderPicture"></param>
+        /// <param name="pictureSources"></param>
+        /// <returns>HTML Markup</returns>
+        public IHtmlEncodedString ConvertImgToResponsive(IPublishedElement publishedElement, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
+        {
+            var sourceValue = publishedElement.GetProperty(propertyAlias)?.GetSourceValue();
+
+            return sourceValue != null ?
+                this.ConvertImgToResponsive(sourceValue.ToString(), generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
+                new HtmlEncodedString("");
+        }
 
         #endregion
 
