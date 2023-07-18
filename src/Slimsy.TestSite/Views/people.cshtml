@@ -70,10 +70,15 @@
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
             {
+                string? fetch = null;
+                if (person == Model.Children<Person>().First())
+                {
+                    fetch = "high";
+                }
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">
                         <div class="employee-grid__item__image">
-                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" decorative="true" fetchPriority="high"></slimsy-picture>
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" decorative="true" fetch-priority="@fetch"></slimsy-picture>
                         </div>
                     </div>
                     @{
