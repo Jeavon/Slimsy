@@ -30,6 +30,7 @@ namespace Slimsy
         public bool RenderWebpAlternative { get; set; } = true;
         public bool RenderLQIP { get; set; } = true;
         public bool Decorative { get; set; } = false;
+        public string? FetchPriority { get; set; } = null;
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
         private readonly SlimsyService _slimsyService;
         private readonly SlimsyOptions _slimsyOptions;
@@ -163,7 +164,8 @@ namespace Slimsy
                         }                        
                     }
                 }
-                var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $"width=\"{this.Width}\" height=\"{renderHeight}\"" : string.Empty;
+                var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $" width=\"{this.Width}\" height=\"{renderHeight}\"" : string.Empty;
+                var fetchPriorityAttribute = !string.IsNullOrEmpty(FetchPriority) ? $" fetchpriority=\"{FetchPriority}\"" : null;
 
                 var htmlContent = "";
 
@@ -180,11 +182,11 @@ namespace Slimsy
       
                 if (RenderLQIP)
                 {
-                    htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.Decorative ? "role=\"presentation\"" : string.Empty)} />" + Environment.NewLine;
+                    htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}""{imgDimensions}{fetchPriorityAttribute}{(this.Decorative ? " role=\"presentation\"" : string.Empty)} />" + Environment.NewLine;
                 }
                 else
                 {
-                    htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}"" {imgDimensions} {(this.Decorative ? "role=\"presentation\"" : string.Empty)} />" + Environment.NewLine;
+                    htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}""{imgDimensions}{fetchPriorityAttribute}{(this.Decorative ? " role=\"presentation\"" : string.Empty)} />" + Environment.NewLine;
                 }
                 
                 output.TagName = "picture";
