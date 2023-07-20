@@ -155,7 +155,10 @@ e.g.
   }
 ```
 
-TagHelper has a new parameter called `Decorative` which renders `role="presentation"` on the `img` tag 
+TagHelper has new parameters
+
+- `decorative` which renders `role="presentation"` on the `img` tag
+- `fetch-priority` which renders on the `img` tag, for example `fetchpriority="high"`
 
 # How to use AVIF format in v4.1+
 
