@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 using Slimsy.Configuration;
+using Slimsy.Enums;
 using Slimsy.Models;
 using Slimsy.Services;
 using System;
@@ -30,7 +31,7 @@ namespace Slimsy
         public bool RenderWebpAlternative { get; set; } = true;
         public bool RenderLQIP { get; set; } = true;
         public bool Decorative { get; set; } = false;
-        public string? FetchPriority { get; set; } = null;
+        public FetchPriority FetchPriority { get; set; } = FetchPriority.Auto;
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
         private readonly SlimsyService _slimsyService;
         private readonly SlimsyOptions _slimsyOptions;
@@ -165,7 +166,7 @@ namespace Slimsy
                     }
                 }
                 var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $" width=\"{this.Width}\" height=\"{renderHeight}\"" : string.Empty;
-                var fetchPriorityAttribute = !string.IsNullOrEmpty(FetchPriority) ? $" fetchpriority=\"{FetchPriority}\"" : null;
+                var fetchPriorityAttribute = !(FetchPriority == FetchPriority.Auto) ? $" fetchpriority=\"{FetchPriority.ToString().ToLower()}\"" : null;
 
                 var htmlContent = "";
 

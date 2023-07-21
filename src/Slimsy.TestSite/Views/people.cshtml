@@ -70,10 +70,10 @@
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
             {
-                string? fetch = null;
+                FetchPriority fetch = FetchPriority.Auto;
                 if (person == Model.Children<Person>().First())
                 {
-                    fetch = "high";
+                    fetch = FetchPriority.High;
                 }
                 <div class="employee-grid__item">
                     <div class="employee-grid__item__image">

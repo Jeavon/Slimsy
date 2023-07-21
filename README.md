@@ -28,6 +28,7 @@ NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpr
 ### 3. Add to _ViewImports.cshtml
 
 ```c#
+@using Slimsy.Enums;
 @addTagHelper *, Slimsy
 @inject Slimsy.Services.SlimsyService SlimsyService
 ```
