@@ -32,6 +32,8 @@ namespace Slimsy
         public bool RenderLQIP { get; set; } = true;
         public bool Decorative { get; set; } = false;
         public FetchPriority FetchPriority { get; set; } = FetchPriority.Auto;
+        public ImageCropMode ImageCropMode { get; set; } = ImageCropMode.Crop;
+        public ImageCropAnchor ImageCropAnchor { get; set; } = ImageCropAnchor.Center;
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
         private readonly SlimsyService _slimsyService;
         private readonly SlimsyOptions _slimsyOptions;
