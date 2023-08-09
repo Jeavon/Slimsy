@@ -249,10 +249,11 @@
                 // remove the last comma
                 outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
             }
-            else
+            else if (imageCrops != null)
             {
                 // this code would execute if a predefined crop has been added to the data type but this media item hasn't been re-saved
                 var cropperConfiguration = (ImageCropperConfiguration)publishedContent.Properties.FirstOrDefault(x => x.Alias == propertyAlias)?.PropertyType.DataType.Configuration;
+
                 ImageCropperConfiguration.Crop cropConfiguration = null;
                 if (cropperConfiguration.Crops != null)
                 {
