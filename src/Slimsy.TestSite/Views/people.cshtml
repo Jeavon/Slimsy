@@ -66,6 +66,28 @@
             }
         </div>
 
+        <h2>Using Image Source Set with picture element, Pad Crop Mode</h2>
+        <div class="employee-grid">
+            @foreach (Person person in Model.Children<Person>())
+            {
+                FetchPriority fetch = FetchPriority.Auto;
+                if (person == Model.Children<Person>().First())
+                {
+                    fetch = FetchPriority.High;
+                }
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" decorative="true" fetch-priority="@fetch" image-crop-mode="Pad" image-crop-anchor="TopLeft"></slimsy-picture>
+                        </div>
+                    </div>
+                    @{
+                        ContactDetails(person);
+                    }
+                </div>
+            }
+        </div>
+
         <h2>Using Image Source Set with picture element, WebP &amp; AVIF formats and LQIP using Slimsy Picture Tag Helper</h2>
         <div class="employee-grid">
             @foreach (Person person in Model.Children<Person>())
