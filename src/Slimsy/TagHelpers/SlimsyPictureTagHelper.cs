@@ -20,7 +20,7 @@ namespace Slimsy
     {
         public MediaWithCrops? MediaItem { get; set; }
         /// <summary>
-        /// Crop Alias to use, when this attribute is passed, width and height parameters are ignored
+        /// Crop Alias to use, when this attribute is passed, Width, Height, ImageCropMode & ImageCropAnchor parameters are ignored
         /// </summary>
         public string? CropAlias { get; set; }
         public int Width { get; set; }
@@ -120,20 +120,42 @@ namespace Slimsy
                 {
                     lqipWidth = (int)Math.Round((decimal)Width / 2);
                     lqipHeight = (int)Math.Round((decimal)Height / 2);
-                                                      
-                    imgSrc = _slimsyService.GetCropUrl(MediaItem, Width, Height, furtherOptions: "&format=" + defaultFormat);
 
-                    foreach (var source in pictureSources)
+                    if (ImageCropMode != ImageCropMode.Crop)
                     {
-                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, source.Quality, source.Extension);
-                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + source.Extension);
-                        var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source.Extension };
-                        sources.Add(newSource);
+                        imgSrc = _slimsyService.GetCropUrl(MediaItem, Width, Height, imageCropMode: ImageCropMode, imageCropAnchor: ImageCropAnchor, furtherOptions: "&format=" + defaultFormat);
+
+                        foreach (var source in pictureSources)
+                        {
+                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, ImageCropMode, ImageCropAnchor, PropertyAlias, source.Quality, source.Extension );
+                            imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, PropertyAlias, quality: 20, imageCropMode: ImageCropMode, imageCropAnchor: ImageCropAnchor, furtherOptions: "&format=" + source.Extension);
+
+                            var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source.Extension };
+                            sources.Add(newSource);
+                        }
+
+                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, ImageCropMode, ImageCropAnchor, PropertyAlias, outputFormat: defaultFormat);
+                        // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **                        
+                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, PropertyAlias, quality: 20, imageCropMode: ImageCropMode, imageCropAnchor: ImageCropAnchor, furtherOptions: "&format=" + defaultFormat);
+
+                    }
+                    else // crop use focal point
+                    {
+                        imgSrc = _slimsyService.GetCropUrl(MediaItem, Width, Height, furtherOptions: "&format=" + defaultFormat);
+
+                        foreach (var source in pictureSources)
+                        {
+                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, source.Quality, source.Extension);
+                            imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, PropertyAlias, quality: 20, furtherOptions: "&format=" + source.Extension);
+                            var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source.Extension };
+                            sources.Add(newSource);
+                        }
+
+                        imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, outputFormat: defaultFormat);
+                        // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
+                        imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, PropertyAlias, quality: 20, furtherOptions: "&format=" + defaultFormat);
                     }
 
-                    imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, outputFormat: defaultFormat);
-                    // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
-                    imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, furtherOptions: "&format=" + defaultFormat);
 
                     // native format not included in sources so we add it as the last option
                     if (!pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
