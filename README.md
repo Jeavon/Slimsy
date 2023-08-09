@@ -28,6 +28,7 @@ NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpr
 ### 3. Add to _ViewImports.cshtml
 
 ```c#
+@using Slimsy.Enums;
 @addTagHelper *, Slimsy
 @inject Slimsy.Services.SlimsyService SlimsyService
 ```
@@ -159,6 +160,8 @@ TagHelper has new parameters
 
 - `decorative` which renders `role="presentation"` on the `img` tag
 - `fetch-priority` which renders on the `img` tag, for example `fetchpriority="high"`
+- `image-crop-mode` specifies a crop mode such as "Pad"
+- `image-crop-anchor` used with crop-mode to set where cropping should be focussed 
 
 # How to use AVIF format in v4.1+
 
