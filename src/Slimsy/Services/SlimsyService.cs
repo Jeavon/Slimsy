@@ -332,6 +332,9 @@
                 case "jpg":
                     mimeType = "image/jpeg";
                     break;
+                case "jpeg":
+                    mimeType = "image/jpeg";
+                    break;
                 case "png":
                     mimeType = "image/png";
                     break;
