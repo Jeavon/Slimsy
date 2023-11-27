@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 using Slimsy.Configuration;
@@ -35,6 +35,8 @@ namespace Slimsy
         public ImageCropMode ImageCropMode { get; set; } = ImageCropMode.Crop;
         public ImageCropAnchor ImageCropAnchor { get; set; } = ImageCropAnchor.Center;
         public string PropertyAlias { get; set; } = Umbraco.Cms.Core.Constants.Conventions.Media.File;
+        public Loading Loading { get; set; } = Loading.Lazy;
+        public string? ManualSizes { get; set; }
         private readonly SlimsyService _slimsyService;
         private readonly SlimsyOptions _slimsyOptions;
 
@@ -46,6 +48,10 @@ namespace Slimsy
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            if (Loading == Loading.Eager && string.IsNullOrEmpty(ManualSizes))
+            {
+                ManualSizes = "100vw";
+            }
 
             List<PictureSource> pictureSources = _slimsyOptions.TagHelper.DefaultPictureSources.ToList();
 
@@ -55,7 +61,12 @@ namespace Slimsy
                 pictureSources.Add(new PictureSource(){Extension="webp", Quality=70});
             }
 
-            CssClass = !string.IsNullOrEmpty(CssClass) ? $"lazyload {CssClass}" : "lazyload";
+            CssClass = Loading switch
+            {
+                Loading.Lazy when !string.IsNullOrEmpty(CssClass) => $"lazyload {CssClass}",
+                Loading.Lazy => "lazyload",
+                _ => CssClass
+            };
 
             if (MediaItem != null)
             {
@@ -193,27 +204,53 @@ namespace Slimsy
                         }
                     }
                     var imgDimensions = _slimsyOptions.TagHelper.ImageDimensions ? $" width=\"{this.Width}\" height=\"{renderHeight}\"" : string.Empty;
-
+                    var sizes = string.IsNullOrEmpty(ManualSizes) ? "auto" : ManualSizes;
 
                     foreach (var source in sources)
                     {
-                        if (RenderLQIP)
+                        if (Loading == Loading.Lazy)
                         {
-                            htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
+                            if (RenderLQIP)
+                            {
+                                htmlContent += Environment.NewLine +
+                                               $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""{sizes}"" />" +
+                                               Environment.NewLine;
+                            }
+                            else
+                            {
+                                htmlContent += Environment.NewLine +
+                                               $@"<source data-srcset=""{source.Source}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""{sizes}"" />" +
+                                               Environment.NewLine;
+                            }
                         }
                         else
                         {
-                            htmlContent += Environment.NewLine + $@"<source data-srcset=""{source.Source}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""auto"" />" + Environment.NewLine;
+                            htmlContent += Environment.NewLine +
+                                           $@"<source srcset=""{source.Source}"" type=""{SlimsyService.MimeType(source.Format)}"" sizes=""{sizes}"" />" +
+                                           Environment.NewLine;
                         }
                     }
 
-                    if (RenderLQIP)
+                    if (Loading == Loading.Lazy)
                     {
-                        htmlContent += $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}""{imgDimensions}{fetchPriorityAttribute}{(this.Decorative ? " role=\"presentation\"" : string.Empty)} />" + Environment.NewLine;
+                        if (RenderLQIP)
+                        {
+                            htmlContent +=
+                                $@"<img src=""{imgLqip}"" data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""{sizes}"" alt=""{AltText}""{imgDimensions}{fetchPriorityAttribute}{(this.Decorative ? " role=\"presentation\"" : string.Empty)} />" +
+                                Environment.NewLine;
+                        }
+                        else
+                        {
+                            htmlContent +=
+                                $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""{sizes}"" alt=""{AltText}""{imgDimensions}{fetchPriorityAttribute}{(this.Decorative ? " role=\"presentation\"" : string.Empty)} />" +
+                                Environment.NewLine;
+                        }
                     }
                     else
                     {
-                        htmlContent += $@"<img data-src=""{imgSrc}"" class=""{CssClass}"" data-sizes=""auto"" alt=""{AltText}""{imgDimensions}{fetchPriorityAttribute}{(this.Decorative ? " role=\"presentation\"" : string.Empty)} />" + Environment.NewLine;
+                        htmlContent +=
+                            $@"<img src=""{imgSrc}"" class=""{CssClass}"" sizes=""{sizes}"" alt=""{AltText}""{imgDimensions}{fetchPriorityAttribute}{(this.Decorative ? " role=\"presentation\"" : string.Empty)} />" +
+                            Environment.NewLine;
                     }
 
                     output.TagName = "picture";
