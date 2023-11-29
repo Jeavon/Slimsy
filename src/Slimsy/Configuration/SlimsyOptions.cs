@@ -11,6 +11,7 @@ namespace Slimsy.Configuration
         public int WidthStep { get; set; } = 160!;
         public bool UseCropAsSrc { get; set; }
         public TagHelper TagHelper { get; set; } = new TagHelper();
+        public string? ForceRefresh { get; set; } = null;
     }
 
     public sealed class TagHelper

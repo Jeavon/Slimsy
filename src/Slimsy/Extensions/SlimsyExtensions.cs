@@ -198,5 +198,9 @@
         }
         #endregion
 
+        internal static string? ForceRefresh(this string Src, string? forceRefresh)
+        {
+            return !string.IsNullOrEmpty(forceRefresh) ? $"{Src}&r={forceRefresh}" : Src;
+        }
     }
 }
