@@ -124,9 +124,7 @@ or edit `Startup.cs` to modify SlimsyOptions
 })
 ```
 
-## Available in v4.1+
-
-TagHelper has some options in `appsettings.json`
+TagHelper also has some options in `appsettings.json` (available in v4.1+)
 
 - SingleSources - allows specific file extensions to only render a single source
 - DefaultPictureSources - allows multiple picture sources to be defined, example below is for both avif and webp formats
