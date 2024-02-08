@@ -1,23 +1,38 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Umbraco.Cms.Web.Common.Hosting;
+using Slimsy.DependencyInjection;
 
-namespace Slimsy.TestSite
-{
-    public class Program
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.CreateUmbracoBuilder()
+    .AddBackOffice()
+    .AddWebsite()
+    .AddDeliveryApi()
+    .AddComposers()
+    .AddSlimsy()
+    //.AddSlimsy(options =>
+    //{
+    //    options.DefaultQuality = 60;
+    //    options.WidthStep = 60;
+    //    options.UseCropAsSrc = true;
+    //    options.TagHelper.RenderPictureSources = new string[] { "jxl" };
+    //    options.TagHelper.SingleSourceExtensions = new string[] { "gif" };
+    //})
+    .Build();
+WebApplication app = builder.Build();
+
+await app.BootUmbracoAsync();
+
+
+app.UseUmbraco()
+    .WithMiddleware(u =>
     {
-        public static void Main(string[] args)
-            => CreateHostBuilder(args)
-                .Build()
-                .Run();
+        u.UseBackOffice();
+        u.UseWebsite();
+    })
+    .WithEndpoints(u =>
+    {
+        u.UseInstallerEndpoints();
+        u.UseBackOfficeEndpoints();
+        u.UseWebsiteEndpoints();
+    });
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureUmbracoDefaults()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStaticWebAssets();
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+await app.RunAsync();
