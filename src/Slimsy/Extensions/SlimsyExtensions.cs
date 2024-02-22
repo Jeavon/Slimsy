@@ -198,9 +198,19 @@ namespace Slimsy.Extensions
         }
         #endregion
 
-        internal static string? ForceRefresh(this string Src, string? forceRefresh)
+        internal static string? AdditionalProcess(this string Src, string? forceRefresh, bool encodeCommas)
         {
-            return !string.IsNullOrEmpty(forceRefresh) ? $"{Src}&r={forceRefresh}" : Src;
+            if (encodeCommas)
+            {
+                Src = Src.Replace(",", "%2C");
+            }
+
+            if (!string.IsNullOrEmpty(forceRefresh))
+            {
+                Src = $"{Src}&r={forceRefresh}";
+            }
+
+            return Src;
         }
     }
 }

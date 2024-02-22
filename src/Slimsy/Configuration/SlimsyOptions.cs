@@ -12,6 +12,7 @@ namespace Slimsy.Configuration
         public bool UseCropAsSrc { get; set; }
         public TagHelper TagHelper { get; set; } = new TagHelper();
         public string? ForceRefresh { get; set; } = null;
+        public bool EncodeCommas { get; set; } = false;
     }
 
     public sealed class TagHelper

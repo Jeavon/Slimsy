@@ -159,7 +159,8 @@ TagHelper has new parameters
 - `decorative` which renders `role="presentation"` on the `img` tag
 - `fetch-priority` which renders on the `img` tag, for example `fetchpriority="high"`
 - `image-crop-mode` specifies a crop mode such as "Pad"
-- `image-crop-anchor` used with crop-mode to set where cropping should be focussed 
+- `image-crop-anchor` used with crop-mode to set where cropping should be focussed
+- `loading` (available v4.2+) you can set to `Eager` to not lazy load, useful for optimzing LCP on the first image rendered on the page
 
 # How to use AVIF format in v4.1+
 
