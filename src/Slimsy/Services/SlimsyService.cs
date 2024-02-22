@@ -683,7 +683,7 @@ namespace Slimsy.Services
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true).ForceRefresh(_slimsyOptions.ForceRefresh);
+            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true).ForceRefresh(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -711,7 +711,7 @@ namespace Slimsy.Services
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true).ForceRefresh(_slimsyOptions.ForceRefresh);
+            var url = mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true).ForceRefresh(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -789,7 +789,7 @@ namespace Slimsy.Services
             if (mediaItem == null) return EmptyHtmlString;
 
             var url = mediaItem.GetCropUrl(width: width, height: height, propertyAlias: propertyAlias, cropAlias: cropAlias, quality: quality, imageCropMode: imageCropMode,
-                imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: furtherOptions).ForceRefresh(_slimsyOptions.ForceRefresh);
+                imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: furtherOptions).ForceRefresh(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -865,7 +865,7 @@ namespace Slimsy.Services
             string? furtherOptions = null,
             bool htmlEncode = true)
         {
-            var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions).ForceRefresh(_slimsyOptions.ForceRefresh);
+            var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions).ForceRefresh(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -887,7 +887,7 @@ namespace Slimsy.Services
 
             var imageUrl = imageCropperValue.Src;
             var url = imageUrl?.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
-                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions).ForceRefresh(_slimsyOptions.ForceRefresh);
+                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions).ForceRefresh(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -907,7 +907,7 @@ namespace Slimsy.Services
             UrlMode urlMode = UrlMode.Default,
             bool htmlEncode = true)
         {
-            var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, furtherOptions, urlMode).ForceRefresh(_slimsyOptions.ForceRefresh);
+            var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, furtherOptions, urlMode).ForceRefresh(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
         #endregion

@@ -198,8 +198,13 @@
         }
         #endregion
 
-        internal static string? ForceRefresh(this string Src, string? forceRefresh)
+        internal static string? ForceRefresh(this string Src, string? forceRefresh, bool encodeCommas)
         {
+            if (encodeCommas)
+            {
+                Src = Src.Replace(",", "%2C");
+            }
+
             return !string.IsNullOrEmpty(forceRefresh) ? $"{Src}&r={forceRefresh}" : Src;
         }
     }
