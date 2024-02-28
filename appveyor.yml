@@ -56,7 +56,7 @@ deploy:
       secure: SASQGWG/4zNns7bwSSsJ5RPvKcKfJsBeEPuw69wsVPA3PO739QmzVtc5VwQwgvbr
     artifact: /.*\.nupkg/
     on:
-      branch: umbraco131
+      branch: dev-v5
 
     # Umbraco MyGet community feed
   - provider: NuGet
