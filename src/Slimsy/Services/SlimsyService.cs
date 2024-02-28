@@ -1,4 +1,7 @@
 using Slimsy.Extensions;
+using Slimsy.UmbracoClone;
+using Umbraco.Cms.Core.Models.Blocks;
+using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 
 namespace Slimsy.Services
 {
@@ -16,7 +19,6 @@ namespace Slimsy.Services
     using Umbraco.Cms.Core.Models;
     using Umbraco.Cms.Core.Models.PublishedContent;
     using Umbraco.Cms.Core.PropertyEditors;
-    using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
     using Umbraco.Cms.Core.Web;
     using Umbraco.Extensions;
     using Microsoft.Extensions.Options;
@@ -27,9 +29,9 @@ namespace Slimsy.Services
         private readonly SlimsyOptions _slimsyOptions;
         private readonly IUmbracoContextAccessor _umbracoContextAccessor;
         private static readonly HtmlString EmptyHtmlString = new HtmlString(string.Empty);
-        private readonly RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
+        private readonly Slimsy.UmbracoClone.RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
 
-        public SlimsyService(IOptionsMonitor<SlimsyOptions> slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
+        public SlimsyService(IOptionsMonitor<SlimsyOptions> slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, Slimsy.UmbracoClone.RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
         {
             this._slimsyOptions = slimsyOptions.CurrentValue;
             this._umbracoContextAccessor = umbracoContextAccessor;
@@ -455,7 +457,7 @@ namespace Slimsy.Services
             return returnString.ToString();
         }
 
-        private HtmlString ConvertImgToResponsiveInternal(string html, bool generateLqip = true,
+        private string ConvertImgToResponsiveInternal(string html, bool generateLqip = true,
             bool removeStyleAttribute = false, bool removeUdiAttribute = true, bool roundWidthHeight = true,
             bool renderPicture = false, string[]? pictureSources = null)
         {
@@ -652,12 +654,12 @@ namespace Slimsy.Services
 
                     if (modified)
                     {
-                        return new HtmlString(doc.DocumentNode.OuterHtml);
+                        return doc.DocumentNode.OuterHtml;
                     }
                 }
             }
 
-            return new HtmlString(html);
+            return html;
         }
 
         #endregion
@@ -918,18 +920,28 @@ namespace Slimsy.Services
         /// Convert img to img srcset, extracts width and height from querystrings
         /// </summary>
         /// <param name="sourceValueHtml">This html value should be the source value from and Umbraco property or a raw grid RTE value</param>
+        /// <param name="propertyType"></param>
         /// <param name="generateLqip"></param>
         /// <param name="removeStyleAttribute">If you don't want the inline style attribute added by TinyMce to render</param>
         /// <param name="renderPicture"></param>
         /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        public IHtmlEncodedString ConvertImgToResponsive(string sourceValueHtml, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
+        private IHtmlEncodedString ConvertImgToResponsive(string sourceValueHtml, IPublishedPropertyType? propertyType, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
-            var source = this.ConvertImgToResponsiveInternal(sourceValueHtml, generateLqip, removeStyleAttribute, renderPicture: renderPicture, pictureSources: pictureSources);
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var intermediateValue = this._rteMacroRenderingValueConverter.ConvertSourceToIntermediate(null, null, source, false);
-            var objectValue = this._rteMacroRenderingValueConverter.ConvertIntermediateToObject(null, null, 0, intermediateValue, false);
+            var intermediateValue = this._rteMacroRenderingValueConverter.ConvertSourceToIntermediate(null, propertyType, sourceValueHtml, false);
+            var richTextEditorIntermediateValue = intermediateValue as IRichTextEditorIntermediateValue;
+
+            var source = this.ConvertImgToResponsiveInternal(richTextEditorIntermediateValue.Markup, generateLqip, removeStyleAttribute, renderPicture: renderPicture, pictureSources: pictureSources);
+
+            var slimsyRichTextEditorIntermediateValue = new RichTextEditorIntermediateValue()
+            {
+                Markup = source,
+                RichTextBlockModel = richTextEditorIntermediateValue.RichTextBlockModel
+            };
+
+            var objectValue = this._rteMacroRenderingValueConverter.ConvertIntermediateToObject(null, propertyType, 0, slimsyRichTextEditorIntermediateValue, false);
             return objectValue as IHtmlEncodedString;
         }
 
@@ -946,9 +958,9 @@ namespace Slimsy.Services
         public IHtmlEncodedString ConvertImgToResponsive(IPublishedContent publishedContent, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
             var sourceValue = publishedContent.GetProperty(propertyAlias)?.GetSourceValue();
-
+            var propertyType = publishedContent.GetProperty(propertyAlias)?.PropertyType;
             return sourceValue != null ?
-                this.ConvertImgToResponsive(sourceValue.ToString(), generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
+                this.ConvertImgToResponsive(sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlEncodedString("");
         }
 
@@ -965,13 +977,21 @@ namespace Slimsy.Services
         public IHtmlEncodedString ConvertImgToResponsive(IPublishedElement publishedElement, string propertyAlias, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
             var sourceValue = publishedElement.GetProperty(propertyAlias)?.GetSourceValue();
+            var propertyType = publishedElement.GetProperty(propertyAlias)?.PropertyType;
 
             return sourceValue != null ?
-                this.ConvertImgToResponsive(sourceValue.ToString(), generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
+                this.ConvertImgToResponsive(sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlEncodedString("");
         }
 
         #endregion
 
+    }
+
+    public class RichTextEditorIntermediateValue : IRichTextEditorIntermediateValue
+    {
+        public required string Markup { get; set; }
+
+        public required RichTextBlockModel? RichTextBlockModel { get; set; }
     }
 }
