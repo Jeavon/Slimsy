@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F41AA125
 		build\appveyor-semver.ps1 = build\appveyor-semver.ps1
 		appveyor.yml = appveyor.yml
 		build\check-release-version.ps1 = build\check-release-version.ps1
+		NuGet.config = NuGet.config
 		build\patch-package-manifest.js = build\patch-package-manifest.js
 	EndProjectSection
 EndProject

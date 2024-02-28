@@ -1,5 +1,4 @@
 using Slimsy.Extensions;
-using Slimsy.UmbracoClone;
 using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 
@@ -29,9 +28,9 @@ namespace Slimsy.Services
         private readonly SlimsyOptions _slimsyOptions;
         private readonly IUmbracoContextAccessor _umbracoContextAccessor;
         private static readonly HtmlString EmptyHtmlString = new HtmlString(string.Empty);
-        private readonly Slimsy.UmbracoClone.RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
+        private readonly RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
 
-        public SlimsyService(IOptionsMonitor<SlimsyOptions> slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, Slimsy.UmbracoClone.RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
+        public SlimsyService(IOptionsMonitor<SlimsyOptions> slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
         {
             this._slimsyOptions = slimsyOptions.CurrentValue;
             this._umbracoContextAccessor = umbracoContextAccessor;
