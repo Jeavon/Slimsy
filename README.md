@@ -110,7 +110,7 @@ Add/Edit `appsettings.json`
     "UseCropAsSrc": false,
     "DefaultQuality": 70,
     "Format": "",
-    "BGColor": ""
+    "BackgroundColor": ""
   }
 ```
 
