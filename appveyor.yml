@@ -6,7 +6,8 @@ configuration: Release
 
 branches:
   only:
-    - dev-v4  
+    - dev-v5
+    - main-v5
     - /v*/
 
 environment:
@@ -76,4 +77,14 @@ deploy:
     artifact: /.*\.nupkg/
     on:
       branch: main-v4
+      appveyor_repo_tag: true
+
+    # NuGet Deployment for releases
+  - provider: NuGet
+    server: 
+    api_key:
+      secure: adk3pI9HCByZg2VRxplX9UR6qHf97bA3as6dusxLswCKI8BQQE8DO5a0frLrI+EO
+    artifact: /.*\.nupkg/
+    on:
+      branch: main-v5
       appveyor_repo_tag: true
