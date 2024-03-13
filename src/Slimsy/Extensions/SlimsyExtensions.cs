@@ -1,6 +1,4 @@
-﻿using Umbraco.Extensions;
-
-namespace Slimsy.Extensions
+﻿namespace Slimsy.Extensions
 {
     using Microsoft.AspNetCore.Html;
     using Microsoft.AspNetCore.Mvc;
