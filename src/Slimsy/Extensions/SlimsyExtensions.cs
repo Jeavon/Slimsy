@@ -200,7 +200,7 @@ namespace Slimsy.Extensions
         }
         #endregion
 
-        internal static string? AdditionalProcess(this string Src, string? forceRefresh, bool encodeCommas, bool addSourceDimensions, IPublishedContent? mediaItem=null)
+        internal static string? AdditionalProcess(this string Src, string? forceRefresh, bool encodeCommas)
         {
             if (encodeCommas)
             {
@@ -210,21 +210,6 @@ namespace Slimsy.Extensions
             if (!string.IsNullOrEmpty(forceRefresh))
             {
                 Src = $"{Src}&r={forceRefresh}";
-            }
-
-            if (addSourceDimensions && mediaItem != null)
-            {
-                var sourceHeight = mediaItem.Value<int?>(Constants.Conventions.Media.Height);
-                var sourceWidth = mediaItem.Value<int?>(Constants.Conventions.Media.Width);
-
-                if (sourceWidth != null)
-                {
-                    Src = $"{Src}&sourceWidth={sourceWidth}";
-                }
-                if (sourceHeight != null)
-                {
-                    Src = $"{Src}&sourceHeight={sourceHeight}";
-                }
             }
 
             return Src;
