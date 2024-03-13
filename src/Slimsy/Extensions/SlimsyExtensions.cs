@@ -1,4 +1,6 @@
-﻿namespace Slimsy.Extensions
+﻿using Umbraco.Extensions;
+
+namespace Slimsy.Extensions
 {
     using Microsoft.AspNetCore.Html;
     using Microsoft.AspNetCore.Mvc;
@@ -198,7 +200,7 @@
         }
         #endregion
 
-        internal static string? AdditionalProcess(this string Src, string? forceRefresh, bool encodeCommas)
+        internal static string? AdditionalProcess(this string Src, string? forceRefresh, bool encodeCommas, bool addSourceDimensions, IPublishedContent? mediaItem=null)
         {
             if (encodeCommas)
             {
@@ -208,6 +210,21 @@
             if (!string.IsNullOrEmpty(forceRefresh))
             {
                 Src = $"{Src}&r={forceRefresh}";
+            }
+
+            if (addSourceDimensions && mediaItem != null)
+            {
+                var sourceHeight = mediaItem.Value<int?>(Constants.Conventions.Media.Height);
+                var sourceWidth = mediaItem.Value<int?>(Constants.Conventions.Media.Width);
+
+                if (sourceWidth != null)
+                {
+                    Src = $"{Src}&sourceWidth={sourceWidth}";
+                }
+                if (sourceHeight != null)
+                {
+                    Src = $"{Src}&sourceHeight={sourceHeight}";
+                }
             }
 
             return Src;
