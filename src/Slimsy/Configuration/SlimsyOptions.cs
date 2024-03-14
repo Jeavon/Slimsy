@@ -13,13 +13,12 @@ namespace Slimsy.Configuration
         public TagHelper TagHelper { get; set; } = new TagHelper();
         public string? ForceRefresh { get; set; } = null;
         public bool EncodeCommas { get; set; } = false;
-        public bool AddSourceDimensions { get; set; } = false;
+        public bool AppendSourceDimensions { get; set; } = false;
     }
 
     public sealed class TagHelper
     {
         public string[]? SingleSources { get; set; } = Array.Empty<string>();
-        public string[]? PictureSources { get; set; } = Array.Empty<string>();
         public PictureSource[] DefaultPictureSources { get; set; } = Array.Empty<PictureSource>();
         public bool ImageDimensions { get; set; } = false;
     }
