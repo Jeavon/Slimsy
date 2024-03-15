@@ -198,9 +198,10 @@ namespace Slimsy.Extensions
         }
         #endregion
 
-        internal static string? AdditionalProcess(this string Src, string? forceRefresh, bool encodeCommas)
+        internal static string? AdditionalProcess(this string? Src, string? forceRefresh, bool encodeCommas)
         {
-            if (encodeCommas)
+
+            if (encodeCommas && Src != null)
             {
                 Src = Src.Replace(",", "%2C");
             }
