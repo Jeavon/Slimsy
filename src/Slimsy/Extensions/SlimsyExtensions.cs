@@ -198,5 +198,20 @@
         }
         #endregion
 
+        internal static string? AdditionalProcess(this string? Src, string? forceRefresh, bool encodeCommas)
+        {
+
+            if (encodeCommas && Src != null)
+            {
+                Src = Src.Replace(",", "%2C");
+            }
+
+            if (!string.IsNullOrEmpty(forceRefresh))
+            {
+                Src = $"{Src}&r={forceRefresh}";
+            }
+
+            return Src;
+        }
     }
 }

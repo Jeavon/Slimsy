@@ -1,4 +1,6 @@
-﻿namespace Slimsy.Services
+using Slimsy.Extensions;
+
+namespace Slimsy.Services
 {
     using System;
     using System.Collections.Generic;
@@ -423,6 +425,33 @@
             return maxWidth;
         }
 
+        private string ProcessFurtherOptions(bool addSourceDimensions, string? furtherOptions = null,
+            IPublishedContent? mediaItem = null)
+        {
+            var returnString = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(furtherOptions))
+            {
+                returnString.Append(furtherOptions);
+            }
+
+            if (addSourceDimensions && mediaItem != null)
+            {
+                var sourceHeight = mediaItem.Value<int?>(Constants.Conventions.Media.Height);
+                var sourceWidth = mediaItem.Value<int?>(Constants.Conventions.Media.Width);
+
+                if (sourceWidth != null)
+                {
+                    returnString.Append($"&sourceWidth={sourceWidth}");
+                }
+                if (sourceHeight != null)
+                {
+                    returnString.Append($"&sourceHeight={sourceHeight}");
+                }
+            }
+
+            return returnString.ToString();
+        }
         private string AdditionalParams(string? outputFormat = null, string? furtherOptions = null)
         {
             if (string.IsNullOrEmpty(outputFormat) && _slimsyOptions.Format != null)
@@ -681,7 +710,7 @@
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true);
+            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true, furtherOptions:ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, mediaItem:mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -709,7 +738,7 @@
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true);
+            var url = mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true, furtherOptions:ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, mediaItem:mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -787,7 +816,7 @@
             if (mediaItem == null) return EmptyHtmlString;
 
             var url = mediaItem.GetCropUrl(width: width, height: height, propertyAlias: propertyAlias, cropAlias: cropAlias, quality: quality, imageCropMode: imageCropMode,
-                imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: furtherOptions);
+                imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, furtherOptions, mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -863,7 +892,7 @@
             string? furtherOptions = null,
             bool htmlEncode = true)
         {
-            var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions);
+            var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, furtherOptions)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -885,7 +914,7 @@
 
             var imageUrl = imageCropperValue.Src;
             var url = imageUrl?.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
-                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, furtherOptions);
+                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, furtherOptions)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -905,7 +934,7 @@
             UrlMode urlMode = UrlMode.Default,
             bool htmlEncode = true)
         {
-            var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, furtherOptions, urlMode);
+            var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, furtherOptions, mediaWithCrops), urlMode).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
         #endregion
