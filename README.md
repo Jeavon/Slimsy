@@ -111,7 +111,9 @@ Add/Edit `appsettings.json`
     "UseCropAsSrc": false,
     "DefaultQuality": 70,
     "Format": "",
-    "BackgroundColor": ""
+    "BackgroundColor": "",
+    "AppendSourceDimensions": true,
+    "EncodeCommas": true,
   }
 ```
 
@@ -187,12 +189,13 @@ dotnet add package Umbraco.Community.CloudflareImageUrlGenerator
 
 https://developers.cloudflare.com/images/image-resizing/enable-image-resizing/
 
-### 4. Set the avif format as a DefaultPictureSources in appsettings.json
+### 4. Set the avif format as a DefaultPictureSources and enable AppendSourceDimensions in appsettings.json
 
 e.g.
 
 ```json
   "Slimsy": {
+    "AppendSourceDimensions": true,
     "TagHelper": {
       "DefaultPictureSources": [
         {
