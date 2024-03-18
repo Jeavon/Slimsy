@@ -30,3 +30,7 @@ Slimsy Change log
 - 4.0.0 - Umbraco v10 support
 - 4.0.1 & 4.0.2 - Changes to NuGet package for Umbraco marketplace support
 - 4.1.0-beta1 - New TagHelper options and Decorative parameter
+- 4.1.0 - Minor tweaks only from the beta release
+- 5.0.0 - Umbraco v13.2 compatability
+- 4.2.0 - Added AppendSourceDimensions & EncodeCommas options
+- 5.1.0 - Added AppendSourceDimensions & EncodeCommas options
