@@ -14,6 +14,7 @@ namespace Slimsy.Configuration
         public string? ForceRefresh { get; set; } = null;
         public bool EncodeCommas { get; set; } = false;
         public bool AppendSourceDimensions { get; set; } = false;
+        public bool AutoOrient { get; set; } = false;
     }
 
     public sealed class TagHelper
