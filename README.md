@@ -114,6 +114,7 @@ Add/Edit `appsettings.json`
     "BackgroundColor": "",
     "AppendSourceDimensions": true,
     "EncodeCommas": true,
+    "AutoOrient": true
   }
 ```
 
