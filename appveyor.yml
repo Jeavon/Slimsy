@@ -27,6 +27,11 @@ dotnet_csproj:
   file_version: '$(appveyor_file_version)'
   informational_version: '$(semver)'
 
+before_build:
+- pwsh: |
+    dotnet tool install --global GitVersion.Tool --version 5.*
+    dotnet-gitversion $env:APPVEYOR_BUILD_FOLDER /l console /nofetch /b $env:APPVEYOR_REPO_BRANCH
+
 build_script:
 - cmd: >-
     cd build
