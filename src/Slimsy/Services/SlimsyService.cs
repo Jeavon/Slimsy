@@ -28,13 +28,13 @@ namespace Slimsy.Services
         private readonly SlimsyOptions _slimsyOptions;
         private readonly IUmbracoContextAccessor _umbracoContextAccessor;
         private static readonly HtmlString EmptyHtmlString = new HtmlString(string.Empty);
-        private readonly RteMacroRenderingValueConverter _rteMacroRenderingValueConverter;
+        private readonly RteBlockRenderingValueConverter _rteBlockRenderingValueConverter;
 
-        public SlimsyService(IOptionsMonitor<SlimsyOptions> slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, RteMacroRenderingValueConverter rteMacroRenderingValueConverter)
+        public SlimsyService(IOptionsMonitor<SlimsyOptions> slimsyOptions, IUmbracoContextAccessor umbracoContextAccessor, RteBlockRenderingValueConverter rteBlockRenderingValueConverter)
         {
             this._slimsyOptions = slimsyOptions.CurrentValue;
             this._umbracoContextAccessor = umbracoContextAccessor;
-            this._rteMacroRenderingValueConverter = rteMacroRenderingValueConverter;
+            this._rteBlockRenderingValueConverter = rteBlockRenderingValueConverter;
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace Slimsy.Services
             else if (imageCrops != null)
             {
                 // this code would execute if a predefined crop has been added to the data type but this media item hasn't been re-saved
-                var cropperConfiguration = (ImageCropperConfiguration)publishedContent.Properties.FirstOrDefault(x => x.Alias == propertyAlias)?.PropertyType.DataType.Configuration;
+                var cropperConfiguration = (ImageCropperConfiguration)publishedContent.Properties.FirstOrDefault(x => x.Alias != null && x.Alias == propertyAlias)?.PropertyType.DataType.ConfigurationObject;
 
                 ImageCropperConfiguration.Crop cropConfiguration = null;
                 if (cropperConfiguration.Crops != null)
@@ -961,7 +961,7 @@ namespace Slimsy.Services
         {
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var intermediateValue = this._rteMacroRenderingValueConverter.ConvertSourceToIntermediate(null, propertyType, sourceValueHtml, false);
+            var intermediateValue = this._rteBlockRenderingValueConverter.ConvertSourceToIntermediate(null, propertyType, sourceValueHtml, false);
             var richTextEditorIntermediateValue = intermediateValue as IRichTextEditorIntermediateValue;
 
             var source = this.ConvertImgToResponsiveInternal(richTextEditorIntermediateValue.Markup, generateLqip, removeStyleAttribute, renderPicture: renderPicture, pictureSources: pictureSources);
@@ -972,7 +972,7 @@ namespace Slimsy.Services
                 RichTextBlockModel = richTextEditorIntermediateValue.RichTextBlockModel
             };
 
-            var objectValue = this._rteMacroRenderingValueConverter.ConvertIntermediateToObject(null, propertyType, 0, slimsyRichTextEditorIntermediateValue, false);
+            var objectValue = this._rteBlockRenderingValueConverter.ConvertIntermediateToObject(null, propertyType, 0, slimsyRichTextEditorIntermediateValue, false);
             return objectValue as IHtmlEncodedString;
         }
 

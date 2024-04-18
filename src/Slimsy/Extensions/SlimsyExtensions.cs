@@ -10,7 +10,7 @@ namespace Slimsy.Extensions
     using Umbraco.Cms.Core.Models;
     using Umbraco.Cms.Core.Models.PublishedContent;
     using Umbraco.Cms.Core.Strings;
-    using Umbraco.Cms.Web.Common.DependencyInjection;
+    using Umbraco.Cms.Core.DependencyInjection;
 
     public static class SlimsyExtensions
     {
