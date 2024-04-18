@@ -34,14 +34,6 @@ before_build:
 
 build_script:
 - cmd: >-
-    cd build
-
-    npm install
-
-    node patch-package-manifest.js
-
-    cd..
-
     cd src
 
     cd Slimsy
