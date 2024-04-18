@@ -35,3 +35,4 @@ Slimsy Change log
 - 4.2.0 - Added AppendSourceDimensions & EncodeCommas options
 - 5.1.0 - Added AppendSourceDimensions & EncodeCommas options
 - 5.1.1 & 4.2.1 - Added AutoOrient global option
+- 6.0.0-beta1 - Umbraco v14-RC1 support
