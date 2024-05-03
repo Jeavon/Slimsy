@@ -556,10 +556,10 @@ namespace Slimsy.Services
                             NameValueCollection queryStringCollection;
 
                             int? width = null, height = null;
-                            if (widthAttr != null && heightAttr != null && int.TryParse(widthAttr.Value, out var outWidth) && int.TryParse(heightAttr.Value, out var outHeight))
+                            if (widthAttr != null && heightAttr != null && decimal.TryParse(widthAttr.Value, out var outWidth) && decimal.TryParse(heightAttr.Value, out var outHeight))
                             {
-                                width = outWidth;
-                                height = outHeight;
+                                width = (int)Math.Round(outWidth);
+                                height = (int)Math.Round(outHeight);
 
                             }
                             else if (hasQueryString)
