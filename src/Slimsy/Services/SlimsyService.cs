@@ -700,6 +700,13 @@ namespace Slimsy.Services
                                             img.Attributes.Remove("data-udi");
                                         }
 
+                                        // set img attributes
+                                        if (width > 0 && height > 0 && widthAttr != null && heightAttr != null)
+                                        {
+                                            widthAttr.Value = width.ToString();
+                                            heightAttr.Value = height.ToString();
+                                        }
+
                                         modified = true;
                                     }
                                 }
