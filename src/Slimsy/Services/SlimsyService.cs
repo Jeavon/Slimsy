@@ -1,7 +1,3 @@
-using Slimsy.Extensions;
-using Umbraco.Cms.Core.Models.Blocks;
-using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
-
 namespace Slimsy.Services
 {
     using System;
@@ -10,9 +6,12 @@ namespace Slimsy.Services
     using System.Linq;
     using System.Text;
     using System.Web;
-    using HtmlAgilityPack;
+    
     using Microsoft.AspNetCore.Html;
-    using Slimsy.Models;
+    using Microsoft.Extensions.Options;
+
+    using HtmlAgilityPack;
+
     using Umbraco.Cms.Core;
     using Umbraco.Cms.Core.Strings;
     using Umbraco.Cms.Core.Models;
@@ -20,8 +19,12 @@ namespace Slimsy.Services
     using Umbraco.Cms.Core.PropertyEditors;
     using Umbraco.Cms.Core.Web;
     using Umbraco.Extensions;
-    using Microsoft.Extensions.Options;
+    using Umbraco.Cms.Core.Models.Blocks;
+    using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
+    
+    using Slimsy.Models;
     using Slimsy.Configuration;
+    using Slimsy.Extensions;
 
     public class SlimsyService
     {
@@ -541,6 +544,9 @@ namespace Slimsy.Services
                         var udiAttr = img.Attributes.FirstOrDefault(x => x.Name == "data-udi");
                         var classAttr = img.Attributes.FirstOrDefault(x => x.Name == "class");
 
+                        var widthAttr = img.Attributes.FirstOrDefault(x => x.Name == "width");
+                        var heightAttr = img.Attributes.FirstOrDefault(x => x.Name == "height");
+
                         if (srcAttr != null)
                         {
                             // html decode the url as variables encoded in tinymce
@@ -549,136 +555,161 @@ namespace Slimsy.Services
                             var hasQueryString = src.InvariantContains("?");
                             NameValueCollection queryStringCollection;
 
-                            if (hasQueryString)
+                            int? width = null, height = null;
+                            if (widthAttr != null && heightAttr != null && decimal.TryParse(widthAttr.Value, out var outWidth) && decimal.TryParse(heightAttr.Value, out var outHeight))
+                            {
+                                width = (int)Math.Round(outWidth);
+                                height = (int)Math.Round(outHeight);
+
+                            }
+                            else if (hasQueryString)
                             {
                                 queryStringCollection = HttpUtility.ParseQueryString(src.Substring(src.IndexOf('?')));
-
                                 // ensure case of variables doesn't cause trouble
                                 IDictionary<string, string> queryString = queryStringCollection.AllKeys.ToDictionary(k => k.ToLowerInvariant(), k => queryStringCollection[k]);
 
-                                if (udiAttr != null)
+                                if (queryString.TryGetValue("width", out var widthValue))
                                 {
-                                    // Umbraco media
-                                    GuidUdi? guidUdi;
-                                    if (UdiParser.TryParse(udiAttr.Value, out guidUdi))
+                                    if (decimal.TryParse(widthValue, out var decWidth))
                                     {
-                                        var node = this.GetAnyTypePublishedContent(guidUdi);
-
-                                        var qsWidth = "0";
-                                        if (queryString.ContainsKey("width"))
-                                        {
-                                            qsWidth = queryString["width"];
-                                        }
-
-                                        var qsHeight = "0";
-                                        if (queryString.ContainsKey("height"))
-                                        {
-                                            qsHeight = queryString["height"];
-                                        }
-
-                                        // TinyMce sometimes adds decimals to image resize commands, we need to fix those
-                                        if (decimal.TryParse(qsWidth, out decimal decWidth) && decimal.TryParse(qsHeight, out decimal decHeight))
-                                        {
-                                            var width = (int)Math.Round(decWidth);
-                                            var height = (int)Math.Round(decHeight);
-
-                                            // if width is 0 (I don't know why it would be but it has been seen) then we can't do anything
-                                            if (width > 0)
-                                            {
-                                                // change the src attribute to data-src
-                                                srcAttr.Name = "data-src";
-                                                if (roundWidthHeight)
-                                                {
-                                                    var roundedUrl = this.GetCropUrl(node, width, height,
-                                                        imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
-                                                    srcAttr.Value = roundedUrl.ToString();
-                                                }
-
-                                                var srcSet = this.GetSrcSetUrls(node, width, height);
-
-                                                IHtmlContent? defaultLqip = null;
-                                                if (generateLqip)
-                                                {
-                                                    defaultLqip = this.GetCropUrl(node, width, height, quality: 30,
-                                                        furtherOptions: "&format=auto", preferFocalPoint: true);
-                                                }
-
-                                                if (renderPicture)
-                                                {
-                                                    var umbracoExtension = node.Value<string>(Constants.Conventions.Media.Extension);
-
-                                                    if (pictureSources == null || !pictureSources.Contains(umbracoExtension))
-                                                    {
-                                                        var defaultSource = HtmlNode.CreateNode($"<source data-srcset=\"{srcSet.ToString()}\" type=\"{MimeType(umbracoExtension)}\" data-sizes=\"auto\" />");
-                                                        if (generateLqip)
-                                                        {
-                                                            defaultSource.Attributes.Add("srcset", defaultLqip.ToString());
-                                                        }
-
-                                                        imgElement.ChildNodes.Insert(0, defaultSource);
-                                                    }
-
-                                                    if (pictureSources != null)
-                                                    {
-                                                        foreach (var source in pictureSources.Reverse())
-                                                        {
-                                                            var srcSetForSource = this.GetSrcSetUrls(node, width,
-                                                                height, outputFormat: source);
-                                                            var sourceElement =
-                                                                HtmlNode.CreateNode(
-                                                                    $"<source data-srcset=\"{srcSetForSource.ToString()}\" type=\"{MimeType(source)}\" data-sizes=\"auto\" />");
-
-                                                            if (generateLqip)
-                                                            {
-                                                                var sourceLqip = this.GetCropUrl(node, width, height, quality: 30,
-                                                                    furtherOptions: $"&format={source}", preferFocalPoint: true);
-                                                                sourceElement.Attributes.Add("srcset", sourceLqip.ToString());
-                                                            }
-
-                                                            imgElement.ChildNodes.Insert(0, sourceElement);
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    img.Attributes.Add("data-srcset", srcSet.ToString());
-                                                }
-
-                                                img.Attributes.Add("data-sizes", "auto");
-
-                                                if (generateLqip)
-                                                {
-                                                    img.Attributes.Add("src", defaultLqip.ToString());
-                                                }
-
-                                                if (classAttr != null)
-                                                {
-                                                    classAttr.Value = $"{classAttr.Value} lazyload";
-                                                }
-                                                else
-                                                {
-                                                    img.Attributes.Add("class", "lazyload");
-                                                }
-
-                                                if (removeStyleAttribute)
-                                                {
-                                                    img.Attributes.Remove("style");
-                                                }
-
-                                                if (removeUdiAttribute)
-                                                {
-                                                    img.Attributes.Remove("data-udi");
-                                                }
-
-                                                modified = true;
-                                            }
-                                        }
+                                        width = (int)Math.Round(decWidth);
+                                    }
+                                }
+                                if (queryString.TryGetValue("height", out var heightValue))
+                                {
+                                    if (decimal.TryParse(heightValue, out var decHeight))
+                                    {
+                                        height = (int)Math.Round(decHeight);
                                     }
                                 }
                             }
                             else
                             {
-                                // Image in TinyMce doesn't have a data-udi attribute
+                                // no querystring at all & no attributes, set width to first step
+                                width = WidthStep();
+                            }
+
+                            if (udiAttr != null)
+                            {
+                                // Umbraco media
+                                GuidUdi? guidUdi;
+                                if (UdiParser.TryParse(udiAttr.Value, out guidUdi))
+                                {
+                                    var node = this.GetAnyTypePublishedContent(guidUdi);
+
+                                    // Only height in the RTE, convert to width
+                                    if ((width is null or 0) && (height is > 0))
+                                    {
+                                        var sourceWidth = node.Value<int?>(Constants.Conventions.Media.Width);
+                                        var sourceHeight = node.Value<int?>(Constants.Conventions.Media.Height);
+
+                                        if (sourceWidth != null && sourceHeight != null)
+                                        {
+                                            var widthRatio = (decimal)sourceWidth / sourceHeight;
+                                            width = (int)Math.Round((decimal)(height * widthRatio)!);
+                                        }
+                                    }
+
+                                    // we have hopefully done everything we can to ensure we have a width
+                                    if (width > 0)
+                                    {
+                                        // if height is null set to 0
+                                        height ??= 0;
+                                        // change the src attribute to data-src
+                                        srcAttr.Name = "data-src";
+                                        if (roundWidthHeight)
+                                        {
+                                            var roundedUrl = this.GetCropUrl(node, width, height,
+                                                imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
+                                            srcAttr.Value = roundedUrl.ToString();
+                                        }
+
+                                        var srcSet = this.GetSrcSetUrls(node, (int)width, (int)height);
+
+                                        IHtmlContent? defaultLqip = null;
+                                        if (generateLqip)
+                                        {
+                                            defaultLqip = this.GetCropUrl(node, width, height, quality: 30,
+                                                furtherOptions: "&format=auto", preferFocalPoint: true);
+                                        }
+
+                                        if (renderPicture)
+                                        {
+                                            var umbracoExtension = node.Value<string>(Constants.Conventions.Media.Extension);
+
+                                            if (pictureSources == null || !pictureSources.Contains(umbracoExtension))
+                                            {
+                                                var defaultSource = HtmlNode.CreateNode($"<source data-srcset=\"{srcSet.ToString()}\" type=\"{MimeType(umbracoExtension)}\" data-sizes=\"auto\" />");
+                                                if (generateLqip)
+                                                {
+                                                    defaultSource.Attributes.Add("srcset", defaultLqip.ToString());
+                                                }
+
+                                                imgElement.ChildNodes.Insert(0, defaultSource);
+                                            }
+
+                                            if (pictureSources != null)
+                                            {
+                                                foreach (var source in pictureSources.Reverse())
+                                                {
+                                                    var srcSetForSource = this.GetSrcSetUrls(node, (int)width,
+                                                        (int)height, outputFormat: source);
+                                                    var sourceElement =
+                                                        HtmlNode.CreateNode(
+                                                            $"<source data-srcset=\"{srcSetForSource.ToString()}\" type=\"{MimeType(source)}\" data-sizes=\"auto\" />");
+
+                                                    if (generateLqip)
+                                                    {
+                                                        var sourceLqip = this.GetCropUrl(node, width, height, quality: 30,
+                                                            furtherOptions: $"&format={source}", preferFocalPoint: true);
+                                                        sourceElement.Attributes.Add("srcset", sourceLqip.ToString());
+                                                    }
+
+                                                    imgElement.ChildNodes.Insert(0, sourceElement);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            img.Attributes.Add("data-srcset", srcSet.ToString());
+                                        }
+
+                                        img.Attributes.Add("data-sizes", "auto");
+
+                                        if (generateLqip)
+                                        {
+                                            img.Attributes.Add("src", defaultLqip.ToString());
+                                        }
+
+                                        if (classAttr != null)
+                                        {
+                                            classAttr.Value = $"{classAttr.Value} lazyload";
+                                        }
+                                        else
+                                        {
+                                            img.Attributes.Add("class", "lazyload");
+                                        }
+
+                                        if (removeStyleAttribute)
+                                        {
+                                            img.Attributes.Remove("style");
+                                        }
+
+                                        if (removeUdiAttribute)
+                                        {
+                                            img.Attributes.Remove("data-udi");
+                                        }
+
+                                        // set img attributes
+                                        if (width > 0 && height > 0 && widthAttr != null && heightAttr != null)
+                                        {
+                                            widthAttr.Value = width.ToString();
+                                            heightAttr.Value = height.ToString();
+                                        }
+
+                                        modified = true;
+                                    }
+                                }
                             }
                         }
                     }
