@@ -22,7 +22,7 @@ NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpr
 
 ### 1. Install from NuGet
 
-### 2. Add to program.cs before the call to the `.Build()` method
+### 2. Add `.AddSlimsy()` to program.cs before the call to the `.Build()` method
 
 e.g.
 ```c#
