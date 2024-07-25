@@ -44,6 +44,8 @@ build_script:
 
     echo "Version patched in umbraco-package.json"
 
+    cd..
+
 - cmd: >-
     cd src
 
