@@ -34,6 +34,13 @@ before_build:
 
 build_script:
 - cmd: >-
+    cd build
+    npm i jsonfile
+    npm i semver
+    node patch-umbraco-package.js
+    echo "Version patched in umbraco-package.json"
+
+- cmd: >-
     cd src
 
     cd Slimsy
