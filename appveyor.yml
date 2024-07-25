@@ -1,4 +1,4 @@
-version: 6.0.0.{build}
+version: 6.0.1.{build}
 
 os: Visual Studio 2022
 
@@ -12,7 +12,7 @@ branches:
 
 environment:
   # Version Suffix
-  version_suffix: beta3
+  version_suffix: alpha
 
 install:
   - ps: .\build\appveyor-semver.ps1
@@ -29,10 +29,23 @@ dotnet_csproj:
 
 before_build:
 - pwsh: |
-    dotnet tool install --global GitVersion.Tool --version 5.*
+    dotnet tool install --global GitVersion.Tool --version 6.*
     dotnet-gitversion $env:APPVEYOR_BUILD_FOLDER /l console /nofetch /b $env:APPVEYOR_REPO_BRANCH
 
 build_script:
+- cmd: >-
+    cd build
+
+    npm i jsonfile
+
+    npm i semver
+
+    node patch-umbraco-package.js
+
+    echo "Version patched in umbraco-package.json"
+
+    cd..
+
 - cmd: >-
     cd src
 
