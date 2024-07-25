@@ -29,7 +29,7 @@ dotnet_csproj:
 
 before_build:
 - pwsh: |
-    dotnet tool install --global GitVersion.Tool --version 5.*
+    dotnet tool install --global GitVersion.Tool --version 6.*
     dotnet-gitversion $env:APPVEYOR_BUILD_FOLDER /l console /nofetch /b $env:APPVEYOR_REPO_BRANCH
 
 build_script:
