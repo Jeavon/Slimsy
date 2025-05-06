@@ -988,11 +988,11 @@ namespace Slimsy.Services
         /// <param name="renderPicture"></param>
         /// <param name="pictureSources"></param>
         /// <returns>HTML Markup</returns>
-        private IHtmlEncodedString ConvertImgToResponsive(string sourceValueHtml, IPublishedPropertyType? propertyType, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
+        private IHtmlEncodedString ConvertImgToResponsive(IPublishedElement publishedElement, string sourceValueHtml, IPublishedPropertyType? propertyType, bool generateLqip = true, bool removeStyleAttribute = true, bool renderPicture = false, string[]? pictureSources = null)
         {
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var intermediateValue = this._rteBlockRenderingValueConverter.ConvertSourceToIntermediate(null, propertyType, sourceValueHtml, false);
+            var intermediateValue = this._rteBlockRenderingValueConverter.ConvertSourceToIntermediate(publishedElement, propertyType, sourceValueHtml, false);
             var richTextEditorIntermediateValue = intermediateValue as IRichTextEditorIntermediateValue;
 
             var source = this.ConvertImgToResponsiveInternal(richTextEditorIntermediateValue.Markup, generateLqip, removeStyleAttribute, renderPicture: renderPicture, pictureSources: pictureSources);
@@ -1022,7 +1022,7 @@ namespace Slimsy.Services
             var sourceValue = publishedContent.GetProperty(propertyAlias)?.GetSourceValue();
             var propertyType = publishedContent.GetProperty(propertyAlias)?.PropertyType;
             return sourceValue != null ?
-                this.ConvertImgToResponsive(sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
+                this.ConvertImgToResponsive(publishedContent, sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlEncodedString("");
         }
 
@@ -1042,7 +1042,7 @@ namespace Slimsy.Services
             var propertyType = publishedElement.GetProperty(propertyAlias)?.PropertyType;
 
             return sourceValue != null ?
-                this.ConvertImgToResponsive(sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
+                this.ConvertImgToResponsive(publishedElement, sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlEncodedString("");
         }
 
