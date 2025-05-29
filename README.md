@@ -95,7 +95,7 @@ public ResponsiveImageViewComponent(SlimsyService slimsyService)
 }
 ```
 
-### 7 (optional). Adjust the rendering of your TinyMce Richtext editors
+### 7 (optional). Adjust the rendering of your Richtext editors
 
 ```C#
 <div class="col-md-9">
