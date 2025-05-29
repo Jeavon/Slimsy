@@ -24,24 +24,16 @@
                     <button class="button button--border--solid">Buy</button>
                 </div>
                 <div class="product-advantages">
-                    @if (Model.Features != null)
-                    {
-                        foreach (var feature in Model.Features)
-                        {
-                            <div class="product-advantage">
-                                <h4>@feature.FeatureName</h4>
-                                <h5>@feature.FeatureDetails</h5>
-                            </div>
-                        }
-                    }
+                    @Html.GetBlockListHtml(Model, "features")
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 <section class="section section--sand">
     <div class="container">
         <!-- todo: Check if grid is empty via a property value converter -->
-        @Html.GetGridHtml(Model, "bodyText", "bootstrap3-fluid")
+        @await Html.GetBlockGridHtmlAsync(Model, "bodyText")
     </div>
 </section>

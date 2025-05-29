@@ -55,7 +55,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("bodyText")]
-		public virtual string BodyText => this.Value<string>(_publishedValueFallback, "bodyText");
+		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockGridModel BodyText => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockGridModel>(_publishedValueFallback, "bodyText");
 
 		///<summary>
 		/// Category
@@ -79,7 +79,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("features")]
-		public virtual string Features => this.Value<string>(_publishedValueFallback, "features");
+		public virtual global::Umbraco.Cms.Core.Models.Blocks.BlockListModel Features => this.Value<global::Umbraco.Cms.Core.Models.Blocks.BlockListModel>(_publishedValueFallback, "features");
 
 		///<summary>
 		/// Photos

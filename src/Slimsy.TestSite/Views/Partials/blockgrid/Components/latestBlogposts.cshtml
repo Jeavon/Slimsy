@@ -1,0 +1,5 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem<ContentModels.LatestBlogposts>>;
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+
+@await Component.InvokeAsync("LatestBlogPosts",
+    new { numberOfPosts = Model.Content.NumberOfPosts, startNodeKey = Model.Content.StartNode?.Key ?? Guid.Empty })

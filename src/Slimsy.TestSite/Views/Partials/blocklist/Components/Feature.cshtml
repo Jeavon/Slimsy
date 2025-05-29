@@ -1,0 +1,10 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockListItem<Feature>>;
+@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
+@{
+    var feature = Model.Content;
+}
+
+<div class="product-advantage">
+    <h4>@feature.FeatureName</h4>
+    <h5>@feature.FeatureDetails</h5>
+</div>

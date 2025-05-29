@@ -19,16 +19,11 @@
 
         <div class="col-md-9">
             <article>
-@*                 @Html.GetGridHtml(Model, "bodyText", "bootstrap3-fluid")
- *@            </article>
-        </div>
-
-        <div class="col-md-9">
-            <article>
-                @SlimsyService.ConvertImgToResponsive(Model, "richTextBody", renderPicture:true, pictureSources: new []{"webp"})
+                @await Html.GetBlockGridHtmlAsync(Model, "bodyText")
             </article>
         </div>
-
     </div>
 
 </section>
+
+<link rel="stylesheet" href="@Url.Content("~/css/umbraco-starterkit-blockgrid.css")" />

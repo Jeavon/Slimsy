@@ -71,7 +71,7 @@ namespace Umbraco.Cms.Web.Common.PublishedModels
 		[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Umbraco.ModelsBuilder.Embedded", "")]
 		[global::System.Diagnostics.CodeAnalysis.MaybeNull]
 		[ImplementPropertyType("mapCoordinates")]
-		public virtual string MapCoordinates => this.Value<string>(_publishedValueFallback, "mapCoordinates");
+		public virtual global::Bergmania.OpenStreetMap.Core.OpenStreetMapModel MapCoordinates => this.Value<global::Bergmania.OpenStreetMap.Core.OpenStreetMapModel>(_publishedValueFallback, "mapCoordinates");
 
 		///<summary>
 		/// Map Header
