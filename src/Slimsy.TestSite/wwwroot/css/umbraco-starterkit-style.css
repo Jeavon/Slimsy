@@ -1988,7 +1988,9 @@ article {
     }
 
     article img {
-        max-width: 100%
+        max-width: 100%;
+        width:100%;
+        height:auto
     }
 
     article iframe, article img {
@@ -2405,7 +2407,7 @@ article {
     }
 }
 
-.compat-msg {
+.compat-msg {    
     color: #000;
     display: block;
     background: #f4f4f0;
