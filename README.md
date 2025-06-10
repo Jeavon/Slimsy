@@ -2,7 +2,7 @@ Slimsy
 ============
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
-# Slimsy v6 is made for Umbraco v14+!
+# Slimsy v6 is made for Umbraco v14, v15 & v16!
 # Slimsy v5 is made for Umbraco v13.2 < v14!
 # Slimsy v4 is made for Umbraco v10, v11 & v12!
 
@@ -73,13 +73,13 @@ img {
 
 ### 6. Use the `<slimsy-picture>` tag helper or manually adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
 
-```C#
+```HTML+Razor
 <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true"></slimsy-picture>
 ```
 
 Use the `GetSrcSetUrls` UrlHelper extension methods to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
-```C#
+```HTML+Razor
 <div class="employee-grid__item__image">
     <img data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" srcset="@Url.GetSrcSetUrls(person.Photo, 250, 250, quality: 40)" data-sizes="auto" class="lazyload"/>
 </div>
@@ -105,7 +105,6 @@ e.g.
     var slimsyDefaultPictureSources = SlimsyOptions.Value.TagHelper.DefaultPictureSources.Select(x => x.Extension).ToArray();
 }
 <div style="padding: 20px">
-    @* @Model.Content.Value("richText") *@
     @SlimsyService.ConvertImgToResponsive(Model.Content, "richText", renderPicture: true, pictureSources: slimsyDefaultPictureSources)
 </div>
 ```
