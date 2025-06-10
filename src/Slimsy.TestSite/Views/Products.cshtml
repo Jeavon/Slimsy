@@ -27,9 +27,20 @@
         <div class="product-grid">
             @if (Model.FeaturedProducts != null)
             {
-                foreach (Product product in Model.FeaturedProducts)
+@*                 foreach (Product product in Model.FeaturedProducts)
                 {
                     <a href="@product.Url()" class="product-grid__item" style="background-image: url('@product.Photos?.Url()')">
+                        <div class="product-grid__item__overlay">
+                            <div class="product-grid__item__name">@product.ProductName</div>
+                            <div class="product-grid__item__price">@Model.DefaultCurrency @product.Price.ToString("F")</div>
+                        </div>
+                    </a>
+                } *@
+
+                foreach (Product product in Model.FeaturedProducts)
+                {
+                    <a href="@product.Url()">
+                        <slimsy-picture media-item="@product.Photos" width="376" height="300" render-lqip="true"></slimsy-picture>
                         <div class="product-grid__item__overlay">
                             <div class="product-grid__item__name">@product.ProductName</div>
                             <div class="product-grid__item__price">@Model.DefaultCurrency @product.Price.ToString("F")</div>

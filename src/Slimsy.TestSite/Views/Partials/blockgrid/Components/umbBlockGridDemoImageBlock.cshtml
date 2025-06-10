@@ -1,11 +1,16 @@
-﻿@using Umbraco.Extensions
+﻿@using Umbraco.Cms.Core
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
 
 @{
     var typedMediaPickerSingle = Model.Content.Value<Umbraco.Cms.Core.Models.MediaWithCrops>("image");
     if (typedMediaPickerSingle != null)
     {
-        <img src="@typedMediaPickerSingle.MediaUrl()" style="object-fit:cover; width:100%; height:100%;"/>
+        var sourceWidth = typedMediaPickerSingle.Value<int>(Constants.Conventions.Media.Width);
+        var sourceHeight = typedMediaPickerSingle.Value<int>(Constants.Conventions.Media.Height);
+
+        // <img src="@typedMediaPickerSingle.MediaUrl()" style="object-fit:cover; width:100%; height:100%;"/>
+        <slimsy-picture media-item="@typedMediaPickerSingle" width="sourceWidth" height="sourceHeight" css-class="object-fit:cover; width:100%; height:100%;" render-lqip="true"></slimsy-picture>
+
     } else {
         <p>Missing image</p>
     }
