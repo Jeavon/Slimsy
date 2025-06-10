@@ -12,6 +12,3 @@
 @using Slimsy.Enums;
 
 @inject IOptions<Slimsy.Configuration.SlimsyOptions> SlimsyOptions
-@{
-    var slimsyDefaultPictureSources = SlimsyOptions.Value.TagHelper.DefaultPictureSources.Select(x => x.Extension).ToArray();
-}
