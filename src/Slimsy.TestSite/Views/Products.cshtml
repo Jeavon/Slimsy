@@ -39,7 +39,7 @@
 
                 foreach (Product product in Model.FeaturedProducts)
                 {
-                    <a href="@product.Url()">
+                    <a href="@product.Url()" class="product-grid__item">
                         <slimsy-picture media-item="@product.Photos" width="376" height="300" render-lqip="true"></slimsy-picture>
                         <div class="product-grid__item__overlay">
                             <div class="product-grid__item__name">@product.ProductName</div>
