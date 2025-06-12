@@ -2,7 +2,7 @@ Slimsy
 ============
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
-# Slimsy v6 is made for Umbraco v14+!
+# Slimsy v6 is made for Umbraco v14, v15 & v16!
 # Slimsy v5 is made for Umbraco v13.2 < v14!
 # Slimsy v4 is made for Umbraco v10, v11 & v12!
 
@@ -73,13 +73,13 @@ img {
 
 ### 6. Use the `<slimsy-picture>` tag helper or manually adjust your image elements, adding `data-srcset`, `data-src`, `sizes="auto"` & `class="lazyload"` attributes
 
-```C#
+```HTML+Razor
 <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true"></slimsy-picture>
 ```
 
 Use the `GetSrcSetUrls` UrlHelper extension methods to generate your `data-srcset` attributes. For these methods to function correctly your image property types should use the built-in **Image Cropper**.
 
-```C#
+```HTML+Razor
 <div class="employee-grid__item__image">
     <img data-srcset="@Url.GetSrcSetUrls(person.Photo, 323, 300)" srcset="@Url.GetSrcSetUrls(person.Photo, 250, 250, quality: 40)" data-sizes="auto" class="lazyload"/>
 </div>
@@ -97,17 +97,39 @@ public ResponsiveImageViewComponent(SlimsyService slimsyService)
 
 ### 7 (optional). Adjust the rendering of your Richtext editors
 
-```C#
-<div class="col-md-9">
-    <article>
-        @SlimsyService.ConvertImgToResponsive(Model, "richTextBody", renderPicture:true, pictureSources: new []{"webp"})
-    </article>
+e.g.
+
+```HTML+Razor
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var slimsyDefaultPictureSources = SlimsyOptions.Value.TagHelper.DefaultPictureSources.Select(x => x.Extension).ToArray();
+}
+<div style="padding: 20px">
+    @SlimsyService.ConvertImgToResponsive(Model.Content, "richText", renderPicture: true, pictureSources: slimsyDefaultPictureSources)
 </div>
 ```
 
-### 8 (optional). Adjust the renderer of media within the Grid editor
+### 8 (optional). Adjust the renderer of media within the Block Grid editor
 
-There's quite a lot to this - so check it out in the demo site [here](https://github.com/Jeavon/Slimsy/blob/dev-v4/src/Slimsy.TestSite/Views/Partials/grid/editors/media.cshtml)
+e.g.
+
+```HTML+Razor
+@using Umbraco.Cms.Core
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Umbraco.Cms.Core.Models.Blocks.BlockGridItem>
+@{
+    var typedMediaPickerSingle = Model.Content.Value<Umbraco.Cms.Core.Models.MediaWithCrops>("image");
+    if (typedMediaPickerSingle != null)
+    {
+        var sourceWidth = typedMediaPickerSingle.Value<int>(Constants.Conventions.Media.Width);
+        var sourceHeight = typedMediaPickerSingle.Value<int>(Constants.Conventions.Media.Height);
+
+        <slimsy-picture media-item="@typedMediaPickerSingle" width="sourceWidth" height="sourceHeight" css-class="object-fit:cover; width:100%; height:100%;" render-lqip="true"></slimsy-picture>
+
+    } else {
+        <p>Missing image</p>
+    }
+}
+```
 
 # Options
 
