@@ -1828,6 +1828,10 @@ p.testimonial-text {
     background-position: 50%
 }
 
+  .employee-grid__item__image img {
+    width: 100%;
+  }
+
 .employee-grid__item__details {
     padding: 30px;
     background: #f4f4f0

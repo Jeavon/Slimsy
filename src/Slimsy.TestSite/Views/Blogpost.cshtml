@@ -17,8 +17,10 @@
                 </span>
             </div>
             <h3>@Model.Excerpt</h3>
-@*             @Html.GetGridHtml(Model, "bodyText", "bootstrap3-fluid")
- *@            <!-- todo: implement discus comments -->
+            @await Html.GetBlockGridHtmlAsync(Model, "bodyText")
+            <!-- todo: implement discus comments -->
         </article>
     </div>
 </section>
+
+<link rel="stylesheet" href="@Url.Content("~/css/umbraco-starterkit-blockgrid.css")" />

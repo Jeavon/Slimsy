@@ -1,4 +1,5 @@
 ﻿@using Slimsy.Extensions
+
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<People>
 @{
     Layout = "master.cshtml";
@@ -152,6 +153,21 @@
                     <div class="employee-grid__item__image">
                         <div class="employee-grid__item__image">
                             <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" render-webp-alternative="true" crop-alias="GlobalSquare"></slimsy-picture>
+                        </div>
+                    </div>
+                    @{ContactDetails(person);}
+                </div>
+            }
+        </div>
+
+        <h2>BoxPad</h2>
+        <div class="employee-grid">          
+            @foreach (Person person in Model.Children<Person>())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo" width="323" height="300" css-class="myClass" render-lqip="true" image-crop-mode="BoxPad" ></slimsy-picture>
                         </div>
                     </div>
                     @{ContactDetails(person);}

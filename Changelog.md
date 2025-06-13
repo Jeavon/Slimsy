@@ -39,3 +39,4 @@ Slimsy Change log
 - 5.1.2 & 6.0.0-beta2 Fix for ConvertImgToResponsive when parsing dimensions
 - 6.0.0 - Umbraco v14 compatability
 - 6.0.1 - fix for v14 package version info
+- 6.0.2 - fix for TipTap editor
