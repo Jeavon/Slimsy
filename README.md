@@ -265,4 +265,4 @@ Many thanks to Douglas Robar for naming Slimsy.
 
 # Change log
 
-[Here](https://github.com/Jeavon/Slimsy/blob/dev-v4/Changelog.md)
+[Here](https://github.com/Jeavon/Slimsy/blob/dev-v6/Changelog.md)
