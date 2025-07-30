@@ -37,7 +37,8 @@ builder.CreateUmbracoBuilder()
 ### 3. Add to _ViewImports.cshtml
 
 ```c#
-@using Slimsy.Enums;
+@using Slimsy.Enums
+@using Slimsy.Extensions
 @addTagHelper *, Slimsy
 @inject Slimsy.Services.SlimsyService SlimsyService
 ```
@@ -105,7 +106,7 @@ e.g.
     var slimsyDefaultPictureSources = SlimsyOptions.Value.TagHelper.DefaultPictureSources.Select(x => x.Extension).ToArray();
 }
 <div style="padding: 20px">
-    @SlimsyService.ConvertImgToResponsive(Model.Content, "richText", renderPicture: true, pictureSources: slimsyDefaultPictureSources)
+    @Html.ConvertImgToResponsive(Model.Content, "richText", renderPicture: true, pictureSources: slimsyDefaultPictureSources)
 </div>
 ```
 
