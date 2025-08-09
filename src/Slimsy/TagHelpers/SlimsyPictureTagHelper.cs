@@ -8,6 +8,7 @@ using Slimsy.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
@@ -91,6 +92,9 @@ namespace Slimsy
                 {
                     AltText = "";
                 }
+
+                AltText = HttpUtility.HtmlAttributeEncode(AltText);
+
                 var fetchPriorityAttribute = !(FetchPriority == FetchPriority.Auto) ? $" fetchpriority=\"{FetchPriority.ToString().ToLower()}\"" : null;
 
                 if (defaultMimeType != null) //supported type
