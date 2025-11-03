@@ -15,6 +15,7 @@ namespace Slimsy.Configuration
         public bool EncodeCommas { get; set; } = false;
         public bool AppendSourceDimensions { get; set; } = false;
         public bool AutoOrient { get; set; } = false;
+        public int MobileWidth { get; set; } = 720!;
     }
 
     public sealed class TagHelper
