@@ -126,12 +126,16 @@ namespace Slimsy
                             imgSrc = _slimsyService.GetCropUrl(MediaItem, cropAlias: CropAlias, useCropDimensions: true, furtherOptions: "&format=" + defaultFormat);
 
                             // Check if mobile crop alias is provided
-                            var mobileCrop = !string.IsNullOrEmpty(MobileCropAlias) ? mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(MobileCropAlias)) : null;
+                            var mobileCrop = !string.IsNullOrEmpty(MobileCropAlias)
+                                ? mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(MobileCropAlias))
+                                : null;
+
+                            // setting starting width for desktop sources. This will be adjusted if mobile crop is provided
                             var startingWidth = 0;
 
                             if (mobileCrop != null)
                             {
-                                // Generate mobile sources first (no media attribute - evaluated first/default)
+                                // Generate mobile sources first and set IsMobileSource flag to true
                                 foreach (var source in pictureSources)
                                 {
                                     var mobileSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, MobileCropAlias, PropertyAlias, source.Quality, source.Extension, maxWidth: _slimsyOptions.MobileWidth);
@@ -149,6 +153,7 @@ namespace Slimsy
                                     sources.Add(mobileNativeSource);
                                 }
 
+                                // Set starting width for desktop sources so it doesn't include the mobile widths
                                 startingWidth = _slimsyOptions.MobileWidth + _slimsyOptions.WidthStep;
                             }
 
