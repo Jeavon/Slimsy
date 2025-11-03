@@ -134,7 +134,7 @@ namespace Slimsy
                                 // Generate mobile sources first (no media attribute - evaluated first/default)
                                 foreach (var source in pictureSources)
                                 {
-                                    var mobileSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, MobileCropAlias, PropertyAlias, source.Quality, source.Extension, maxWidth: 720);
+                                    var mobileSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, MobileCropAlias, PropertyAlias, source.Quality, source.Extension, maxWidth: _slimsyOptions.MobileWidth);
                                     imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: MobileCropAlias, quality: 20, furtherOptions: "&format=" + source.Extension);
                                     var mobileSource = new SourceSet() { Source = mobileSrcSet, Lqip = imgLqip, Format = source.Extension, IsMobileSource = true };
                                     sources.Add(mobileSource);
@@ -143,13 +143,13 @@ namespace Slimsy
                                 // Handle mobile native format
                                 if (!pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
                                 {
-                                    var mobileSrcSetNative = _slimsyService.GetSrcSetUrls(MediaItem, MobileCropAlias, PropertyAlias, outputFormat: defaultFormat, maxWidth: 720);
+                                    var mobileSrcSetNative = _slimsyService.GetSrcSetUrls(MediaItem, MobileCropAlias, PropertyAlias, outputFormat: defaultFormat, maxWidth: _slimsyOptions.MobileWidth);
                                     imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, cropAlias: MobileCropAlias, furtherOptions: "&format=" + defaultFormat);
                                     var mobileNativeSource = new SourceSet() { Source = mobileSrcSetNative, Lqip = imgLqip, Format = defaultFormat, IsMobileSource = true };
                                     sources.Add(mobileNativeSource);
                                 }
 
-                                startingWidth = 900;
+                                startingWidth = _slimsyOptions.MobileWidth + _slimsyOptions.WidthStep;
                             }
 
                             foreach (var source in pictureSources)
