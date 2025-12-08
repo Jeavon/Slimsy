@@ -90,7 +90,8 @@ jobs:
         
         # Find and update csproj file
         CSPROJ_FILE=$(find . -name "*.csproj" -not -path "*/bin/*" -not -path "*/obj/*" | head -1)
-        sed -i "s|<FileVersion>\$(FileVersionNumber)</FileVersion>|<FileVersion>$FILE_VERSION</FileVersion>|" "$CSPROJ_FILE"   
+        sed -i "s|<FileVersion>.*</FileVersion>|<FileVersion>$FILE_VERSION</FileVersion>|" "$CSPROJ_FILE"
+        sed -i "s|<InformationalVersion>.*</InformationalVersion>|<InformationalVersion>$SEMVER</InformationalVersion>|" "$CSPROJ_FILE"   
 
     - name: Build sln
       run: dotnet build ${{ github.workspace }}/*.slnx -c Release        

@@ -10,6 +10,7 @@
         <PackageTags>umbraco plugin package images responsive umbraco-marketplace</PackageTags>
         <RootNamespace>Slimsy</RootNamespace>
         <FileVersion>0.0.0.0</FileVersion>
+        <InformationalVersion>0.0.0</InformationalVersion>
 		    <PackageIcon>slimsy.png</PackageIcon>
 		    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 		    <Nullable>enable</Nullable>
