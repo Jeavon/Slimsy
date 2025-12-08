@@ -688,14 +688,14 @@ namespace Slimsy.Services
                                         }
                                         else
                                         {
-                                            img.Attributes.Add("data-srcset", srcSet.ToString());
+                                            img.Attributes.Add("data-srcset", srcSet.ToString() ?? "");
                                         }
 
                                         img.Attributes.Add("data-sizes", "auto");
 
                                         if (generateLqip && defaultLqip != null)
                                         {
-                                            img.Attributes.Add("src", defaultLqip.ToString());
+                                            img.Attributes.Add("src", defaultLqip.ToString() ?? "");
                                         }
 
                                         if (classAttr != null)
@@ -720,8 +720,8 @@ namespace Slimsy.Services
                                         // set img attributes
                                         if (width > 0 && height > 0 && widthAttr != null && heightAttr != null)
                                         {
-                                            widthAttr.Value = width.ToString();
-                                            heightAttr.Value = height.ToString();
+                                            widthAttr.Value = width?.ToString() ?? "";
+                                            heightAttr.Value = height?.ToString() ?? "";
                                         }
 
                                         modified = true;
@@ -1020,7 +1020,7 @@ namespace Slimsy.Services
                 RichTextBlockModel = richTextEditorIntermediateValue.RichTextBlockModel
             };
 
-            var objectValue = this._rteBlockRenderingValueConverter.ConvertIntermediateToObject(null, propertyType, 0, slimsyRichTextEditorIntermediateValue, false);
+            var objectValue = this._rteBlockRenderingValueConverter.ConvertIntermediateToObject(null!, propertyType!, 0, slimsyRichTextEditorIntermediateValue, false);
             return (objectValue as IHtmlEncodedString) ?? new HtmlEncodedString("");
         }
 
@@ -1039,7 +1039,7 @@ namespace Slimsy.Services
             var sourceValue = publishedContent.GetProperty(propertyAlias)?.GetSourceValue();
             var propertyType = publishedContent.GetProperty(propertyAlias)?.PropertyType;
             return sourceValue != null ?
-                this.ConvertImgToResponsive(publishedContent, sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
+                this.ConvertImgToResponsive(publishedContent, sourceValue.ToString() ?? "", propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlEncodedString("");
         }
 
@@ -1059,7 +1059,7 @@ namespace Slimsy.Services
             var propertyType = publishedElement.GetProperty(propertyAlias)?.PropertyType;
 
             return sourceValue != null ?
-                this.ConvertImgToResponsive(publishedElement, sourceValue.ToString(), propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
+                this.ConvertImgToResponsive(publishedElement, sourceValue.ToString() ?? "", propertyType, generateLqip, removeStyleAttribute, renderPicture, pictureSources) :
                 new HtmlEncodedString("");
         }
 
