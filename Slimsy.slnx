@@ -1,9 +1,5 @@
 <Solution>
   <Folder Name="/Build/">
-    <File Path="appveyor.yml" />
-    <File Path="build/appveyor-semver.ps1" />
-    <File Path="build/check-release-version.ps1" />
-    <File Path="build/patch-umbraco-package.js" />
     <File Path="NuGet.config" />
   </Folder>
   <Folder Name="/Docs/">
