@@ -1,4 +1,4 @@
-version: 6.0.5.{build}
+version: 7.0.0.{build}
 
 os: Visual Studio 2022
 
@@ -6,8 +6,8 @@ configuration: Release
 
 branches:
   only:
-    - dev-v6
-    - main-v6
+    - dev-v7
+    - main-v7
     - /v*/
 
 environment:
@@ -18,6 +18,10 @@ install:
   - ps: .\build\appveyor-semver.ps1
   - ps: .\build\check-release-version.ps1
   - ps: Update-AppveyorBuild -Version $Env:semver
+  - ps: |
+      Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
+      & $env:temp\dotnet-install.ps1 -Architecture x64 -Channel '10.0' -InstallDir "$env:ProgramFiles\dotnet"
+
 
 dotnet_csproj:
   patch: true
@@ -31,6 +35,7 @@ before_build:
 - pwsh: |
     dotnet tool install --global GitVersion.Tool --version 6.*
     dotnet-gitversion $env:APPVEYOR_BUILD_FOLDER /l console /nofetch /b $env:APPVEYOR_REPO_BRANCH
+- cmd: dotnet --version
 
 build_script:
 - cmd: >-
