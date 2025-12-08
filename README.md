@@ -253,7 +253,7 @@ Lazysizes.js is awesome and it's part of what makes Slimsy so easy to implement.
 
 # Test Site & Source Code
 
-A test site is included in the solution, the username and password for Umbraco are `admin@admin.com/password1234567890.`
+A test site is included in the solution, the username and password for Umbraco are `admin@admin.com/password1234567890`
 
 # Credits and references
 
