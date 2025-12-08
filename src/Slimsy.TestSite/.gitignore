@@ -472,8 +472,8 @@ umbraco-package-schema.json
 
 # SQLite database files
 #/umbraco/Data/*.sqlite.db
-#/umbraco/Data/*.sqlite.db-shm
-#/umbraco/Data/*.sqlite.db-wal
+/umbraco/Data/*.sqlite.db-shm
+/umbraco/Data/*.sqlite.db-wal
 
 # Log files
 /umbraco/Logs/
