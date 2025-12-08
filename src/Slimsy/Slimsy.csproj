@@ -9,10 +9,7 @@
         <Description>Effortless Responsive Images with Umbraco using LazySizes.js</Description>
         <PackageTags>umbraco plugin package images responsive umbraco-marketplace</PackageTags>
         <RootNamespace>Slimsy</RootNamespace>
-		    <Version>4.0.0-alpha.0</Version>
-		    <AssemblyVersion>4.0.0.0</AssemblyVersion>
-        <FileVersion>4.0.0.0</FileVersion>
-        <InformationalVersion>4.0.0.0-alpha.0</InformationalVersion>
+        <FileVersion>0.0.0.0</FileVersion>
 		    <PackageIcon>slimsy.png</PackageIcon>
 		    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 		    <Nullable>enable</Nullable>
