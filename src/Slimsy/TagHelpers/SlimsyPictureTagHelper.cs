@@ -247,7 +247,7 @@ namespace Slimsy
                     foreach (var source in sources)
                     {
                         // Only add media query for mobile sources when mobile crop is provided
-                        var mediaAttribute = source.IsMobileSource ? " media=\"(max-width: 767px)\"" : null;
+                        var mediaAttribute = source.IsMobileSource ? $" media=\"(max-width: {_slimsyOptions.MobileWidth}px)\"" : null;                        
                         var sourceMimeType = SlimsyService.MimeType(source.Format ?? "jpg");
                         if (Loading == Loading.Lazy)
                         {
