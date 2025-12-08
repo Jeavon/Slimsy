@@ -53,7 +53,7 @@ namespace Slimsy.Services
         /// <returns>Url of image</returns>
         public IHtmlContent GetSrcSetUrls(IPublishedContent publishedContent, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
         {
-            return this.GetSrcSetUrls(new MediaWithCrops(publishedContent, null, null), width, height, propertyAlias, quality, outputFormat, furtherOptions);
+            return this.GetSrcSetUrls(new MediaWithCrops(publishedContent, null!, null!), width, height, propertyAlias, quality, outputFormat, furtherOptions);
         }
 
         /// <summary>
@@ -258,12 +258,12 @@ namespace Slimsy.Services
             else if (imageCrops != null)
             {
                 // this code would execute if a predefined crop has been added to the data type but this media item hasn't been re-saved
-                var cropperConfiguration = (ImageCropperConfiguration)publishedContent.Properties.FirstOrDefault(x => x.Alias != null && x.Alias == propertyAlias)?.PropertyType.DataType.ConfigurationObject;
+                var cropperConfiguration = (ImageCropperConfiguration?)publishedContent.Properties.FirstOrDefault(x => x.Alias != null && x.Alias == propertyAlias)?.PropertyType.DataType.ConfigurationObject;
 
-                ImageCropperConfiguration.Crop cropConfiguration = null;
-                if (cropperConfiguration.Crops != null)
+                ImageCropperConfiguration.Crop? cropConfiguration = null;
+                if (cropperConfiguration?.Crops != null)
                 {
-                    cropConfiguration = cropperConfiguration?.Crops.FirstOrDefault(c => c.Alias == cropAlias);
+                    cropConfiguration = cropperConfiguration.Crops.FirstOrDefault(c => c.Alias == cropAlias);
                 }
 
                 if (cropConfiguration != null)
@@ -361,17 +361,17 @@ namespace Slimsy.Services
             return mimeType;
         }
 
-        private IPublishedContent GetAnyTypePublishedContent(GuidUdi guidUdi)
+        private IPublishedContent? GetAnyTypePublishedContent(GuidUdi guidUdi)
         {
             if (_umbracoContextAccessor.TryGetUmbracoContext(out var context))
             {
                 switch (guidUdi.EntityType)
                 {
                     case Constants.UdiEntityType.Media:
-                        return context.Media.GetById(guidUdi.Guid);
+                        return context.Media?.GetById(guidUdi.Guid);
 
                     case Constants.UdiEntityType.Document:
-                        return context.Content.GetById(guidUdi.Guid);
+                        return context.Content?.GetById(guidUdi.Guid);
 
                     default:
                         return null;
@@ -577,7 +577,7 @@ namespace Slimsy.Services
                             {
                                 queryStringCollection = HttpUtility.ParseQueryString(src.Substring(src.IndexOf('?')));
                                 // ensure case of variables doesn't cause trouble
-                                IDictionary<string, string> queryString = queryStringCollection.AllKeys.ToDictionary(k => k.ToLowerInvariant(), k => queryStringCollection[k]);
+                                IDictionary<string, string?> queryString = queryStringCollection.AllKeys.ToDictionary(k => k?.ToLowerInvariant() ?? "", k => queryStringCollection[k]);
 
                                 if (queryString.TryGetValue("width", out var widthValue))
                                 {
@@ -607,6 +607,7 @@ namespace Slimsy.Services
                                 if (UdiParser.TryParse(udiAttr.Value, out guidUdi))
                                 {
                                     var node = this.GetAnyTypePublishedContent(guidUdi);
+                                    if (node == null) continue;
 
                                     // Only height in the RTE, convert to width
                                     if ((width is null or 0) && (height is > 0))
@@ -632,7 +633,7 @@ namespace Slimsy.Services
                                         {
                                             var roundedUrl = this.GetCropUrl(node, width, height,
                                                 imageCropMode: ImageCropMode.Pad, preferFocalPoint: true);
-                                            srcAttr.Value = roundedUrl.ToString();
+                                            srcAttr.Value = roundedUrl?.ToString() ?? "";
                                         }
 
                                         var srcSet = this.GetSrcSetUrls(node, (int)width, (int)height);
@@ -650,10 +651,11 @@ namespace Slimsy.Services
 
                                             if (pictureSources == null || !pictureSources.Contains(umbracoExtension))
                                             {
-                                                var defaultSource = HtmlNode.CreateNode($"<source data-srcset=\"{srcSet.ToString()}\" type=\"{MimeType(umbracoExtension)}\" data-sizes=\"auto\" />");
-                                                if (generateLqip)
+                                                var mimeType = MimeType(umbracoExtension ?? "jpg") ?? "image/jpeg";
+                                                var defaultSource = HtmlNode.CreateNode($"<source data-srcset=\"{srcSet.ToString()}\" type=\"{mimeType}\" data-sizes=\"auto\" />");
+                                                if (generateLqip && defaultLqip != null)
                                                 {
-                                                    defaultSource.Attributes.Add("srcset", defaultLqip.ToString());
+                                                    defaultSource.Attributes.Add("srcset", defaultLqip.ToString() ?? "");
                                                 }
 
                                                 imgElement.ChildNodes.Insert(0, defaultSource);
@@ -665,15 +667,16 @@ namespace Slimsy.Services
                                                 {
                                                     var srcSetForSource = this.GetSrcSetUrls(node, (int)width,
                                                         (int)height, outputFormat: source);
+                                                    var sourceMimeType = MimeType(source) ?? "image/jpeg";
                                                     var sourceElement =
                                                         HtmlNode.CreateNode(
-                                                            $"<source data-srcset=\"{srcSetForSource.ToString()}\" type=\"{MimeType(source)}\" data-sizes=\"auto\" />");
+                                                            $"<source data-srcset=\"{srcSetForSource.ToString()}\" type=\"{sourceMimeType}\" data-sizes=\"auto\" />");
 
                                                     if (generateLqip)
                                                     {
                                                         var sourceLqip = this.GetCropUrl(node, width, height, quality: 30,
                                                             furtherOptions: $"&format={source}", preferFocalPoint: true);
-                                                        sourceElement.Attributes.Add("srcset", sourceLqip.ToString());
+                                                        sourceElement.Attributes.Add("srcset", sourceLqip?.ToString() ?? "");
                                                     }
 
                                                     imgElement.ChildNodes.Insert(0, sourceElement);
@@ -687,7 +690,7 @@ namespace Slimsy.Services
 
                                         img.Attributes.Add("data-sizes", "auto");
 
-                                        if (generateLqip)
+                                        if (generateLqip && defaultLqip != null)
                                         {
                                             img.Attributes.Add("src", defaultLqip.ToString());
                                         }
@@ -1003,10 +1006,10 @@ namespace Slimsy.Services
         {
 
             // We have the raw value so we need to run it through the value converter to ensure that links and macros are rendered
-            var intermediateValue = this._rteBlockRenderingValueConverter.ConvertSourceToIntermediate(publishedElement, propertyType, sourceValueHtml, false);
+            var intermediateValue = this._rteBlockRenderingValueConverter.ConvertSourceToIntermediate(publishedElement, propertyType!, sourceValueHtml, false);
             var richTextEditorIntermediateValue = intermediateValue as IRichTextEditorIntermediateValue;
 
-            var source = this.ConvertImgToResponsiveInternal(richTextEditorIntermediateValue.Markup, generateLqip, removeStyleAttribute, renderPicture: renderPicture, pictureSources: pictureSources);
+            var source = this.ConvertImgToResponsiveInternal(richTextEditorIntermediateValue!.Markup, generateLqip, removeStyleAttribute, renderPicture: renderPicture, pictureSources: pictureSources);
 
             var slimsyRichTextEditorIntermediateValue = new RichTextEditorIntermediateValue()
             {
@@ -1015,7 +1018,7 @@ namespace Slimsy.Services
             };
 
             var objectValue = this._rteBlockRenderingValueConverter.ConvertIntermediateToObject(null, propertyType, 0, slimsyRichTextEditorIntermediateValue, false);
-            return objectValue as IHtmlEncodedString;
+            return (objectValue as IHtmlEncodedString) ?? new HtmlEncodedString("");
         }
 
         /// <summary>

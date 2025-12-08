@@ -27,11 +27,16 @@
         public override IActionResult Index()
         {
             var page = CurrentPage as Person;
-            var vm = new PersonViewModel(CurrentPage,
+            if (page == null)
+            {
+                return NotFound();
+            }
+
+            var vm = new PersonViewModel(page,
                 new PublishedValueFallback(_serviceContext, _variationContextAccessor))
             {
-                PictureSrc = _slimsyService.GetCropUrl(page.Photo, 500, 0),
-                PictureSrcSet = _slimsyService.GetSrcSetUrls(page.Photo, 500, 0)
+                PictureSrc = _slimsyService.GetCropUrl(page.Photo!, 500, 0),
+                PictureSrcSet = _slimsyService.GetSrcSetUrls(page.Photo!, 500, 0)
             };
 
             return CurrentTemplate(vm);

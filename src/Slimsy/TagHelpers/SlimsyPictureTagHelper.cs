@@ -1,18 +1,19 @@
+using System.Web;
+
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
-using Slimsy.Configuration;
-using Slimsy.Enums;
-using Slimsy.Models;
-using Slimsy.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Extensions;
+
+using Slimsy.Configuration;
+using Slimsy.Enums;
+using Slimsy.Models;
+using Slimsy.Services;
+
 using TagHelper = Microsoft.AspNetCore.Razor.TagHelpers.TagHelper;
 
 namespace Slimsy
@@ -28,8 +29,6 @@ namespace Slimsy
         public int Height { get; set; }
         public string? AltText { get; set; }
         public string? CssClass { get; set; }
-        [Obsolete("This property is obsolete, Use DefaultPictureSources Options in appsettings.json instead.", false)]
-        public bool RenderWebpAlternative { get; set; } = true;
         public bool RenderLQIP { get; set; } = true;
         public bool Decorative { get; set; } = false;
         public FetchPriority FetchPriority { get; set; } = FetchPriority.Auto;
@@ -46,7 +45,6 @@ namespace Slimsy
             _slimsyService = slimsyService;
             _slimsyOptions = slimsyOptions.CurrentValue;
         }
-
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             if (Loading == Loading.Eager && string.IsNullOrEmpty(ManualSizes))
@@ -57,7 +55,7 @@ namespace Slimsy
             List<PictureSource> pictureSources = _slimsyOptions.TagHelper.DefaultPictureSources.ToList();
 
             // supporting upgrades
-            if (RenderWebpAlternative && !pictureSources.Select(s => s.Extension).Contains("webp"))
+            if (!pictureSources.Select(s => s.Extension).Contains("webp"))
             {
                 pictureSources.Add(new PictureSource(){Extension="webp", Quality=70});
             }
@@ -73,14 +71,14 @@ namespace Slimsy
             {
                 var umbracoExtension = MediaItem.Value<string>(Umbraco.Cms.Core.Constants.Conventions.Media.Extension);
 
-                if (_slimsyOptions.TagHelper.SingleSources != null && _slimsyOptions.TagHelper.SingleSources.Contains(umbracoExtension))
+                if (_slimsyOptions.TagHelper.SingleSources != null && umbracoExtension != null && _slimsyOptions.TagHelper.SingleSources.Contains(umbracoExtension))
                 {
                     // empty the sources as this should render a single source
                     pictureSources = new List<PictureSource>();
                 }
 
-                var defaultFormat = umbracoExtension;
-                string? defaultMimeType = SlimsyService.MimeType(umbracoExtension);
+                var defaultFormat = umbracoExtension ?? "jpg";
+                string? defaultMimeType = SlimsyService.MimeType(defaultFormat);
 
                 var htmlContent = "";
 
@@ -130,7 +128,7 @@ namespace Slimsy
                             }
 
                             // native format not included in sources so we add it as the last option, it will use the Slimsy default quality
-                            if (!pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
+                            if (defaultFormat != null && !pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
                             {
                                 imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat);
                                 // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
@@ -160,7 +158,7 @@ namespace Slimsy
                                 sources.Add(newSource);
                             }
 
-                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, ImageCropMode, ImageCropAnchor, PropertyAlias, outputFormat: defaultFormat);
+                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, ImageCropMode, ImageCropAnchor, PropertyAlias, outputFormat: defaultFormat ?? "");
                             // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **                        
                             imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, PropertyAlias, quality: 20, imageCropMode: ImageCropMode, imageCropAnchor: ImageCropAnchor, furtherOptions: "&format=" + defaultFormat);
 
@@ -212,25 +210,26 @@ namespace Slimsy
 
                     foreach (var source in sources)
                     {
+                        var sourceMimeType = SlimsyService.MimeType(source.Format ?? "jpg");
                         if (Loading == Loading.Lazy)
                         {
                             if (RenderLQIP)
                             {
                                 htmlContent += Environment.NewLine +
-                                               $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""{sizes}"" />" +
+                                               $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{sourceMimeType}"" data-sizes=""{sizes}"" />" +
                                                Environment.NewLine;
                             }
                             else
                             {
                                 htmlContent += Environment.NewLine +
-                                               $@"<source data-srcset=""{source.Source}"" type=""{SlimsyService.MimeType(source.Format)}"" data-sizes=""{sizes}"" />" +
+                                               $@"<source data-srcset=""{source.Source}"" type=""{sourceMimeType}"" data-sizes=""{sizes}"" />" +
                                                Environment.NewLine;
                             }
                         }
                         else
                         {
                             htmlContent += Environment.NewLine +
-                                           $@"<source srcset=""{source.Source}"" type=""{SlimsyService.MimeType(source.Format)}"" sizes=""{sizes}"" />" +
+                                           $@"<source srcset=""{source.Source}"" type=""{sourceMimeType}"" sizes=""{sizes}"" />" +
                                            Environment.NewLine;
                         }
                     }

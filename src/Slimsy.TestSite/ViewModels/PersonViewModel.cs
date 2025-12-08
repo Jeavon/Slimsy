@@ -8,6 +8,8 @@
     {
         public PersonViewModel(IPublishedContent content, IPublishedValueFallback publishedValueFallback) : base(content, publishedValueFallback)
         {
+            PictureSrc = HtmlString.Empty;
+            PictureSrcSet = HtmlString.Empty;
         }
 
         public IHtmlContent PictureSrc { get; set; }
