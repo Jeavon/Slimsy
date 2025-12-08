@@ -7,5 +7,6 @@ namespace Slimsy.Models
         public IHtmlContent? Source { get; set; }
         public IHtmlContent? Lqip { get; set; }
         public string? Format { get; set; }
+        public bool IsMobileSource { get; set; }
     }
 }

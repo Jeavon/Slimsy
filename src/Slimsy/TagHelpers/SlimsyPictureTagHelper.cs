@@ -25,6 +25,10 @@ namespace Slimsy
         /// Crop Alias to use, when this attribute is passed, Width, Height, ImageCropMode & ImageCropAnchor parameters are ignored
         /// </summary>
         public string? CropAlias { get; set; }
+        /// <summary>
+        /// Mobile Crop Alias to use for smaller width variants. When provided, mobile and desktop sources will be generated separately with media queries
+        /// </summary>
+        public string? MobileCropAlias { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public string? AltText { get; set; }
@@ -119,9 +123,36 @@ namespace Slimsy
 
                             imgSrc = _slimsyService.GetCropUrl(MediaItem, cropAlias: CropAlias, useCropDimensions: true, furtherOptions: "&format=" + defaultFormat);
 
+                            // Check if mobile crop alias is provided
+                            var mobileCrop = !string.IsNullOrEmpty(MobileCropAlias) ? mergedImageCrops?.Crops?.FirstOrDefault(x => x.Alias.InvariantEquals(MobileCropAlias)) : null;
+                            var startingWidth = 0;
+
+                            if (mobileCrop != null)
+                            {
+                                // Generate mobile sources first (no media attribute - evaluated first/default)
+                                foreach (var source in pictureSources)
+                                {
+                                    var mobileSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, MobileCropAlias, PropertyAlias, source.Quality, source.Extension, maxWidth: 720);
+                                    imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: MobileCropAlias, quality: 20, furtherOptions: "&format=" + source.Extension);
+                                    var mobileSource = new SourceSet() { Source = mobileSrcSet, Lqip = imgLqip, Format = source.Extension, IsMobileSource = true };
+                                    sources.Add(mobileSource);
+                                }
+
+                                // Handle mobile native format
+                                if (!pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
+                                {
+                                    var mobileSrcSetNative = _slimsyService.GetSrcSetUrls(MediaItem, MobileCropAlias, PropertyAlias, outputFormat: defaultFormat, maxWidth: 720);
+                                    imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, cropAlias: MobileCropAlias, furtherOptions: "&format=" + defaultFormat);
+                                    var mobileNativeSource = new SourceSet() { Source = mobileSrcSetNative, Lqip = imgLqip, Format = defaultFormat, IsMobileSource = true };
+                                    sources.Add(mobileNativeSource);
+                                }
+
+                                startingWidth = 900;
+                            }
+
                             foreach (var source in pictureSources)
                             {
-                                imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, source.Quality, source.Extension);
+                                imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, source.Quality, source.Extension, startingWidth: startingWidth);
                                 imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, cropAlias: CropAlias, quality: 20, furtherOptions: "&format=" + source.Extension);
                                 var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source.Extension };
                                 sources.Add(newSource);
@@ -130,7 +161,7 @@ namespace Slimsy
                             // native format not included in sources so we add it as the last option, it will use the Slimsy default quality
                             if (defaultFormat != null && !pictureSources.Select(s => s.Extension).InvariantContains(defaultFormat))
                             {
-                                imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat);
+                                imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, CropAlias, PropertyAlias, outputFormat: defaultFormat, startingWidth: startingWidth);
                                 // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
                                 imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, quality: 20, cropAlias: CropAlias, furtherOptions: "&format=" + defaultFormat);
 
@@ -210,26 +241,28 @@ namespace Slimsy
 
                     foreach (var source in sources)
                     {
+                        // Only add media query for mobile sources when mobile crop is provided
+                        var mediaAttribute = source.IsMobileSource ? " media=\"(max-width: 767px)\"" : null;
                         var sourceMimeType = SlimsyService.MimeType(source.Format ?? "jpg");
                         if (Loading == Loading.Lazy)
                         {
                             if (RenderLQIP)
                             {
                                 htmlContent += Environment.NewLine +
-                                               $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{sourceMimeType}"" data-sizes=""{sizes}"" />" +
+                                               $@"<source data-srcset=""{source.Source}"" srcset=""{source.Lqip}"" type=""{sourceMimeType}""{mediaAttribute} data-sizes=""{sizes}"" />" +
                                                Environment.NewLine;
                             }
                             else
                             {
                                 htmlContent += Environment.NewLine +
-                                               $@"<source data-srcset=""{source.Source}"" type=""{sourceMimeType}"" data-sizes=""{sizes}"" />" +
+                                               $@"<source data-srcset=""{source.Source}"" type=""{sourceMimeType}""{mediaAttribute} data-sizes=""{sizes}"" />" +
                                                Environment.NewLine;
                             }
                         }
                         else
                         {
                             htmlContent += Environment.NewLine +
-                                           $@"<source srcset=""{source.Source}"" type=""{sourceMimeType}"" sizes=""{sizes}"" />" +
+                                           $@"<source srcset=""{source.Source}"" type=""{sourceMimeType}""{mediaAttribute} sizes=""{sizes}"" />" +
                                            Environment.NewLine;
                         }
                     }

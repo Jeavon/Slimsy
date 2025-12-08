@@ -291,10 +291,13 @@ namespace Slimsy.Services
         /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
+        /// <param name="startingWidth"></param>
+        /// <param name="maxWidth"></param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, string cropAlias, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "", int startingWidth = 0, int maxWidth = 0)
         {
-            var w = this.WidthStep();
+            var w = startingWidth > 0 ? startingWidth : this.WidthStep();
+            maxWidth = maxWidth > 0 ? maxWidth : this.MaxWidth(mediaWithCrops.Content, ImageCropMode.Crop);
             var q = quality == null ? this.DefaultQuality() : quality;
 
             var outputStringBuilder = new StringBuilder();
@@ -311,7 +314,7 @@ namespace Slimsy.Services
             if (crop != null)
             {
                 var heightRatio = (decimal)crop.Height / crop.Width;
-                while (w <= this.MaxWidth(mediaWithCrops.Content, ImageCropMode.Crop))
+                while (w <= maxWidth)
                 {
                     var h = (int)Math.Round(w * heightRatio);
                     outputStringBuilder.Append(
