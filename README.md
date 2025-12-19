@@ -3,7 +3,7 @@ Slimsy
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
 # Slimsy v7 is made for Umbraco v17!
-# Slimsy v6 is made for Umbraco v14, v15 & v16!
+# Slimsy v6 is made for Umbraco v14, v15 & v16 (it does also work with v17)!
 # Slimsy v5 is made for Umbraco v13.2 < v14!
 # Slimsy v4 is made for Umbraco v10, v11 & v12!
 
@@ -301,4 +301,4 @@ Many thanks to Douglas Robar for naming Slimsy.
 
 # Change log
 
-[Here](https://github.com/Jeavon/Slimsy/blob/dev-v6/Changelog.md)
+[Here](https://github.com/Jeavon/Slimsy/blob/dev-v7/Changelog.md)
