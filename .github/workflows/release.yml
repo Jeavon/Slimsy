@@ -2,11 +2,17 @@ name: Build and Package
 
 env:
   PATH_TO_EXTENSION: "src/Slimsy"
-  PATH_TO_TESTSITE: "src/Slimsy.TestSite"
+
   DOTNET_VERSION: '10'
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_to_nuget:
+        description: 'Publish to nuget.org'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   setup:
@@ -93,7 +99,7 @@ jobs:
         sed -i "s|<FileVersion>.*</FileVersion>|<FileVersion>$FILE_VERSION</FileVersion>|" "$CSPROJ_FILE"
         sed -i "s|<InformationalVersion>.*</InformationalVersion>|<InformationalVersion>$SEMVER</InformationalVersion>|" "$CSPROJ_FILE"   
 
-    - name: Build sln
+    - name: Build slnx
       run: dotnet build ${{ github.workspace }}/*.slnx -c Release        
 
     - name: Pack NuGet Package
@@ -107,4 +113,43 @@ jobs:
     - name: Push NuGet Package
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
       run: dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg"  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate
+    
+    - name: Push MyGet Package
+      if: needs.setup.outputs.new_release_published == 'true'
+      env:
+        MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
+      run: |
+        if [ -n "$MYGET_API_KEY" ]; then
+          dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg" --api-key $MYGET_API_KEY --source https://www.myget.org/F/umbraco-packages/api/v2/package --skip-duplicate
+        else
+          echo "MYGET_API_KEY is not set, skipping MyGet push"
+        fi
+      
+    - name: Push to Nuget.org
+      if: ${{ needs.setup.outputs.new_release_published == 'true' && github.event.inputs.publish_to_nuget == 'true' && startsWith(github.ref, 'refs/heads/main-') && !contains(needs.setup.outputs.semver, '-') }}
+      run: dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    
+    - name: Merge main branch to dev
+      if: ${{ needs.setup.outputs.new_release_published == 'true' && startsWith(github.ref, 'refs/heads/main-') }}
+      run: |
+        # Extract version from main branch (e.g., main-v7 -> v7)
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        VERSION_SUFFIX=$(echo $CURRENT_BRANCH | sed 's/main-//')
+        DEV_BRANCH="dev-$VERSION_SUFFIX"
+        
+        # Configure git
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # Fetch the dev branch
+        git fetch origin $DEV_BRANCH
+        
+        # Checkout dev branch
+        git checkout $DEV_BRANCH
+        
+        # Merge main branch into dev
+        git merge --no-ff origin/$CURRENT_BRANCH -m "chore: merge $CURRENT_BRANCH into $DEV_BRANCH after release ${{ needs.setup.outputs.semver }}"
+        
+        # Push changes
+        git push origin $DEV_BRANCH
       
