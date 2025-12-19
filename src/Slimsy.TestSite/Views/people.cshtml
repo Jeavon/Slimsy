@@ -313,6 +313,29 @@
             }
         </div>
 
+        <h2>Local crop with seperate specified mobile crop (Reduce screen width to see)</h2>
+        <div class="employee-grid">
+            @foreach (Person person in Model.Children<Person>().Reverse())
+            {
+                <div class="employee-grid__item">
+                    <div class="employee-grid__item__image">
+                        <div class="employee-grid__item__image">
+                            <slimsy-picture media-item="@person.Photo"
+                                            width="323"
+                                            height="300"
+                                            css-class="myClass"
+                                            render-lqip="true"
+                                            crop-alias="GlobalSquare"
+                                            mobile-crop-alias="GlobalSquareMobile">
+                            </slimsy-picture>
+                        </div>
+                    </div>
+                    @{
+                        ContactDetails(person);
+                    }
+                </div>
+            }
+        </div>
     </div>
 
 </section>
