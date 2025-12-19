@@ -207,7 +207,7 @@ The `<slimsy-picture>` tag helper supports separate mobile crops for responsive 
 2. Generate desktop sources for larger viewports using the main crop
 3. Automatically apply media queries to serve the appropriate source based on viewport width
 
-The mobile width threshold can be configured in `appsettings.json`:
+The mobile width threshold can be configured in `appsettings.json` (<em>it will default to 720 if not specified in the settings</em>):
 
 ```json
 "Slimsy": {
