@@ -7,7 +7,7 @@ Slimsy
 # Slimsy v5 is made for Umbraco v13.2 < v14!
 # Slimsy v4 is made for Umbraco v10, v11 & v12!
 
-![](https://raw.githubusercontent.com/Jeavon/Slimsy/main-v4/Slimsy.png)
+![](https://raw.githubusercontent.com/Jeavon/Slimsy/main-v7/Slimsy.png)
 
 __Release Downloads__
 
@@ -16,8 +16,6 @@ NuGet Package: [![NuGet release](https://img.shields.io/nuget/vpre/Our.Umbraco.S
 __Prerelease Downloads__
 
 NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpre/Our.Umbraco.Slimsy.svg)](https://www.myget.org/feed/umbraco-packages/package/nuget/Our.Umbraco.Slimsy)
-
-[![Build status](https://ci.appveyor.com/api/projects/status/a7rxrfkxc5dx8cuo?svg=true)](https://ci.appveyor.com/project/CrumpledDog/slimsy)
 
 ## Installation
 
