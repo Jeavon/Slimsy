@@ -44,3 +44,4 @@ Slimsy Change log
 - 6.0.2 - fix for TipTap editor
 - 6.0.3 - fix for boxpad crop mode and BackgroundColor
 - 6.0.4 - encode alt text attributes to prevent broken markup
+- 7.0.0 - min Umbraco verison v17.0.1 and remove legacy RenderWebPAlternative
