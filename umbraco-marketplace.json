@@ -1,6 +1,6 @@
 {
   "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
-  "AlternatePackageNames": [ "Slimsy" ],
+  "Title":  "Slimsy",
   "AuthorDetails": {
     "Name": "Jeavon Leopold",
     "Description": "Umbraco MVP, CMS and documentation contributor",
@@ -14,6 +14,10 @@
       {
         "Name": "William Phillips",
         "Url": "https://github.com/Will-i-am-"
+      },
+      {
+        "Name": "Imran Haider",
+        "Url": "https://github.com/imranhaidercogworks"
       }
     ]
   },

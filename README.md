@@ -2,7 +2,8 @@ Slimsy
 ============
 **Effortless Responsive & Lazy Images with LazySizes and Umbraco**
 
-# Slimsy v6 is made for Umbraco v14, v15 & v16!
+# Slimsy v7 is made for Umbraco v17!
+# Slimsy v6 is made for Umbraco v14, v15 & v16 (it does also work with v17)!
 # Slimsy v5 is made for Umbraco v13.2 < v14!
 # Slimsy v4 is made for Umbraco v10, v11 & v12!
 
@@ -159,7 +160,7 @@ or edit `Startup.cs` to modify SlimsyOptions
 })
 ```
 
-TagHelper also has some options in `appsettings.json` (available in v4.1+)
+TagHelper also has some options in `appsettings.json`
 
 - SingleSources - allows specific file extensions to only render a single source
 - DefaultPictureSources - allows multiple picture sources to be defined, example below is for both avif and webp formats
@@ -195,7 +196,41 @@ TagHelper has new parameters
 - `fetch-priority` which renders on the `img` tag, for example `fetchpriority="high"`
 - `image-crop-mode` specifies a crop mode such as "Pad"
 - `image-crop-anchor` used with crop-mode to set where cropping should be focussed
-- `loading` (available v4.2+) you can set to `Eager` to not lazy load, useful for optimzing LCP on the first image rendered on the page
+- `loading` you can set to `Eager` to not lazy load, useful for optimzing LCP on the first image rendered on the page
+- `mobile-crop-alias` allows you to specify a separate crop to use for mobile/smaller viewports
+
+## Mobile Crop Support
+
+The `<slimsy-picture>` tag helper supports separate mobile crops for responsive images. When you specify both `crop-alias` and `mobile-crop-alias`, Slimsy will:
+
+1. Generate mobile-optimized sources for smaller viewports using the mobile crop
+2. Generate desktop sources for larger viewports using the main crop
+3. Automatically apply media queries to serve the appropriate source based on viewport width
+
+The mobile width threshold can be configured in `appsettings.json` (<em>it will default to 720 if not specified in the settings</em>):
+
+```json
+"Slimsy": {
+  "MobileWidth": 720
+}
+```
+
+### Example Usage
+
+```HTML+Razor
+<slimsy-picture 
+    media-item="@Model.HeroImage" 
+    crop-alias="desktop" 
+    mobile-crop-alias="mobile" 
+    css-class="hero-image" 
+    render-lqip="true">
+</slimsy-picture>
+```
+
+This will generate:
+- Mobile sources using the "mobile" crop for viewports up to the configured mobile width (default 720px)
+- Desktop sources using the "desktop" crop for larger viewports
+- Appropriate media queries to serve the correct image based on screen size
 
 # How to use AVIF format in v4.1+
 
@@ -266,4 +301,4 @@ Many thanks to Douglas Robar for naming Slimsy.
 
 # Change log
 
-[Here](https://github.com/Jeavon/Slimsy/blob/dev-v6/Changelog.md)
+[Here](https://github.com/Jeavon/Slimsy/blob/dev-v7/Changelog.md)
