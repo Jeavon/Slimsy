@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Build/">
+    <File Path="appveyor.yml" />
+    <File Path="build/appveyor-semver.ps1" />
+    <File Path="build/check-release-version.ps1" />
+    <File Path="build/patch-package-manifest.js" />
+    <File Path="NuGet.config" />
+  </Folder>
+  <Folder Name="/Docs/">
+    <File Path="Changelog.md" />
+    <File Path="README.md" />
+    <File Path="umbraco-marketplace.json" />
+  </Folder>
+  <Project Path="src/Slimsy.TestSite/Slimsy.TestSite.csproj" />
+  <Project Path="src/Slimsy/Slimsy.csproj" />
+</Solution>
