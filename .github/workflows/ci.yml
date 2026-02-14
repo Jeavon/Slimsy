@@ -7,7 +7,7 @@ env:
 
 on:
   push:
-    branches: [ "dev-v7" ]
+    branches: [ "dev-v7", "main-v7" ]
   pull_request:
     branches:
     - dev-v7
