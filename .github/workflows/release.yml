@@ -101,7 +101,7 @@ jobs:
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: .github/scripts/create-release-notes.sh "${{ needs.setup.outputs.semver }}" "Our.Umbraco.Slimsy" "https://nuget.pkg.github.com/Jeavon/index.json"
+      run: .github/scripts/create-release-notes.sh "${{ needs.setup.outputs.semver }}" "Our.Umbraco.Slimsy" "https://nuget.pkg.github.com/Jeavon/index.json" "https://www.myget.org/F/umbraco-packages/api/v3/index.json"
     
     - name: Add GitHub Packages Source
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
