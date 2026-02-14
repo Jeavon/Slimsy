@@ -1,8 +1,8 @@
 {
   "branches": [
-    "main-v7",
+    "main-v5",
     {
-      "name": "dev-v7",
+      "name": "dev-v5",
       "prerelease": "alpha"
     }
   ],
