@@ -2,8 +2,7 @@ name: Build and Package
 
 env:
   PATH_TO_EXTENSION: "src/Slimsy"
-
-  DOTNET_VERSION: '10'
+  DOTNET_VERSION: '8'
 
 on:
   workflow_dispatch:
@@ -122,4 +121,3 @@ jobs:
     - name: Merge main branch to dev
       if: ${{ needs.setup.outputs.new_release_published == 'true' && startsWith(github.ref, 'refs/heads/main-') }}
       run: .github/scripts/merge-to-develop.sh "${{ needs.setup.outputs.semver }}"
-      
