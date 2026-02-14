@@ -77,7 +77,9 @@ namespace Slimsy
             {
                 var umbracoExtension = MediaItem.Value<string>(Umbraco.Cms.Core.Constants.Conventions.Media.Extension);
 
-                if (_slimsyOptions.TagHelper.SingleSources != null && _slimsyOptions.TagHelper.SingleSources.Contains(umbracoExtension))
+                var isSingleSource = _slimsyOptions.TagHelper.SingleSources != null && umbracoExtension != null && _slimsyOptions.TagHelper.SingleSources.Contains(umbracoExtension);
+
+                if (isSingleSource)
                 {
                     // empty the sources as this should render a single source
                     pictureSources = new List<PictureSource>();
@@ -133,7 +135,7 @@ namespace Slimsy
                             // setting starting width for desktop sources. This will be adjusted if mobile crop is provided
                             var startingWidth = 0;
 
-                            if (mobileCrop != null)
+                            if (mobileCrop != null && !isSingleSource)
                             {
                                 // Generate mobile sources first and set IsMobileSource flag to true
                                 foreach (var source in pictureSources)
