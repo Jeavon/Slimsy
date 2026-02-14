@@ -22,6 +22,11 @@
 		    <PackageReadmeFile>README.md</PackageReadmeFile>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <StaticWebAssetBasePath>App_Plugins/Slimsy</StaticWebAssetBasePath>
+        <!-- Symbol file configuration -->
+        <DebugType>portable</DebugType>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <!-- Enable deterministic builds in CI -->
         <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
     </PropertyGroup>
 
