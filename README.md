@@ -17,6 +17,8 @@ __Prerelease Downloads__
 
 NuGet Package: [![MyGet build](https://img.shields.io/myget/umbraco-packages/vpre/Our.Umbraco.Slimsy.svg)](https://www.myget.org/feed/umbraco-packages/package/nuget/Our.Umbraco.Slimsy)
 
+[![CI Build](https://github.com/Jeavon/Slimsy/actions/workflows/ci.yml/badge.svg?branch=dev-v7)](https://github.com/Jeavon/Slimsy/actions/workflows/ci.yml)
+
 ## Installation
 
 ### 1. Install from NuGet
