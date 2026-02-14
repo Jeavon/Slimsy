@@ -108,4 +108,4 @@ jobs:
       run: dotnet tool install -g dotnet-validate --prerelease
     
     - name: Validate NuGet Package
-      run: dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg
+      run: dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.${{ needs.setup.outputs.semver }}.nupkg
