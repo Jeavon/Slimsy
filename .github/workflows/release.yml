@@ -95,9 +95,7 @@ jobs:
     
     - name: Validate NuGet Package
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
-      run: |
-        PACKAGE_PATH=$(ls ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg)
-        dotnet validate package local "$PACKAGE_PATH"
+      run: dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.${{ needs.setup.outputs.semver }}.nupkg
     
     - name: Create GitHub Release
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
