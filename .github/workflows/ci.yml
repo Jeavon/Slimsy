@@ -1,5 +1,9 @@
 name: Verify Build
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PATH_TO_EXTENSION: "src/Slimsy"
   DOTNET_VERSION: '8'
@@ -94,14 +98,15 @@ jobs:
           nuget-cache-${{ runner.os }}-nuget-
 
     - name: Update Version Files
+      id: update-version
       run: .github/scripts/update-version-files.sh "${{ needs.setup.outputs.semver }}" "${{ env.PATH_TO_EXTENSION }}"
 
     - name: Build slnx
-      run: dotnet build ${{ github.workspace }}/*.slnx -c Release
+      run: dotnet build ${{ github.workspace }}/*.slnx -c Release /maxcpucount:1
 
     - name: Pack NuGet Package
       working-directory: ${{ env.PATH_TO_EXTENSION }}
-      run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }}
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }} /p:FileVersion=${{ steps.update-version.outputs.file_version }}
     
     - name: Install Package Validation Tool
       run: dotnet tool install -g dotnet-validate --prerelease
