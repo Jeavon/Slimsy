@@ -2,10 +2,10 @@
 set -e
 
 # Update Version Files Script
-# Updates version numbers in umbraco-package.json and .csproj files
+# Updates version numbers in umbraco-package.json, package.manifest, and related files
 #
 # Usage: ./update-version-files.sh <semver> <path_to_extension>
-# Example: ./update-version-files.sh "7.0.0-alpha.1" "src/Slimsy"
+# Example: ./update-version-files.sh "1.0.0-alpha.1" "src/Extension"
 
 SEMVER="$1"
 PATH_TO_EXTENSION="$2"
@@ -18,11 +18,19 @@ fi
 
 echo "Updating version to $SEMVER in $PATH_TO_EXTENSION"
 
-# Update umbraco-package.json
-jq '.version = "'"$SEMVER"'"' "$PATH_TO_EXTENSION/wwwroot/umbraco-package.json" > temp.json && mv temp.json "$PATH_TO_EXTENSION/wwwroot/umbraco-package.json"
-echo "Updated version in $PATH_TO_EXTENSION/wwwroot/umbraco-package.json to $SEMVER"
+# Update umbraco-package.json if it exists
+if [ -f "$PATH_TO_EXTENSION/wwwroot/umbraco-package.json" ]; then
+  jq '.version = "'"$SEMVER"'"' "$PATH_TO_EXTENSION/wwwroot/umbraco-package.json" > temp.json && mv temp.json "$PATH_TO_EXTENSION/wwwroot/umbraco-package.json"
+  echo "Updated version in $PATH_TO_EXTENSION/wwwroot/umbraco-package.json to $SEMVER"
+fi
 
-# Convert semantic version to numeric file version (e.g., 7.0.0-alpha.1 -> 7.0.0.1)
+# Update package.manifest if it exists
+if [ -f "$PATH_TO_EXTENSION/wwwroot/package.manifest" ]; then
+  jq '.version = "'"$SEMVER"'"' "$PATH_TO_EXTENSION/wwwroot/package.manifest" > temp.json && mv temp.json "$PATH_TO_EXTENSION/wwwroot/package.manifest"
+  echo "Updated version in $PATH_TO_EXTENSION/wwwroot/package.manifest to $SEMVER"
+fi
+
+# Convert semantic version to numeric file version (e.g., 1.0.0-alpha.1 -> 1.0.0.1)
 if [[ $SEMVER == *"-"* ]]; then
   BASE_VERSION=$(echo "$SEMVER" | cut -d'-' -f1)
   PRERELEASE=$(echo "$SEMVER" | cut -d'-' -f2)
@@ -30,44 +38,25 @@ if [[ $SEMVER == *"-"* ]]; then
   PRERELEASE_NUM=$(echo "$PRERELEASE" | grep -o '[0-9]\+$' || echo "0")
   FILE_VERSION="${BASE_VERSION}.${PRERELEASE_NUM}"
 else
-  FILE_VERSION="${SEMVER}.0"
+  # Stable release: Find highest pre-release number for this version and add 1
+  BASE_VERSION="$SEMVER"
+  # Get all tags matching this version with pre-release suffix
+  MAX_PRERELEASE=$(git tag -l "v${BASE_VERSION}-*" | grep -o '[0-9]\+$' | sort -n | tail -1)
+  if [ -z "$MAX_PRERELEASE" ]; then
+    # No pre-releases found, use 1
+    FILE_VERSION="${BASE_VERSION}.1"
+  else
+    # Use max pre-release number + 1
+    NEXT_NUM=$((MAX_PRERELEASE + 1))
+    FILE_VERSION="${BASE_VERSION}.${NEXT_NUM}"
+  fi
 fi
 
-# Function to update file version in .csproj files
-update_file_version() {
-  local CSPROJ_PATH=$1
-  local FILE_VERSION=$2
-  local INFORMATIONAL_VERSION=$3
-  
-  if [ ! -f "$CSPROJ_PATH" ]; then
-    echo "Warning: $CSPROJ_PATH not found"
-    return
-  fi
-  
-  # Check if FileVersion element exists
-  if grep -q "<FileVersion>" "$CSPROJ_PATH"; then
-    # Update existing FileVersion
-    sed -i "s|<FileVersion>.*</FileVersion>|<FileVersion>$FILE_VERSION</FileVersion>|" "$CSPROJ_PATH"
-    echo "Updated FileVersion in $CSPROJ_PATH to $FILE_VERSION"
-  else
-    # Add FileVersion to the first PropertyGroup
-    sed -i "0,/<PropertyGroup>/s|<PropertyGroup>|<PropertyGroup>\n\t\t<FileVersion>$FILE_VERSION</FileVersion>|" "$CSPROJ_PATH"
-    echo "Added FileVersion to $CSPROJ_PATH with value $FILE_VERSION"
-  fi
-  
-  # Check if InformationalVersion element exists
-  if grep -q "<InformationalVersion>" "$CSPROJ_PATH"; then
-    # Update existing InformationalVersion
-    sed -i "s|<InformationalVersion>.*</InformationalVersion>|<InformationalVersion>$INFORMATIONAL_VERSION</InformationalVersion>|" "$CSPROJ_PATH"
-    echo "Updated InformationalVersion in $CSPROJ_PATH to $INFORMATIONAL_VERSION"
-  else
-    # Add InformationalVersion to the first PropertyGroup
-    sed -i "0,/<PropertyGroup>/s|<PropertyGroup>|<PropertyGroup>\n\t\t<InformationalVersion>$INFORMATIONAL_VERSION</InformationalVersion>|" "$CSPROJ_PATH"
-    echo "Added InformationalVersion to $CSPROJ_PATH with value $INFORMATIONAL_VERSION"
-  fi
-}
-
-# Update Slimsy project file
-update_file_version "$PATH_TO_EXTENSION/Slimsy.csproj" "$FILE_VERSION" "$SEMVER"
-
 echo "Version update completed successfully"
+echo "SEMVER=$SEMVER"
+echo "FILE_VERSION=$FILE_VERSION"
+
+# Output for GitHub Actions
+if [ -n "$GITHUB_OUTPUT" ]; then
+  echo "file_version=$FILE_VERSION" >> "$GITHUB_OUTPUT"
+fi
