@@ -48,6 +48,14 @@ jobs:
             @semantic-release/github
             conventional-changelog-conventionalcommits
 
+      - name: Check Release
+        run: |
+          if [ -z "${{ steps.semantic.outputs.new_release_version }}" ]; then
+            echo "::error::No release version generated. Ensure there are conventional commits since the last release."
+            exit 1
+          fi
+          echo "Release version: ${{ steps.semantic.outputs.new_release_version }}"
+
       - name: Echo the version
         run: |
           echo "New release version: '${{ steps.semantic.outputs.new_release_version }}'"
@@ -84,14 +92,17 @@ jobs:
 
     - name: Update Version Files
       id: update-version
-      run: .github/scripts/update-version-files.sh "${{ needs.setup.outputs.semver }}" "${{ env.PATH_TO_EXTENSION }}"
+      uses: CrumpledDog/Crumpled.Umbraco.Package.Actions/update-version-files@main
+      with:
+        semver: ${{ needs.setup.outputs.semver }}
+        path-to-extension: ${{ env.PATH_TO_EXTENSION }}
 
     - name: Build slnx
       run: dotnet build ${{ github.workspace }}/*.slnx -c Release /maxcpucount:1
 
     - name: Pack NuGet Package
       working-directory: ${{ env.PATH_TO_EXTENSION }}
-      run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }} /p:FileVersion=${{ steps.update-version.outputs.file_version }}
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }} /p:FileVersion=${{ steps.update-version.outputs.file-version }}
     
     - name: Install Package Validation Tool
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
@@ -103,9 +114,18 @@ jobs:
     
     - name: Create GitHub Release
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: .github/scripts/create-release-notes.sh "${{ needs.setup.outputs.semver }}" "Our.Umbraco.Slimsy" "https://nuget.pkg.github.com/Jeavon/index.json" "https://www.myget.org/F/umbraco-packages/api/v3/index.json"
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ needs.setup.outputs.semver }}
+        name: v${{ needs.setup.outputs.semver }}
+        generate_release_notes: true
+        prerelease: ${{ contains(needs.setup.outputs.semver, '-') }}
+        body: |
+          ## Installation
+          
+          ```bash
+          ${{ contains(needs.setup.outputs.semver, '-') && format('dotnet add package Our.Umbraco.Slimsy --version {0} --source https://nuget.pkg.github.com/Jeavon/index.json', needs.setup.outputs.semver) || format('dotnet add package Our.Umbraco.Slimsy --version {0}', needs.setup.outputs.semver) }}
+          ```
     
     - name: Add GitHub Packages Source
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
