@@ -155,13 +155,15 @@ jobs:
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
       run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Jeavon/index.json"
 
-    - name: Push NuGet Package
+    - name: Push GitHub Package
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
       run: dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg"  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate
     
     - name: Push MyGet Package
       if: needs.setup.outputs.new_release_published == 'true' && env.MYGET_API_KEY != ''
-      run: dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/api/v2/package --skip-duplicate
+      run: |
+        dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/api/v2/package --skip-duplicate
+        dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.snupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/symbols/api/v2/package --skip-duplicate
       
     - name: Push to Nuget.org
       if: ${{ needs.setup.outputs.new_release_published == 'true' && github.event.inputs.publish_to_nuget == 'true' && startsWith(github.ref, 'refs/heads/main-') && !contains(needs.setup.outputs.semver, '-') }}
