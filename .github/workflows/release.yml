@@ -112,6 +112,35 @@ jobs:
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
       run: dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.${{ needs.setup.outputs.semver }}.nupkg
     
+    - name: Generate Release Notes Body
+      if: ${{ needs.setup.outputs.new_release_published == 'true' }}
+      run: |
+        if [[ "${{ needs.setup.outputs.semver }}" == *"-"* ]]; then
+          cat << 'EOF' > release_body.md
+        ## Installation
+        
+        ### From MyGet (pre-release)
+        
+        ```bash
+        dotnet add package Our.Umbraco.Slimsy --version ${{ needs.setup.outputs.semver }} --source https://www.myget.org/F/umbraco-packages/api/v3/index.json
+        ```
+        
+        ### From GitHub Packages (pre-release)
+        
+        ```bash
+        dotnet add package Our.Umbraco.Slimsy --version ${{ needs.setup.outputs.semver }} --source https://nuget.pkg.github.com/Jeavon/index.json
+        ```
+        EOF
+        else
+          cat << 'EOF' > release_body.md
+        ## Installation
+        
+        ```bash
+        dotnet add package Our.Umbraco.Slimsy --version ${{ needs.setup.outputs.semver }}
+        ```
+        EOF
+        fi
+    
     - name: Create GitHub Release
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
       uses: softprops/action-gh-release@v2
@@ -120,12 +149,7 @@ jobs:
         name: v${{ needs.setup.outputs.semver }}
         generate_release_notes: true
         prerelease: ${{ contains(needs.setup.outputs.semver, '-') }}
-        body: |
-          ## Installation
-          
-          ```bash
-          ${{ contains(needs.setup.outputs.semver, '-') && format('dotnet add package Our.Umbraco.Slimsy --version {0} --source https://nuget.pkg.github.com/Jeavon/index.json', needs.setup.outputs.semver) || format('dotnet add package Our.Umbraco.Slimsy --version {0}', needs.setup.outputs.semver) }}
-          ```
+        body_path: release_body.md
     
     - name: Add GitHub Packages Source
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
