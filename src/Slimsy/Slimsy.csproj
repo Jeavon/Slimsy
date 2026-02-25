@@ -1,30 +1,40 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
         <ContentTargetFolders>.</ContentTargetFolders>
-        <Product>Slimsy</Product>
+        <RootNamespace>Slimsy</RootNamespace>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <StaticWebAssetBasePath>App_Plugins/Slimsy</StaticWebAssetBasePath>
+        <!-- Symbol file configuration -->
+        <DebugType>portable</DebugType>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <!-- Enable deterministic builds in CI -->
+        <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+        <!-- SourceLink configuration -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <PackageId>Our.Umbraco.Slimsy</PackageId>
+        <Product>Slimsy</Product>
         <Title>Slimsy</Title>
         <Description>Effortless Responsive Images with Umbraco using LazySizes.js</Description>
         <PackageTags>umbraco plugin package images responsive umbraco-marketplace</PackageTags>
-        <RootNamespace>Slimsy</RootNamespace>
-		    <Version>4.0.0-alpha.0</Version>
-		    <AssemblyVersion>4.0.0.0</AssemblyVersion>
-        <FileVersion>4.0.0.0</FileVersion>
-        <InformationalVersion>4.0.0.0-alpha.0</InformationalVersion>
-		    <PackageIcon>slimsy.png</PackageIcon>
-		    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-		    <Nullable>enable</Nullable>
-		    <PackageProjectUrl>https://github.com/Jeavon/Slimsy</PackageProjectUrl>
-		    <Authors>Jeavon Leopold, Marc Stöcker, William Phillips</Authors>
-		    <RepositoryUrl>https://github.com/Jeavon/Slimsy</RepositoryUrl>
-		    <PackageReadmeFile>README.md</PackageReadmeFile>
-        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-        <StaticWebAssetBasePath>App_Plugins/Slimsy</StaticWebAssetBasePath>
+        <Authors>Jeavon Leopold, Marc Stöcker, William Phillips</Authors>
+        <RepositoryUrl>https://github.com/Jeavon/Slimsy</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Jeavon/Slimsy</PackageProjectUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>slimsy.png</PackageIcon>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
         <PackageReference Include="Umbraco.Cms.Web.Common" Version="13.2.0" />
     </ItemGroup>
 
