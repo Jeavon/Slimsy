@@ -39,9 +39,10 @@ Slimsy Change log
 - 5.1.2 & 6.0.0-beta2 Fix for ConvertImgToResponsive when parsing dimensions
 - 5.1.3 - fix for boxpad crop mode and BackgroundColor
 - 5.1.4 - encode alt text attributes to prevent broken markup
+- 5.2.0 - Mobile crop support - thanks to @imranhaidercogworks
 - 6.0.0 - Umbraco v14 compatability
 - 6.0.1 - fix for v14 package version info
 - 6.0.2 - fix for TipTap editor
 - 6.0.3 - fix for boxpad crop mode and BackgroundColor
 - 6.0.4 - encode alt text attributes to prevent broken markup
-- 7.0.0 - min Umbraco verison v17.0.1 and remove legacy RenderWebPAlternative
+- 7.0.0 - Mobile crop support - thanks to @imranhaidercogworks, min Umbraco verison v17.0.1 and remove legacy RenderWebPAlternative

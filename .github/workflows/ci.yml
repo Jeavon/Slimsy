@@ -1,5 +1,9 @@
 name: Verify Build
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PATH_TO_EXTENSION: "src/Slimsy"
   PATH_TO_TESTSITE: "src/Slimsy.TestSite"
@@ -7,7 +11,7 @@ env:
 
 on:
   push:
-    branches: [ "dev-v7" ]
+    branches: [ "dev-v7", "main-v7" ]
   pull_request:
     branches:
     - dev-v7
@@ -95,29 +99,21 @@ jobs:
           nuget-cache-${{ runner.os }}-nuget-
 
     - name: Update Version Files
-      working-directory: ${{ env.PATH_TO_EXTENSION }}
-      run: |
-        jq '.version = "${{ needs.setup.outputs.semver }}"' wwwroot/umbraco-package.json > temp.json && mv temp.json wwwroot/umbraco-package.json
-
-        # Convert semantic version to numeric file version (e.g., 2.0.0-alpha.1 -> 2.0.0.1)
-        SEMVER="${{ needs.setup.outputs.semver }}"
-        if [[ $SEMVER == *"-"* ]]; then
-          BASE_VERSION=$(echo $SEMVER | cut -d'-' -f1)
-          PRERELEASE=$(echo $SEMVER | cut -d'-' -f2)
-          # Extract number from prerelease (e.g., alpha.1 -> 1, beta.2 -> 2)
-          PRERELEASE_NUM=$(echo $PRERELEASE | grep -o '[0-9]\+$' || echo "0")
-          FILE_VERSION="${BASE_VERSION}.${PRERELEASE_NUM}"
-        else
-          FILE_VERSION="${SEMVER}.0"
-        fi
-        
-        # Find and update csproj file
-        CSPROJ_FILE=$(find . -name "*.csproj" -not -path "*/bin/*" -not -path "*/obj/*" | head -1)
-        sed -i "s|<FileVersion>\$(FileVersionNumber)</FileVersion>|<FileVersion>$FILE_VERSION</FileVersion>|" "$CSPROJ_FILE"
+      id: update-version
+      uses: CrumpledDog/Crumpled.Umbraco.Package.Actions/update-version-files@main
+      with:
+        semver: ${{ needs.setup.outputs.semver }}
+        path-to-extension: ${{ env.PATH_TO_EXTENSION }}
 
     - name: Build slnx
-      run: dotnet build ${{ github.workspace }}/*.slnx -c Release        
+      run: dotnet build ${{ github.workspace }}/*.slnx -c Release /maxcpucount:1
 
     - name: Pack NuGet Package
       working-directory: ${{ env.PATH_TO_EXTENSION }}
-      run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }}
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }} /p:FileVersion=${{ steps.update-version.outputs.file-version }}
+    
+    - name: Install Package Validation Tool
+      run: dotnet tool install -g dotnet-validate --prerelease
+    
+    - name: Validate NuGet Package
+      run: dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg

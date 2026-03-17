@@ -4,7 +4,9 @@
         <SlimsyContentFilesPath>$(MSBuildThisFileDirectory)..\Scripts\**\*.*</SlimsyContentFilesPath>
     </PropertyGroup>
 
-    <Target Name="CopySlimsyAssets" BeforeTargets="Build">
+    <Target Name="CopySlimsyAssets" 
+            BeforeTargets="Build" 
+            Condition="'$(UsingMicrosoftNETSdkWeb)' == 'true' OR '$(IsWebProject)' == 'true'">
         <ItemGroup>
             <SlimsyContentFiles Include="$(SlimsyContentFilesPath)" />
         </ItemGroup>
