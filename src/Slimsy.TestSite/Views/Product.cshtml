@@ -1,8 +1,8 @@
-﻿@using Umbraco.Cms.Web.Common.PublishedModels
+@using Umbraco.Cms.Web.Common.PublishedModels
 @using Umbraco.Extensions
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<Product>
 @{
-    Layout = "master.cshtml";
+    Layout = "_Master.cshtml";
     var defaultCurrency = Model.Parent<Products>().DefaultCurrency;
 }
 <!-- for the section we want to show the shop header -->

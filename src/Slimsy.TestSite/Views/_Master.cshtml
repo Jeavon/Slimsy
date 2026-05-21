@@ -1,0 +1,73 @@
+﻿@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+    Layout = null;
+    // Get basic design settings from the homepage
+    var home = Model.Root<Home>();
+}
+
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>@Model.Name - @home.Sitename</title>
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link rel="stylesheet" href="@Url.Content("~/css/umbraco-starterkit-style.css")"/>
+        @await RenderSectionAsync("Header", required: false)
+    </head>
+
+    <body class="frontpage theme-font-@(home.Font) theme-color-@(home.ColorTheme)">
+        <div class="mobile-nav">
+            <nav class="nav-bar">
+                <partial name="Partials/Navigation/TopNavigation"/>
+            </nav>
+        </div>
+
+        <header class="header">
+
+            <div class="logo">
+                @if (home.SiteLogo != null && !string.IsNullOrEmpty(home.SiteLogo.Url()))
+                {
+                    <div class="nav-link--home">
+                        <img class="logo-image" src="@home.SiteLogo.Url()" alt="@home.Sitename">
+                    </div>
+                }
+                else
+                {
+                    <a class="nav-link nav-link--home nav-link--home__text logo-text" href="/">@home.Sitename</a>
+                }
+            </div>
+
+            <nav class="nav-bar top-nav">
+                <partial name="Partials/Navigation/TopNavigation"/>
+            </nav>
+
+            <div class="mobile-nav-handler">
+                <div class="hamburger lines" id="toggle-nav">
+                    <span></span>
+                </div>
+            </div>
+
+        </header>
+
+        <main>
+            @RenderBody()
+        </main>
+
+        <footer class="section--themed">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 ta-center">
+                        @home.FooterAddress
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="@Url.Content("~/scripts/umbraco-starterkit-app.js")"></script>
+    </body>
+</html>

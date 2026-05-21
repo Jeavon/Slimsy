@@ -1,11 +1,10 @@
 ﻿@using ContentModels = Umbraco.Cms.Web.Common.PublishedModels
-
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.Blog>
-
 @{
-    Layout = "master.cshtml";
+    Layout = "_Master.cshtml";
 }
-@Html.Partial("~/Views/Partials/SectionHeader.cshtml")
+
+<partial name="Partials/SectionHeader"/>
 
 <section class="section">
 

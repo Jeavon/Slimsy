@@ -1828,10 +1828,6 @@ p.testimonial-text {
     background-position: 50%
 }
 
-  .employee-grid__item__image img {
-    width: 100%;
-  }
-
 .employee-grid__item__details {
     padding: 30px;
     background: #f4f4f0
@@ -1992,9 +1988,7 @@ article {
     }
 
     article img {
-        max-width: 100%;
-        width:100%;
-        height:auto
+        max-width: 100%
     }
 
     article iframe, article img {
@@ -2411,7 +2405,7 @@ article {
     }
 }
 
-.compat-msg {    
+.compat-msg {
     color: #000;
     display: block;
     background: #f4f4f0;
