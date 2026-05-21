@@ -412,7 +412,7 @@ namespace Slimsy.Services
             var maxWidth = this._slimsyOptions.MaxWidth;
 
             // if publishedContent is a media item we can see if we can get the source image width & height
-            if (publishedContent.ItemType == PublishedItemType.Media && imageCropMode != ImageCropMode.BoxPad)
+            if (publishedContent.ContentType.ItemType == PublishedItemType.Media && imageCropMode != ImageCropMode.BoxPad)
             {
                 var sourceWidth = publishedContent.Value<int>(Constants.Conventions.Media.Width);
 
