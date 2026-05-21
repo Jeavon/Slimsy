@@ -1,4 +1,4 @@
-﻿namespace Slimsy.TestSite.ViewModels
+namespace Slimsy.TestSite.ViewModels
 {
     using Microsoft.AspNetCore.Html;
     using Umbraco.Cms.Core.Models.PublishedContent;

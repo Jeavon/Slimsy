@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Slimsy.Configuration;
@@ -13,10 +13,10 @@ namespace Slimsy.DependencyInjection
         public static IUmbracoBuilder AddSlimsy(this IUmbracoBuilder builder)
              => builder.AddInternal();
 
-        public static IUmbracoBuilder AddSlimsy(this IUmbracoBuilder builder, Action<SlimsyOptions> configure)            
+        public static IUmbracoBuilder AddSlimsy(this IUmbracoBuilder builder, Action<SlimsyOptions> configure)
             => builder.AddInternal(optionsBuilder => optionsBuilder.Configure(configure));
 
-        internal static IUmbracoBuilder AddInternal(this IUmbracoBuilder builder,  Action<OptionsBuilder<SlimsyOptions>>? configure = null)
+        internal static IUmbracoBuilder AddInternal(this IUmbracoBuilder builder, Action<OptionsBuilder<SlimsyOptions>>? configure = null)
         {
             ArgumentNullException.ThrowIfNull(builder);
 

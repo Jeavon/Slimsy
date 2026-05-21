@@ -1,0 +1,40 @@
+# Set default behavior to automatically normalize line endings.
+* text=auto
+
+# C# source files should always use LF (for cross-platform CI/CD)
+*.cs text eol=lf
+*.csx text eol=lf
+
+# Force batch scripts to always use CRLF line endings so that if a repo is accessed
+# in Windows via a file share from Linux, the scripts will work.
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+# Force bash scripts to always use LF line endings so that if a repo is accessed
+# in Unix via a file share from Windows, the scripts will work.
+*.sh text eol=lf
+
+# Mark shell scripts as executable
+*.sh linguist-generated=false
+*.sh -crlf
+
+# Declare files that will always have specific line endings on checkout.
+*.sln text eol=crlf
+*.csproj text eol=crlf
+*.config text eol=crlf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

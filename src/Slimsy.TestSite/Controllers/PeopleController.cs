@@ -1,4 +1,4 @@
-﻿namespace Slimsy.TestSite.Controllers
+namespace Slimsy.TestSite.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.ViewEngines;

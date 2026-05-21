@@ -1,4 +1,4 @@
-﻿namespace Slimsy.Enums
+namespace Slimsy.Enums
 {
     public enum FetchPriority
     {
