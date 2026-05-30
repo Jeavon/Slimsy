@@ -6,9 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Umbraco.Cms" Version="18.0.0-beta2" />
-      <PackageReference Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="18.0.0-beta2" />
-      <PackageReference Include="Umbraco.TheStarterKit" Version="18.0.0-beta1" />
+      <PackageReference Include="Umbraco.Cms" Version="18.0.0-rc1" />
+      <PackageReference Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="18.0.0-rc1" />
+      <PackageReference Include="Umbraco.TheStarterKit" Version="18.0.0-rc1" />
     </ItemGroup>
 
     <ItemGroup>
