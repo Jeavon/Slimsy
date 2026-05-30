@@ -1,4 +1,4 @@
-﻿namespace Slimsy.Models
+namespace Slimsy.Models
 {
     public class AspectRatio
     {

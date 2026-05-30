@@ -11,28 +11,81 @@ env:
 
 on:
   push:
-    branches: [ "dev-v7", "main-v7" ]
+    branches:
+      - "main-v7"
+      - "dev-v7"
+      - "feature/v7/**"
+      - "hotfix/v7/**"
   pull_request:
     branches:
-    - dev-v7
-    - main-v7
+      - main-v7
+      - dev-v7
+      - feature/v7/**
+      - hotfix/v7/**
   workflow_dispatch:
 
 jobs:
   setup:
     name: Setup
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
     outputs:
       semver: ${{ steps.set-version.outputs.version }}
+      prerelease_id: ${{ steps.calculate-branch.outputs.prerelease_id }}
 
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch all tags
-        run: git fetch --force --tags
+        run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git fetch --force --tags
+
+      - name: Calculate Branch Slug
+        id: calculate-branch
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          echo "Current branch: $BRANCH_NAME"
           
+          if [[ "$BRANCH_NAME" == hotfix/* ]] || [[ "$BRANCH_NAME" == feature/* ]]; then
+            # Convert branch name to valid semver prerelease identifier
+            # Prefix with "00-" to ensure these versions sort before alpha/beta/rc
+            # Truncate to max 15 chars total to keep NuGet paths short
+            # Replace feature->ft and hotfix->hf to save more space
+            # Trim trailing hyphen if present after truncation
+            BRANCH_SLUG=$(echo "$BRANCH_NAME" | sed 's/feature\//ft-/g; s/hotfix\//hf-/g; s/\//-/g' | cut -c 1-12 | sed 's/-$//')
+            PRERELEASE_ID="00-${BRANCH_SLUG}"
+            echo "Branch slug: $BRANCH_SLUG"
+            echo "Prerelease ID: $PRERELEASE_ID"
+            echo "prerelease_id=$PRERELEASE_ID" >> $GITHUB_OUTPUT
+          else
+            echo "Branch does not match hotfix/* or feature/*, no prerelease ID needed"
+            echo "prerelease_id=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update .releaserc for current branch
+        if: ${{ steps.calculate-branch.outputs.prerelease_id != '' }}
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          PRERELEASE_ID="${{ steps.calculate-branch.outputs.prerelease_id }}"
+          
+          echo "Adding branch config: $BRANCH_NAME with prerelease: $PRERELEASE_ID"
+          
+          # Read current .releaserc, add the branch entry, and save
+          jq --arg name "$BRANCH_NAME" --arg prerelease "$PRERELEASE_ID" \
+            '.branches += [{"name": $name, "prerelease": $prerelease}]' \
+            .releaserc > .releaserc.tmp && mv .releaserc.tmp .releaserc
+          
+          echo "Updated .releaserc:"
+          cat .releaserc
+
       - name: Semantic Release
         id: semantic
         uses: cycjimmy/semantic-release-action@v6
@@ -75,28 +128,18 @@ jobs:
           echo "New release published: '${{ steps.semantic.outputs.new_release_published }}'"
   
   build:
-    name: Build
+    name: Build and Package
     runs-on: ubuntu-latest
     needs: setup
     timeout-minutes: 5
     steps:
-
-    - uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
     - uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
-    - name: Cache NuGet
-      id: nuget-packages
-      uses: actions/cache@v4
+    - uses: actions/setup-dotnet@v5
       with:
-        path: ~/.nuget/packages
-        key: nuget-cache-${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj*') }}
-        restore-keys: |
-          nuget-cache-${{ runner.os }}-nuget-
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Update Version Files
       id: update-version
@@ -105,15 +148,41 @@ jobs:
         semver: ${{ needs.setup.outputs.semver }}
         path-to-extension: ${{ env.PATH_TO_EXTENSION }}
 
+    - name: Dotnet Format check
+      run: dotnet format --verify-no-changes --verbosity diagnostic
+
+    - name: Cache NuGet
+      id: nuget-packages
+      uses: actions/cache@v5
+      with:
+        path: ~/.nuget/packages
+        key: nuget-cache-${{ runner.os }}-${{ github.ref_name }}-${{ hashFiles('**/*.csproj*') }}
+        restore-keys: |
+          nuget-cache-${{ runner.os }}-${{ github.ref_name }}-
+          nuget-cache-${{ runner.os }}-nuget-
+
     - name: Build slnx
       run: dotnet build ${{ github.workspace }}/*.slnx -c Release /maxcpucount:1
 
     - name: Pack NuGet Package
       working-directory: ${{ env.PATH_TO_EXTENSION }}
       run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }} /p:FileVersion=${{ steps.update-version.outputs.file-version }}
-    
+
+    - name: Upload NuGet Package for Testing
+      uses: actions/upload-artifact@v7
+      with:
+        name: nuget-package
+        path: |
+          ${{ env.PATH_TO_EXTENSION }}/bin/Release/*.nupkg
+          ${{ env.PATH_TO_EXTENSION }}/bin/Release/*.snupkg
+        retention-days: 1
+
     - name: Install Package Validation Tool
-      run: dotnet tool install -g dotnet-validate --prerelease
-    
+      run: |
+        dotnet tool install -g dotnet-validate --prerelease
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
     - name: Validate NuGet Package
-      run: dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg
+      run: |
+        export PATH="$PATH:$HOME/.dotnet/tools"
+        dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg
