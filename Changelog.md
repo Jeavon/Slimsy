@@ -47,3 +47,4 @@ Slimsy Change log
 - 6.0.4 - encode alt text attributes to prevent broken markup
 - 7.0.0 - Mobile crop support - thanks to @imranhaidercogworks, min Umbraco verison v17.0.1 and remove legacy RenderWebPAlternative
 - 7.1.0 - Improvments to packageing and prevent lazysizes.js being copied in non Web SDK projects
+- 7.1.1 - Fix for Umbraco v18 support
