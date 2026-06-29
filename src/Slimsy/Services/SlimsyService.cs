@@ -6,7 +6,7 @@ namespace Slimsy.Services
     using System.Linq;
     using System.Text;
     using System.Web;
-    
+
     using Microsoft.AspNetCore.Html;
     using Microsoft.Extensions.Options;
 
@@ -21,7 +21,7 @@ namespace Slimsy.Services
     using Umbraco.Extensions;
     using Umbraco.Cms.Core.Models.Blocks;
     using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
-    
+
     using Slimsy.Models;
     using Slimsy.Configuration;
     using Slimsy.Extensions;
@@ -442,7 +442,7 @@ namespace Slimsy.Services
             return maxWidth;
         }
 
-        private string ProcessFurtherOptions(bool addSourceDimensions, bool autoOrient, ImageCropMode? imageCropMode, string? furtherOptions = null, 
+        private string ProcessFurtherOptions(bool addSourceDimensions, bool autoOrient, ImageCropMode? imageCropMode, string? furtherOptions = null,
             IPublishedContent? mediaItem = null)
         {
             var returnString = new StringBuilder();
@@ -771,7 +771,7 @@ namespace Slimsy.Services
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true, furtherOptions:ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, ImageCropMode.Crop, mediaItem:mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
+            var url = mediaItem.GetCropUrl(cropAlias: cropAlias, useCropDimensions: true, furtherOptions: ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, ImageCropMode.Crop, mediaItem: mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -799,7 +799,7 @@ namespace Slimsy.Services
         {
             if (mediaItem == null) return EmptyHtmlString;
 
-            var url = mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true, furtherOptions:ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, ImageCropMode.Crop, mediaItem:mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
+            var url = mediaItem.GetCropUrl(propertyAlias: propertyAlias, cropAlias: cropAlias, useCropDimensions: true, furtherOptions: ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, ImageCropMode.Crop, mediaItem: mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
