@@ -313,6 +313,13 @@ namespace Slimsy.Services
 
             if (crop != null)
             {
+                // When the image is smaller than the mobile breakpoint, startingWidth can exceed maxWidth.
+                // Clamp w to maxWidth so at least one srcset entry is generated for the crop.
+                if (w > maxWidth)
+                {
+                    w = maxWidth;
+                }
+
                 var heightRatio = (decimal)crop.Height / crop.Width;
                 while (w <= maxWidth)
                 {
@@ -322,8 +329,11 @@ namespace Slimsy.Services
                     w += this.WidthStep();
                 }
 
-                // remove the last comma
-                outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+                if (outputStringBuilder.Length > 0)
+                {
+                    // remove the last comma
+                    outputString = outputStringBuilder.ToString().Substring(0, outputStringBuilder.Length - 1);
+                }
             }
 
             return new HtmlString(HttpUtility.HtmlEncode(outputString));
