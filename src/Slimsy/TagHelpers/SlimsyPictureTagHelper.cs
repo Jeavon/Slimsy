@@ -63,7 +63,7 @@ namespace Slimsy
             // supporting upgrades
             if (RenderWebpAlternative && !pictureSources.Select(s => s.Extension).Contains("webp"))
             {
-                pictureSources.Add(new PictureSource(){Extension="webp", Quality=70});
+                pictureSources.Add(new PictureSource() { Extension = "webp", Quality = 70 });
             }
 
             CssClass = Loading switch
@@ -252,7 +252,7 @@ namespace Slimsy
                     {
                         // Only add media query for mobile sources when mobile crop is provided
                         var mediaAttribute = source.IsMobileSource ? $" media=\"(max-width: {_slimsyOptions.MobileWidth}px)\"" : null;
-                        
+
                         if (Loading == Loading.Lazy)
                         {
                             if (RenderLQIP)

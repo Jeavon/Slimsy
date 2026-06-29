@@ -16,14 +16,25 @@ on:
         required: false
         type: boolean
         default: false
+      create_github_release:
+        description: 'Create GitHub Release'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   setup:
     name: Setup
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
     outputs:
       semver: ${{ steps.semantic.outputs.new_release_version }}
       new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      prerelease_id: ${{ steps.calculate-branch.outputs.prerelease_id }}
 
     steps:
       - uses: actions/checkout@v5
@@ -33,19 +44,56 @@ jobs:
       
       - name: Fetch all tags
         run: git fetch --force --tags
+
+      - name: Calculate Branch Slug
+        id: calculate-branch
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          echo "Current branch: $BRANCH_NAME"
+          
+          if [[ "$BRANCH_NAME" == hotfix/* ]] || [[ "$BRANCH_NAME" == feature/* ]]; then
+            # Convert branch name to valid semver prerelease identifier
+            # Prefix with "00-" to ensure these versions sort before alpha/beta/rc
+            # Truncate to max 15 chars total to keep NuGet paths short
+            # Replace feature->ft and hotfix->hf to save more space
+            # Trim trailing hyphen if present after truncation
+            BRANCH_SLUG=$(echo "$BRANCH_NAME" | sed 's/feature\//ft-/g; s/hotfix\//hf-/g; s/\//-/g' | cut -c 1-12 | sed 's/-$//')
+            PRERELEASE_ID="00-${BRANCH_SLUG}"
+            echo "Branch slug: $BRANCH_SLUG"
+            echo "Prerelease ID: $PRERELEASE_ID"
+            echo "prerelease_id=$PRERELEASE_ID" >> $GITHUB_OUTPUT
+          else
+            echo "Branch does not match hotfix/* or feature/*, no prerelease ID needed"
+            echo "prerelease_id=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update .releaserc for current branch
+        if: ${{ steps.calculate-branch.outputs.prerelease_id != '' }}
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          PRERELEASE_ID="${{ steps.calculate-branch.outputs.prerelease_id }}"
+          
+          echo "Adding branch config: $BRANCH_NAME with prerelease: $PRERELEASE_ID"
+          
+          # Read current .releaserc, add the branch entry, and save
+          jq --arg name "$BRANCH_NAME" --arg prerelease "$PRERELEASE_ID" \
+            '.branches += [{"name": $name, "prerelease": $prerelease}]' \
+            .releaserc > .releaserc.tmp && mv .releaserc.tmp .releaserc
+          
+          echo "Updated .releaserc:"
+          cat .releaserc
         
-      - name: Semantic Release
+      - name: Semantic Release (Dry Run)
         id: semantic
         uses: cycjimmy/semantic-release-action@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          dry_run: false
+          dry_run: true
           extra_plugins: |
             @semantic-release/exec
             @semantic-release/commit-analyzer
             @semantic-release/release-notes-generator
-            @semantic-release/github
             conventional-changelog-conventionalcommits
 
       - name: Check Release
@@ -66,12 +114,10 @@ jobs:
           echo "New release published: '${{ steps.semantic.outputs.new_release_published }}'"
   
   build:
-    name: Build, Test and Package
+    name: Build and Package
     runs-on: ubuntu-latest
     needs: setup
     timeout-minutes: 5
-    env:
-      MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
     steps:
     - uses: actions/checkout@v5
       with:
@@ -83,11 +129,12 @@ jobs:
 
     - name: Cache NuGet
       id: nuget-packages
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/.nuget/packages
-        key: nuget-cache-${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj*') }}
+        key: nuget-cache-${{ runner.os }}-${{ github.ref_name }}-${{ hashFiles('**/*.csproj*') }}
         restore-keys: |
+          nuget-cache-${{ runner.os }}-${{ github.ref_name }}-
           nuget-cache-${{ runner.os }}-nuget-
 
     - name: Update Version Files
@@ -103,22 +150,162 @@ jobs:
     - name: Pack NuGet Package
       working-directory: ${{ env.PATH_TO_EXTENSION }}
       run: dotnet pack --configuration Release /p:PackageVersion=${{ needs.setup.outputs.semver }} /p:FileVersion=${{ steps.update-version.outputs.file-version }}
-    
+
+    - name: Upload NuGet Package
+      uses: actions/upload-artifact@v7
+      with:
+        name: nuget-package
+        path: |
+          ${{ env.PATH_TO_EXTENSION }}/bin/Release/*.nupkg
+          ${{ env.PATH_TO_EXTENSION }}/bin/Release/*.snupkg
+        retention-days: 1
+
+  publish:
+    name: Publish Package
+    runs-on: ubuntu-latest
+    needs: [setup, build]
+    timeout-minutes: 5
+    env:
+      MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Download NuGet Package
+      uses: actions/download-artifact@v8
+      with:
+        name: nuget-package
+        path: ./nuget-packages
+
     - name: Install Package Validation Tool
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
-      run: dotnet tool install -g dotnet-validate --prerelease
-    
+      run: |
+        dotnet tool install -g dotnet-validate --prerelease
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
     - name: Validate NuGet Package
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
-      run: dotnet validate package local ${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.${{ needs.setup.outputs.semver }}.nupkg
-    
-    - name: Generate Release Notes Body
+      run: |
+        export PATH="$HOME/.dotnet/tools:$PATH"
+        dotnet validate package local nuget-packages/Our.Umbraco.Slimsy.*.nupkg
+
+    - name: Add GitHub Packages Source
+      if: ${{ needs.setup.outputs.new_release_published == 'true' }}
+      run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Jeavon/index.json"
+
+    - name: Push GitHub Package
+      if: ${{ needs.setup.outputs.new_release_published == 'true' }}
+      run: dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate
+
+    - name: Push MyGet Package
+      if: needs.setup.outputs.new_release_published == 'true' && env.MYGET_API_KEY != ''
+      run: |
+        dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/api/v2/package --skip-duplicate
+        dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.snupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/symbols/api/v2/package --skip-duplicate
+
+    - name: Push to Nuget.org
+      if: ${{ needs.setup.outputs.new_release_published == 'true' && github.event.inputs.publish_to_nuget == 'true' && startsWith(github.ref, 'refs/heads/main-') && !contains(needs.setup.outputs.semver, '-') }}
+      run: dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+    - name: Write Summary
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
       run: |
-        if [[ "${{ needs.setup.outputs.semver }}" == *"-"* ]]; then
+        echo "## 📦 Package Built: v${{ needs.setup.outputs.semver }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** \`${GITHUB_REF#refs/heads/}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** Ready for release" >> $GITHUB_STEP_SUMMARY
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [setup, publish]
+    if: ${{ needs.setup.outputs.new_release_published == 'true' }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+        filter: tree:0
+
+    - name: Fetch all tags
+      run: git fetch --force --tags
+
+    - name: Update .releaserc for current branch
+      if: ${{ needs.setup.outputs.prerelease_id != '' }}
+      run: |
+        BRANCH_NAME="${{ github.ref_name }}"
+        PRERELEASE_ID="${{ needs.setup.outputs.prerelease_id }}"
+        
+        echo "Adding branch config: $BRANCH_NAME with prerelease: $PRERELEASE_ID"
+        
+        # Read current .releaserc, add the branch entry, and save
+        jq --arg name "$BRANCH_NAME" --arg prerelease "$PRERELEASE_ID" \
+          '.branches += [{"name": $name, "prerelease": $prerelease}]' \
+          .releaserc > .releaserc.tmp && mv .releaserc.tmp .releaserc
+        
+        echo "Updated .releaserc:"
+        cat .releaserc
+
+    - name: Generate Release Notes Body
+      if: ${{ github.event.inputs.create_github_release != 'false' }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        BRANCH_NAME="${{ github.ref_name }}"
+        
+        # Check if this is a feature or hotfix branch test release
+        if [[ "$BRANCH_NAME" == hotfix/* ]] || [[ "$BRANCH_NAME" == feature/* ]]; then
+          echo "## ⚠️ Test Release from \`$BRANCH_NAME\`" > release_body.md
+          echo "" >> release_body.md
+          echo "This is a test release for development and testing purposes only." >> release_body.md
+          echo "" >> release_body.md
+          echo "### Installation" >> release_body.md
+          echo "" >> release_body.md
+          cat << 'EOF' >> release_body.md
+        ```bash
+        dotnet add package Our.Umbraco.Slimsy --version ${{ needs.setup.outputs.semver }} --source https://nuget.pkg.github.com/Jeavon/index.json
+        ```
+        EOF
+        # Check if publishing to nuget.org (stable release from main branch)
+        elif [[ "${{ github.event.inputs.publish_to_nuget }}" == "true" && "${{ needs.setup.outputs.semver }}" != *"-"* ]]; then
           cat << 'EOF' > release_body.md
         ## Installation
         
+        ```bash
+        dotnet add package Our.Umbraco.Slimsy --version ${{ needs.setup.outputs.semver }}
+        ```
+        EOF
+          
+          echo "" >> release_body.md
+          echo "---" >> release_body.md
+          echo "" >> release_body.md
+          
+          # Get the previous stable tag for changelog comparison
+          CURRENT_TAG="v${{ needs.setup.outputs.semver }}"
+          LAST_NUGET_TAG=$(git tag --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -v "^${CURRENT_TAG}$" | head -n1)
+          
+          if [[ -n "$LAST_NUGET_TAG" ]]; then
+            echo "## What's Changed (since $LAST_NUGET_TAG)" >> release_body.md
+            echo "" >> release_body.md
+            gh api repos/${{ github.repository }}/releases/generate-notes -F tag_name="v${{ needs.setup.outputs.semver }}" -F previous_tag_name="$LAST_NUGET_TAG" --jq .body | sed '/^## What'"'"'s Changed$/d' >> release_body.md
+          else
+            echo "## What's Changed" >> release_body.md
+            echo "" >> release_body.md
+            gh api repos/${{ github.repository }}/releases/generate-notes -F tag_name="v${{ needs.setup.outputs.semver }}" --jq .body | sed '/^## What'"'"'s Changed$/d' >> release_body.md
+          fi
+        else
+          # Pre-release - show alternative sources
+          echo "## Installation" > release_body.md
+          echo "" >> release_body.md
+          
+          cat << 'EOF' >> release_body.md
         ### From MyGet (pre-release)
         
         ```bash
@@ -131,44 +318,39 @@ jobs:
         dotnet add package Our.Umbraco.Slimsy --version ${{ needs.setup.outputs.semver }} --source https://nuget.pkg.github.com/Jeavon/index.json
         ```
         EOF
-        else
-          cat << 'EOF' > release_body.md
-        ## Installation
-        
-        ```bash
-        dotnet add package Our.Umbraco.Slimsy --version ${{ needs.setup.outputs.semver }}
-        ```
-        EOF
         fi
-    
-    - name: Create GitHub Release
-      if: ${{ needs.setup.outputs.new_release_published == 'true' }}
-      uses: softprops/action-gh-release@v2
+
+    - name: Semantic Release
+      id: semantic
+      uses: cycjimmy/semantic-release-action@v6
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        dry_run: false
+        extra_plugins: |
+          @semantic-release/exec
+          @semantic-release/commit-analyzer
+          @semantic-release/release-notes-generator
+          conventional-changelog-conventionalcommits
+
+    - name: Update GitHub Release with Custom Notes
+      if: ${{ steps.semantic.outputs.new_release_published == 'true' && github.event.inputs.create_github_release != 'false' }}
+      uses: softprops/action-gh-release@v3
       with:
         tag_name: v${{ needs.setup.outputs.semver }}
         name: v${{ needs.setup.outputs.semver }}
-        generate_release_notes: true
-        prerelease: ${{ contains(needs.setup.outputs.semver, '-') }}
         body_path: release_body.md
-    
-    - name: Add GitHub Packages Source
-      if: ${{ needs.setup.outputs.new_release_published == 'true' }}
-      run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/Jeavon/index.json"
+        prerelease: ${{ contains(needs.setup.outputs.semver, '-') }}
 
-    - name: Push GitHub Package
-      if: ${{ needs.setup.outputs.new_release_published == 'true' }}
-      run: dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg"  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate
-    
-    - name: Push MyGet Package
-      if: needs.setup.outputs.new_release_published == 'true' && env.MYGET_API_KEY != ''
-      run: |
-        dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/api/v2/package --skip-duplicate
-        dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.snupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/symbols/api/v2/package --skip-duplicate
-      
-    - name: Push to Nuget.org
-      if: ${{ needs.setup.outputs.new_release_published == 'true' && github.event.inputs.publish_to_nuget == 'true' && startsWith(github.ref, 'refs/heads/main-') && !contains(needs.setup.outputs.semver, '-') }}
-      run: dotnet nuget push "${{ env.PATH_TO_EXTENSION }}/bin/Release/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-    
     - name: Merge main branch to dev
-      if: ${{ needs.setup.outputs.new_release_published == 'true' && startsWith(github.ref, 'refs/heads/main-') }}
+      if: ${{ startsWith(github.ref, 'refs/heads/main-') }}
       run: .github/scripts/merge-to-develop.sh "${{ needs.setup.outputs.semver }}"
+
+    - name: Write Summary
+      run: |
+        echo "## 🚀 Release Published: v${{ needs.setup.outputs.semver }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** \`${GITHUB_REF#refs/heads/}\`" >> $GITHUB_STEP_SUMMARY
+        echo "**Tag:** \`v${{ needs.setup.outputs.semver }}\`" >> $GITHUB_STEP_SUMMARY
+        if [[ "${{ github.event.inputs.create_github_release }}" == "false" ]]; then
+          echo "**Note:** GitHub Release creation was skipped (create_github_release=false)" >> $GITHUB_STEP_SUMMARY
+        fi
