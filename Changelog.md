@@ -40,6 +40,7 @@ Slimsy Change log
 - 5.1.3 - fix for boxpad crop mode and BackgroundColor
 - 5.1.4 - encode alt text attributes to prevent broken markup
 - 5.2.0 - Mobile crop support - thanks to @imranhaidercogworks
+- 5.2.1 - Ensure srcset generation for small images and prevent errors
 - 6.0.0 - Umbraco v14 compatability
 - 6.0.1 - fix for v14 package version info
 - 6.0.2 - fix for TipTap editor
@@ -48,3 +49,4 @@ Slimsy Change log
 - 7.0.0 - Mobile crop support - thanks to @imranhaidercogworks, min Umbraco verison v17.0.1 and remove legacy RenderWebPAlternative
 - 7.1.0 - Improvments to packageing and prevent lazysizes.js being copied in non Web SDK projects
 - 7.1.1 - Fix for Umbraco v18 support
+- 7.1.2 - Ensure srcset generation for small images and prevent errors
