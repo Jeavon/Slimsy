@@ -24,13 +24,25 @@ export const SECTION_INDEX = {
   mobileCrop: 12,
 } as const;
 
-/** Scroll the whole page slowly so lazysizes unveils everything, then wait for network idle */
+/**
+ * Scroll every not-yet-unveiled image into view so lazysizes unveils everything, then wait for network idle.
+ *
+ * A single pass down the page isn't reliable: images change the page height as they load (and a cold ImageSharp
+ * cache makes that slow), so lazysizes can miss images the scroll passed over quickly and they stay `lazyload`
+ * forever. Instead keep scrolling to whichever image is still waiting until there are none left.
+ */
 export async function unveilAll(page: Page) {
   await page.evaluate(async () => {
-    const step = Math.max(200, window.innerHeight / 2);
-    for (let y = 0; y < document.body.scrollHeight; y += step) {
-      window.scrollTo(0, y);
-      await new Promise((r) => setTimeout(r, 60));
+    const deadline = Date.now() + 25_000;
+    const pending = () => [...document.images].filter((i) => i.classList.contains('lazyload'));
+    let next = pending()[0];
+    while (next && Date.now() < deadline) {
+      next.scrollIntoView({ block: 'center' });
+      // give lazysizes a chance to run its check, then see if this image has been picked up
+      for (let t = 0; t < 20 && next.classList.contains('lazyload'); t++) {
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      next = pending()[0];
     }
     window.scrollTo(0, 0);
   });
