@@ -117,7 +117,7 @@ jobs:
     name: Build and Package
     runs-on: ubuntu-latest
     needs: setup
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
     - uses: actions/checkout@v5
       with:
@@ -144,6 +144,9 @@ jobs:
         semver: ${{ needs.setup.outputs.semver }}
         path-to-extension: ${{ env.PATH_TO_EXTENSION }}
 
+    - name: Run Unit Tests
+      run: dotnet test src/Slimsy.Tests/Slimsy.Tests.csproj --configuration Release --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+
     - name: Build slnx
       run: dotnet build ${{ github.workspace }}/*.slnx -c Release /maxcpucount:1
 
@@ -160,10 +163,16 @@ jobs:
           ${{ env.PATH_TO_EXTENSION }}/bin/Release/*.snupkg
         retention-days: 1
 
+  # Nothing is published unless the Playwright suite also passes
+  e2e:
+    name: E2E Tests
+    needs: [setup, build]
+    uses: ./.github/workflows/e2e.yml
+
   publish:
     name: Publish Package
     runs-on: ubuntu-latest
-    needs: [setup, build]
+    needs: [setup, build, e2e]
     timeout-minutes: 5
     env:
       MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
