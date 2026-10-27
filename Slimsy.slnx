@@ -8,5 +8,6 @@
     <File Path="umbraco-marketplace.json" />
   </Folder>
   <Project Path="src/Slimsy.TestSite/Slimsy.TestSite.csproj" />
+  <Project Path="src/Slimsy.Tests/Slimsy.Tests.csproj" />
   <Project Path="src/Slimsy/Slimsy.csproj" />
 </Solution>
