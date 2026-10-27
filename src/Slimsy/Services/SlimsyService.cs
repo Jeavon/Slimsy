@@ -879,6 +879,10 @@ namespace Slimsy.Services
         {
             if (mediaItem == null) return EmptyHtmlString;
 
+            // a dimension of 0 means "not set", omit it from the url rather than rendering e.g. height=0
+            width = width > 0 ? width : null;
+            height = height > 0 ? height : null;
+
             var url = mediaItem.GetCropUrl(width: width, height: height, propertyAlias: propertyAlias, cropAlias: cropAlias, quality: quality, imageCropMode: imageCropMode,
                 imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, mediaItem)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
@@ -956,6 +960,10 @@ namespace Slimsy.Services
             string? furtherOptions = null,
             bool htmlEncode = true)
         {
+            // a dimension of 0 means "not set", omit it from the url rather than rendering e.g. height=0
+            width = width > 0 ? width : null;
+            height = height > 0 ? height : null;
+
             var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
@@ -975,6 +983,10 @@ namespace Slimsy.Services
             bool htmlEncode = true)
         {
             if (imageCropperValue == null) return EmptyHtmlString;
+
+            // a dimension of 0 means "not set", omit it from the url rather than rendering e.g. height=0
+            width = width > 0 ? width : null;
+            height = height > 0 ? height : null;
 
             var imageUrl = imageCropperValue.Src;
             var url = imageUrl?.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
@@ -998,6 +1010,10 @@ namespace Slimsy.Services
             UrlMode urlMode = UrlMode.Default,
             bool htmlEncode = true)
         {
+            // a dimension of 0 means "not set", omit it from the url rather than rendering e.g. height=0
+            width = width > 0 ? width : null;
+            height = height > 0 ? height : null;
+
             var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, mediaWithCrops), urlMode).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
