@@ -50,3 +50,4 @@ Slimsy Change log
 - 7.1.0 - Improvments to packageing and prevent lazysizes.js being copied in non Web SDK projects
 - 7.1.1 - Fix for Umbraco v18 support
 - 7.1.2 - Ensure srcset generation for small images and prevent errors
+- 7.1.4 - Fix lazy `manual-sizes` being ignored on `<source>` elements, `crop-alias` rendering `width="0" height="0"` (crop and mobile crop dimensions now rendered on `<img>` and `<source>`), error when no width or height is supplied, and omit `height=0` from image URLs when no height is specified
