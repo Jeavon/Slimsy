@@ -43,6 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Slimsy.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
       <None Remove="Scripts\lazysizes.min.js" />
     </ItemGroup>
 

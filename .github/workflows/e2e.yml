@@ -1,0 +1,76 @@
+name: E2E Tests
+
+# Reusable workflow, called from ci.yml and release.yml so both run and report the same Playwright suite
+
+env:
+  PATH_TO_TESTSITE: "src/Slimsy.TestSite"
+  DOTNET_VERSION: '10'
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: E2E Tests (Playwright, demo site)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v6
+      with:
+        node-version: 'lts/*'
+        cache: 'npm'
+        cache-dependency-path: e2e/package-lock.json
+
+    - name: Install npm dependencies - E2E tests
+      working-directory: e2e
+      run: npm ci
+
+    - name: Install Playwright browsers
+      working-directory: e2e
+      run: npx playwright install --with-deps chromium
+
+    - name: Cache NuGet
+      uses: actions/cache@v5
+      with:
+        path: ~/.nuget/packages
+        key: nuget-cache-${{ runner.os }}-${{ github.ref_name }}-${{ hashFiles('**/*.csproj*') }}
+        restore-keys: |
+          nuget-cache-${{ runner.os }}-${{ github.ref_name }}-
+          nuget-cache-${{ runner.os }}-nuget-
+
+    # Built up front so the Playwright webServer (dotnet run) starts quickly instead of compiling inside its startup timeout
+    - name: Build Test Site
+      run: dotnet build ${{ env.PATH_TO_TESTSITE }}/Slimsy.TestSite.csproj
+
+    # Playwright starts the demo site itself (see e2e/playwright.config.ts webServer)
+    - name: Run Playwright tests
+      working-directory: e2e
+      run: npm test
+
+    - name: Write Test Summary
+      if: always()
+      working-directory: e2e
+      run: node scripts/write-summary.mjs
+
+    # Also on a green run: the config retries once, so a flaky test passes the job and would otherwise
+    # take its failed first attempt's trace with it. Passing tests leave nothing behind.
+    - name: Upload Playwright Report on Failure or Flake
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: playwright-report
+        path: |
+          e2e/playwright-report/
+          e2e/test-results/
+        retention-days: 3
+        if-no-files-found: ignore
