@@ -66,9 +66,25 @@ namespace Slimsy.Services
         /// <param name="quality"></param>
         /// <param name="outputFormat"></param>
         /// <param name="furtherOptions"></param>
-        /// <param name="imageCropAnchor">Crop anchor, emitted as rmode=crop&amp;ranchor when no focal point is set</param>
         /// <returns>Url of image</returns>
-        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "", ImageCropAnchor? imageCropAnchor = null)
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, int width, int height, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
+        {
+            return this.GetSrcSetUrls(mediaWithCrops, width, height, (ImageCropAnchor?)null, propertyAlias, quality, outputFormat, furtherOptions);
+        }
+
+        /// <summary>
+        /// Generate SrcSet attribute value based on a width and height for the image cropped around the focal point, or around an explicit anchor
+        /// </summary>
+        /// <param name="mediaWithCrops"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="imageCropAnchor">Crop anchor, emitted as rmode=crop&amp;ranchor and wins over the media focal point</param>
+        /// <param name="propertyAlias"></param>
+        /// <param name="quality"></param>
+        /// <param name="outputFormat"></param>
+        /// <param name="furtherOptions"></param>
+        /// <returns>Url of image</returns>
+        public IHtmlContent GetSrcSetUrls(MediaWithCrops mediaWithCrops, int width, int height, ImageCropAnchor? imageCropAnchor, string propertyAlias = Constants.Conventions.Media.File, int? quality = null, string? outputFormat = "", string? furtherOptions = "")
         {
             var w = this.WidthStep();
             var q = quality == null ? this.DefaultQuality() : quality;
@@ -83,7 +99,7 @@ namespace Slimsy.Services
                 if (!IsMultiple(width, w) && UseCropAsSrc() && width < w && width > w - WidthStep())
                 {
                     var cropStringSpecific = this.GetCropUrl(mediaWithCrops, width, height, propertyAlias, quality: q, imageCropAnchor: imageCropAnchor, preferFocalPoint: true,
-                        furtherOptions: this.AdditionalParams(outputFormat), htmlEncode: false).ToString();
+                        furtherOptions: this.AdditionalParams(outputFormat, furtherOptions), htmlEncode: false).ToString();
 
                     outputStringBuilder.Append($"{cropStringSpecific} {width}w,");
                 }
@@ -129,7 +145,7 @@ namespace Slimsy.Services
                 if (!IsMultiple(width, w) && UseCropAsSrc() && width < w && width > w - WidthStep())
                 {
                     var cropStringSpecific = this.GetCropUrl(publishedContent, width, height, propertyAlias, quality: q, imageCropMode: imageCropMode, imageCropAnchor: imageCropAnchor, preferFocalPoint: true,
-                        furtherOptions: this.AdditionalParams(outputFormat), htmlEncode: false).ToString();
+                        furtherOptions: this.AdditionalParams(outputFormat, furtherOptions), htmlEncode: false).ToString();
 
                     outputStringBuilder.Append($"{cropStringSpecific} {width}w,");
                 }

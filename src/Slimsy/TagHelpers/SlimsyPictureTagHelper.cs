@@ -228,13 +228,13 @@ namespace Slimsy
 
                             foreach (var source in pictureSources)
                             {
-                                imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, source.Quality, source.Extension, imageCropAnchor: ImageCropAnchor);
+                                imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, ImageCropAnchor, PropertyAlias, source.Quality, source.Extension);
                                 imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, PropertyAlias, quality: 20, imageCropAnchor: ImageCropAnchor, furtherOptions: "&format=" + source.Extension);
                                 var newSource = new SourceSet() { Source = imgSrcSet, Lqip = imgLqip, Format = source.Extension };
                                 sources.Add(newSource);
                             }
 
-                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, PropertyAlias, outputFormat: defaultFormat, imageCropAnchor: ImageCropAnchor);
+                            imgSrcSet = _slimsyService.GetSrcSetUrls(MediaItem, Width, Height, ImageCropAnchor, PropertyAlias, outputFormat: defaultFormat);
                             // ** Using half width/height for LQIP to reduce filesize to a minimum, CSS must oversize the images **
                             imgLqip = _slimsyService.GetCropUrl(MediaItem, lqipWidth, lqipHeight, PropertyAlias, quality: 20, imageCropAnchor: ImageCropAnchor, furtherOptions: "&format=" + defaultFormat);
                         }

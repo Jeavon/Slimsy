@@ -428,7 +428,7 @@ namespace Slimsy.Tests
         {
             var service = CreateService(DefaultOptions());
 
-            var srcset = service.GetSrcSetUrls(CreateMedia(), 400, 300, imageCropAnchor: ImageCropAnchor.TopLeft).ToString()!;
+            var srcset = service.GetSrcSetUrls(CreateMedia(), 400, 300, ImageCropAnchor.TopLeft).ToString()!;
 
             Assert.All(Candidates(srcset), c =>
             {

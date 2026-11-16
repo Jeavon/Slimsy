@@ -22,8 +22,8 @@ const currentSrc = (img: import('@playwright/test').Locator) => img.evaluate((el
 
 test.describe('page structure', () => {
   test('renders every demo section', async ({ page }) => {
-    await expect(page.locator('h2')).toHaveCount(13);
-    for (let i = 0; i < 13; i++) {
+    await expect(page.locator('h2')).toHaveCount(14);
+    for (let i = 0; i < 14; i++) {
       await expect(sectionByIndex(page, i)).toHaveCount(1);
       expect(await sectionByIndex(page, i).locator('.employee-grid__item').count()).toBeGreaterThan(0);
     }
