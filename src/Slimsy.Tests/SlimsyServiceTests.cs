@@ -427,13 +427,34 @@ namespace Slimsy.Tests
         }
 
         [Fact]
-        public void GetCropUrl_UrlWithoutCropperValue_LeavesAnchorToCore()
+        public void GetCropUrl_UrlWithoutCropperValue_CoreWritesAnchorOnceWithoutDuplicateKeys()
         {
             var service = CreateService(DefaultOptions());
             var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl("/media/test/image.jpg", 400, 300, imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft).ToString()!);
 
-            // core's no-cropper branch writes rmode/ranchor itself, Slimsy adding them too would duplicate the keys
-            Assert.DoesNotContain("rmode=crop&ranchor=topleft", url);
+            // core's no-cropper branch writes rmode/ranchor itself (the fake generator throws on duplicate keys like the real one)
+            Assert.Single(url.Split('&', '?'), p => p.StartsWith("ranchor="));
+            Assert.Single(url.Split('&', '?'), p => p.StartsWith("rmode="));
+        }
+
+        [Fact]
+        public void GetCropUrl_CropWithCenterAnchor_KeepsFocalPoint()
+        {
+            var media = CreateMedia(new ImageCropperValue.ImageCropperFocalPoint { Left = 0.2m, Top = 0.3m });
+            var url = CropUrl(CreateService(DefaultOptions()), media, ImageCropMode.Crop, ImageCropAnchor.Center);
+
+            Assert.NotEqual(string.Empty, Param(url, "rxy"));
+            Assert.Equal(string.Empty, Param(url, "ranchor"));
+        }
+
+        [Fact]
+        public void GetCropUrl_CropAliasWithFocalPoint_KeepsFocalPointAndIgnoresAnchor()
+        {
+            var media = CreateMedia(new ImageCropperValue.ImageCropperFocalPoint { Left = 0.2m, Top = 0.3m }, Crop("wide", 2100, 900));
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(media, 400, 300, cropAlias: "wide", imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft).ToString()!);
+
+            Assert.Equal(string.Empty, Param(url, "ranchor"));
         }
 
         [Fact]
