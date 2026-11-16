@@ -49,12 +49,15 @@ namespace Slimsy.Tests
         /// <summary>
         /// Builds a media item with a 2000x1500 jpg and the supplied crops
         /// </summary>
-        public static MediaWithCrops CreateMedia(params ImageCropperValue.ImageCropperCrop[] crops)
+        public static MediaWithCrops CreateMedia(params ImageCropperValue.ImageCropperCrop[] crops) => CreateMedia(null, crops);
+
+        public static MediaWithCrops CreateMedia(ImageCropperValue.ImageCropperFocalPoint? focalPoint, params ImageCropperValue.ImageCropperCrop[] crops)
         {
             var cropperValue = new ImageCropperValue
             {
                 Src = MediaUrl,
                 Crops = crops,
+                FocalPoint = focalPoint,
             };
 
             var contentType = new Mock<IPublishedContentType>();
@@ -195,13 +198,35 @@ namespace Slimsy.Tests
                 return null;
             }
 
-            var parts = new List<string>();
-            if (options.Width != null) parts.Add($"width={options.Width}");
-            if (options.Height != null) parts.Add($"height={options.Height}");
-            if (options.Quality != null) parts.Add($"quality={options.Quality}");
-            if (!string.IsNullOrEmpty(options.FurtherOptions)) parts.Add(options.FurtherOptions.TrimStart('&'));
+            // mirrors Umbraco's ImageSharp generator: options are written first (rmode, ranchor, rxy) and then
+            // further options are added, a key present in both throws just like the real one does
+            var parts = new List<KeyValuePair<string, string>>();
+            void Add(string key, string value)
+            {
+                if (parts.Any(p => string.Equals(p.Key, key, StringComparison.OrdinalIgnoreCase)))
+                {
+                    throw new ArgumentException($"An item with the same key has already been added. Key: {key}");
+                }
 
-            return options.ImageUrl + (parts.Count > 0 ? "?" + string.Join("&", parts) : string.Empty);
+                parts.Add(new KeyValuePair<string, string>(key, value));
+            }
+
+            if (options.Width != null) Add("width", options.Width.ToString()!);
+            if (options.Height != null) Add("height", options.Height.ToString()!);
+            if (options.Quality != null) Add("quality", options.Quality.ToString()!);
+            if (options.ImageCropMode != null) Add("rmode", options.ImageCropMode.Value.ToString().ToLowerInvariant());
+            if (options.ImageCropAnchor != null) Add("ranchor", options.ImageCropAnchor.Value.ToString().ToLowerInvariant());
+            if (options.FocalPoint != null) Add("rxy", FormattableString.Invariant($"{options.FocalPoint.Left},{options.FocalPoint.Top}"));
+            if (!string.IsNullOrEmpty(options.FurtherOptions))
+            {
+                foreach (var pair in options.FurtherOptions.TrimStart('&').Split('&', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var eq = pair.IndexOf('=');
+                    Add(eq >= 0 ? pair[..eq] : pair, eq >= 0 ? pair[(eq + 1)..] : string.Empty);
+                }
+            }
+
+            return options.ImageUrl + (parts.Count > 0 ? "?" + string.Join("&", parts.Select(p => p.Value.Length > 0 ? $"{p.Key}={p.Value}" : p.Key)) : string.Empty);
         }
     }
 }
