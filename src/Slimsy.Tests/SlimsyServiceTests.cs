@@ -1,4 +1,6 @@
+using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Slimsy.Configuration;
+using Slimsy.Enums;
 using Slimsy.Services;
 
 using Umbraco.Cms.Core.Models;
@@ -338,6 +340,100 @@ namespace Slimsy.Tests
 
             Assert.Equal("2100", Param(url, "width"));
             Assert.Equal("900", Param(url, "height"));
+        }
+
+        #endregion
+
+        #region Crop anchor (rmode / ranchor)
+
+        private static string CropUrl(SlimsyService service, MediaWithCrops media, ImageCropMode? mode, ImageCropAnchor? anchor) =>
+            System.Net.WebUtility.HtmlDecode(service.GetCropUrl(media, 400, 300, imageCropMode: mode, imageCropAnchor: anchor).ToString()!);
+
+        [Theory]
+        [InlineData(ImageCropMode.Crop, ImageCropAnchor.TopLeft, "topleft")]
+        [InlineData(null, ImageCropAnchor.BottomRight, "bottomright")]
+        [InlineData(ImageCropMode.Crop, ImageCropAnchor.Top, "top")]
+        public void GetCropUrl_CropWithAnchor_EmitsRmodeAndRanchor(ImageCropMode? mode, ImageCropAnchor anchor, string expected)
+        {
+            var url = CropUrl(CreateService(DefaultOptions()), CreateMedia(), mode, anchor);
+
+            Assert.Equal("crop", Param(url, "rmode"));
+            Assert.Equal(expected, Param(url, "ranchor"));
+        }
+
+        [Fact]
+        public void GetCropUrl_CropWithCenterOrNoAnchor_EmitsNothingExtra()
+        {
+            var service = CreateService(DefaultOptions());
+
+            foreach (var anchor in new ImageCropAnchor?[] { null, ImageCropAnchor.Center })
+            {
+                var url = CropUrl(service, CreateMedia(), ImageCropMode.Crop, anchor);
+                Assert.Equal(string.Empty, Param(url, "rmode"));
+                Assert.Equal(string.Empty, Param(url, "ranchor"));
+            }
+        }
+
+        [Fact]
+        public void GetCropUrl_CropWithAnchor_FocalPointWins()
+        {
+            var media = CreateMedia(new ImageCropperValue.ImageCropperFocalPoint { Left = 0.2m, Top = 0.3m });
+            var url = CropUrl(CreateService(DefaultOptions()), media, ImageCropMode.Crop, ImageCropAnchor.TopLeft);
+
+            Assert.Equal(string.Empty, Param(url, "ranchor"));
+            Assert.Equal(string.Empty, Param(url, "rmode"));
+        }
+
+        [Fact]
+        public void GetCropUrl_CropAlias_IgnoresAnchor()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(CreateMedia(Crop("wide", 2100, 900)), 400, 300, cropAlias: "wide", imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft).ToString()!);
+
+            Assert.Equal(string.Empty, Param(url, "ranchor"));
+        }
+
+        [Fact]
+        public void GetCropUrl_PadWithAnchor_SlimsyAddsNothing()
+        {
+            var url = CropUrl(CreateService(DefaultOptions()), CreateMedia(), ImageCropMode.Pad, ImageCropAnchor.TopLeft);
+
+            // Slimsy adds nothing for non-Crop modes, Umbraco core owns those
+            Assert.DoesNotContain("rmode=crop", url);
+        }
+
+        [Fact]
+        public void GetCropUrl_CallerSuppliedRanchor_IsNotDuplicated()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(CreateMedia(), 400, 300, imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft, furtherOptions: "&ranchor=bottom").ToString()!);
+
+            Assert.Single(url.Split('&'), p => p.StartsWith("ranchor="));
+            Assert.Equal("bottom", Param(url, "ranchor"));
+        }
+
+        [Fact]
+        public void SrcSet_CropWithAnchor_EverySrcsetCandidateCarriesAnchor()
+        {
+            var service = CreateService(DefaultOptions());
+
+            var srcset = service.GetSrcSetUrls(CreateMedia(), 400, 300, imageCropAnchor: ImageCropAnchor.TopLeft).ToString()!;
+
+            Assert.All(Candidates(srcset), c =>
+            {
+                Assert.Equal("crop", Param(c, "rmode"));
+                Assert.Equal("topleft", Param(c, "ranchor"));
+            });
+        }
+
+        [Fact]
+        public void SrcSet_PublishedContentOverloadWithCropAndAnchor_EmitsAnchor()
+        {
+            var service = CreateService(DefaultOptions());
+
+            var srcset = service.GetSrcSetUrls(CreateMedia(), 400, 300, ImageCropMode.Crop, ImageCropAnchor.BottomLeft).ToString()!;
+
+            Assert.All(Candidates(srcset), c => Assert.Equal("bottomleft", Param(c, "ranchor")));
         }
 
         #endregion

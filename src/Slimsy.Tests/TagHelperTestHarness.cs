@@ -49,12 +49,15 @@ namespace Slimsy.Tests
         /// <summary>
         /// Builds a media item with a 2000x1500 jpg and the supplied crops
         /// </summary>
-        public static MediaWithCrops CreateMedia(params ImageCropperValue.ImageCropperCrop[] crops)
+        public static MediaWithCrops CreateMedia(params ImageCropperValue.ImageCropperCrop[] crops) => CreateMedia(null, crops);
+
+        public static MediaWithCrops CreateMedia(ImageCropperValue.ImageCropperFocalPoint? focalPoint, params ImageCropperValue.ImageCropperCrop[] crops)
         {
             var cropperValue = new ImageCropperValue
             {
                 Src = MediaUrl,
                 Crops = crops,
+                FocalPoint = focalPoint,
             };
 
             var contentType = new Mock<IPublishedContentType>();

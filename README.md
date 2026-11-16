@@ -194,8 +194,10 @@ TagHelper has new parameters
 
 - `decorative` which renders `role="presentation"` on the `img` tag
 - `fetch-priority` which renders on the `img` tag, for example `fetchpriority="high"`
-- `image-crop-mode` specifies a crop mode such as "Pad"
-- `image-crop-anchor` used with crop-mode to set where cropping should be focussed
+- `image-crop-mode` specifies a crop mode such as "Pad", the default is "Crop"
+- `image-crop-anchor` sets where cropping should be focussed (for example `TopLeft`), what happens depends on the mode:
+  - `Crop` (default): Slimsy appends `rmode=crop&ranchor=<anchor>` to every generated URL (src, srcset and LQIP), Umbraco core ignores the anchor in this mode when the media has an image cropper value. Nothing is added for `Center`, when the media has a focal point (the focal point wins) or when `crop-alias` is used (the crop coordinates win)
+  - `Pad`, `BoxPad`, `Min`, `Max`, `Stretch`: passed to Umbraco, which renders `ranchor`
 - `loading` you can set to `Eager` to not lazy load, useful for optimzing LCP on the first image rendered on the page
 - `mobile-crop-alias` allows you to specify a separate crop to use for mobile/smaller viewports
 
