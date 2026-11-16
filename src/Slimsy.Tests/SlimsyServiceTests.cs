@@ -1,6 +1,7 @@
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Slimsy.Configuration;
 using Slimsy.Enums;
+using Slimsy.Extensions;
 using Slimsy.Services;
 
 using Umbraco.Cms.Core.Models;
@@ -375,13 +376,23 @@ namespace Slimsy.Tests
         }
 
         [Fact]
-        public void GetCropUrl_CropWithAnchor_FocalPointWins()
+        public void GetCropUrl_CropWithAnchor_AnchorWinsOverFocalPoint()
         {
             var media = CreateMedia(new ImageCropperValue.ImageCropperFocalPoint { Left = 0.2m, Top = 0.3m });
             var url = CropUrl(CreateService(DefaultOptions()), media, ImageCropMode.Crop, ImageCropAnchor.TopLeft);
 
-            Assert.Equal(string.Empty, Param(url, "ranchor"));
-            Assert.Equal(string.Empty, Param(url, "rmode"));
+            Assert.Equal("topleft", Param(url, "ranchor"));
+            Assert.Equal(string.Empty, Param(url, "rxy"));
+        }
+
+        [Theory]
+        [InlineData("/a.jpg?rmode=crop&ranchor=topleft&rxy=0.2,0.3&width=4", "/a.jpg?rmode=crop&ranchor=topleft&width=4")]
+        [InlineData("/a.jpg?width=4&rxy=0.2,0.3&rmode=crop&ranchor=top", "/a.jpg?width=4&rmode=crop&ranchor=top")]
+        [InlineData("/a.jpg?width=4&rmode=crop&ranchor=top&rxy=0.2,0.3", "/a.jpg?width=4&rmode=crop&ranchor=top")]
+        [InlineData("/a.jpg?width=4&rxy=0.2,0.3", "/a.jpg?width=4&rxy=0.2,0.3")]
+        public void StripFocalPointWhenAnchored_RemovesRxyOnlyWhenAnchored(string input, string expected)
+        {
+            Assert.Equal(expected, input.StripFocalPointWhenAnchored());
         }
 
         [Fact]

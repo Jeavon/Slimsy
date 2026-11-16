@@ -198,6 +198,20 @@ namespace Slimsy.Extensions
         }
         #endregion
 
+        /// <summary>
+        /// When the url crops with an explicit anchor (rmode=crop&amp;ranchor=...) remove the focal point (rxy) Umbraco core adds,
+        /// ImageSharp prefers rxy over ranchor so it would otherwise override the anchor
+        /// </summary>
+        internal static string? StripFocalPointWhenAnchored(this string? src)
+        {
+            if (src == null || !src.Contains("rmode=crop", StringComparison.OrdinalIgnoreCase) || !src.Contains("ranchor=", StringComparison.OrdinalIgnoreCase))
+            {
+                return src;
+            }
+
+            return System.Text.RegularExpressions.Regex.Replace(src, @"([?&])rxy=[^&]*(&|$)", m => m.Groups[2].Value == "&" ? m.Groups[1].Value : string.Empty).TrimEnd('?', '&');
+        }
+
         internal static string? AdditionalProcess(this string? Src, string? forceRefresh, bool encodeCommas)
         {
 
