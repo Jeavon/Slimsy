@@ -199,12 +199,12 @@ namespace Slimsy.Extensions
         #endregion
 
         /// <summary>
-        /// When the url crops with an explicit anchor (rmode=crop&amp;ranchor=...) remove the focal point (rxy) Umbraco core adds,
+        /// When Slimsy added an explicit crop anchor (rmode=crop&amp;ranchor=...) to the url remove the focal point (rxy) Umbraco core adds,
         /// ImageSharp prefers rxy over ranchor so it would otherwise override the anchor
         /// </summary>
-        internal static string? StripFocalPointWhenAnchored(this string? src)
+        internal static string? StripFocalPointWhenAnchored(this string? src, bool anchored)
         {
-            if (string.IsNullOrEmpty(src))
+            if (!anchored || string.IsNullOrEmpty(src))
             {
                 return src;
             }

@@ -395,7 +395,7 @@ namespace Slimsy.Tests
         [InlineData("/a.jpg?rmode=crop&ranchor=top&myrxy=1&rxy=0.2,0.3", "/a.jpg?rmode=crop&ranchor=top&myrxy=1")]
         public void StripFocalPointWhenAnchored_RemovesRxyOnlyWhenAnchored(string input, string expected)
         {
-            Assert.Equal(expected, input.StripFocalPointWhenAnchored());
+            Assert.Equal(expected, input.StripFocalPointWhenAnchored(true));
         }
 
         [Fact]
