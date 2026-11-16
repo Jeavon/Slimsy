@@ -467,6 +467,57 @@ namespace Slimsy.Tests
         }
 
         [Fact]
+        public void GetCropUrl_CallerSuppliedRmodeCrop_StillGetsAnchor()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(CreateMedia(), 400, 300, imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft, furtherOptions: "&rmode=crop").ToString()!);
+
+            Assert.Equal("topleft", Param(url, "ranchor"));
+            Assert.Single(url.Split('&', '?'), p => p.StartsWith("rmode="));
+        }
+
+        [Fact]
+        public void GetCropUrl_CallerSuppliedRanchor_WinsOverFocalPoint()
+        {
+            var media = CreateMedia(new ImageCropperValue.ImageCropperFocalPoint { Left = 0.2m, Top = 0.3m });
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(media, 400, 300, furtherOptions: "&rmode=crop&ranchor=bottom").ToString()!);
+
+            Assert.Equal("bottom", Param(url, "ranchor"));
+            Assert.Equal(string.Empty, Param(url, "rxy"));
+        }
+
+        [Fact]
+        public void GetCropUrl_CallerSuppliedRanchorOnly_GetsRmodeCrop()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(CreateMedia(), 400, 300, imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft, furtherOptions: "&ranchor=bottom").ToString()!);
+
+            Assert.Equal("crop", Param(url, "rmode"));
+            Assert.Equal("bottom", Param(url, "ranchor"));
+        }
+
+        [Fact]
+        public void GetCropUrl_CallerSuppliedNonCropMode_IsRespected()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(CreateMedia(), 400, 300, imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft, furtherOptions: "&rmode=pad").ToString()!);
+
+            Assert.Equal("pad", Param(url, "rmode"));
+            Assert.Equal(string.Empty, Param(url, "ranchor"));
+        }
+
+        [Fact]
+        public void GetCropUrl_CallerSuppliedCenterRanchor_KeepsFocalPoint()
+        {
+            var media = CreateMedia(new ImageCropperValue.ImageCropperFocalPoint { Left = 0.2m, Top = 0.3m });
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(media, 400, 300, furtherOptions: "&rmode=crop&ranchor=center").ToString()!);
+
+            Assert.NotEqual(string.Empty, Param(url, "rxy"));
+        }
+
+        [Fact]
         public void GetCropUrl_CallerSuppliedRanchor_IsNotDuplicated()
         {
             var service = CreateService(DefaultOptions());

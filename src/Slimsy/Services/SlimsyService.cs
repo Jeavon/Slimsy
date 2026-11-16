@@ -528,7 +528,9 @@ namespace Slimsy.Services
                 return string.Empty;
             }
 
-            if (HasQueryKey(furtherOptions, "ranchor") || HasQueryKey(furtherOptions, "rmode"))
+            // an explicit non-Crop mode from the caller wins, there is nothing for us to add
+            var callerMode = QueryValue(furtherOptions, "rmode");
+            if (callerMode != null && !string.Equals(callerMode, "crop", StringComparison.OrdinalIgnoreCase))
             {
                 return string.Empty;
             }
@@ -540,7 +542,32 @@ namespace Slimsy.Services
                 return string.Empty;
             }
 
-            return $"&rmode=crop&ranchor={imageCropAnchor.Value.ToString().ToLowerInvariant()}";
+            // merge each key independently so a caller supplied rmode or ranchor is kept and the other one is still added
+            var options = new StringBuilder();
+            if (callerMode == null)
+            {
+                options.Append("&rmode=crop");
+            }
+
+            if (!HasQueryKey(furtherOptions, "ranchor"))
+            {
+                options.Append($"&ranchor={imageCropAnchor.Value.ToString().ToLowerInvariant()}");
+            }
+
+            return options.ToString();
+        }
+
+        /// <summary>
+        /// True when the call crops by anchor/focal point rather than by crop alias or another mode, so an anchor in the url
+        /// (ours or the caller's) is what positions the crop
+        /// </summary>
+        private static bool IsCropContext(ImageCropMode? imageCropMode, string? cropAlias) =>
+            (imageCropMode == null || imageCropMode == ImageCropMode.Crop) && string.IsNullOrWhiteSpace(cropAlias);
+
+        private static string? QueryValue(string? options, string key)
+        {
+            var pair = options?.TrimStart('?', '&').Split('&').FirstOrDefault(p => string.Equals(p.Split('=')[0], key, StringComparison.OrdinalIgnoreCase));
+            return pair == null ? null : (pair.Contains('=') ? pair[(pair.IndexOf('=') + 1)..] : string.Empty);
         }
 
         private static bool HasQueryKey(string? options, string key) =>
@@ -962,7 +989,7 @@ namespace Slimsy.Services
             height = height > 0 ? height : null;
 
             var url = mediaItem.GetCropUrl(width: width, height: height, propertyAlias: propertyAlias, cropAlias: cropAlias, quality: quality, imageCropMode: imageCropMode,
-                imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, mediaItem, imageCropAnchor, cropAlias, propertyAlias)).StripFocalPointWhenAnchored(CropAnchorOptions(imageCropMode, imageCropAnchor, cropAlias, furtherOptions, mediaItem, propertyAlias, null).Length > 0).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
+                imageCropAnchor: imageCropAnchor, preferFocalPoint: preferFocalPoint, useCropDimensions: useCropDimensions, cacheBuster: cacheBuster, furtherOptions: ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, mediaItem, imageCropAnchor, cropAlias, propertyAlias)).StripFocalPointWhenAnchored(IsCropContext(imageCropMode, cropAlias)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -1042,7 +1069,7 @@ namespace Slimsy.Services
             width = width > 0 ? width : null;
             height = height > 0 ? height : null;
 
-            var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, null, imageCropAnchor, cropAlias, cropperValue: ParseCropperValue(imageCropperValue))).StripFocalPointWhenAnchored(CropAnchorOptions(imageCropMode, imageCropAnchor, cropAlias, furtherOptions, null, Constants.Conventions.Media.File, ParseCropperValue(imageCropperValue)).Length > 0).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
+            var url = imageUrl.GetCropUrl(width, height, imageCropperValue, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, null, imageCropAnchor, cropAlias, cropperValue: ParseCropperValue(imageCropperValue))).StripFocalPointWhenAnchored(IsCropContext(imageCropMode, cropAlias)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -1068,7 +1095,7 @@ namespace Slimsy.Services
 
             var imageUrl = imageCropperValue.Src;
             var url = imageUrl?.GetCropUrl(imageCropperValue, width, height, cropAlias, quality, imageCropMode,
-                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, null, imageCropAnchor, cropAlias, cropperValue: imageCropperValue)).StripFocalPointWhenAnchored(CropAnchorOptions(imageCropMode, imageCropAnchor, cropAlias, furtherOptions, null, Constants.Conventions.Media.File, imageCropperValue).Length > 0).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
+                imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBusterValue, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, null, imageCropAnchor, cropAlias, cropperValue: imageCropperValue)).StripFocalPointWhenAnchored(IsCropContext(imageCropMode, cropAlias)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
 
@@ -1092,7 +1119,7 @@ namespace Slimsy.Services
             width = width > 0 ? width : null;
             height = height > 0 ? height : null;
 
-            var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, mediaWithCrops, imageCropAnchor, cropAlias, propertyAlias), urlMode).StripFocalPointWhenAnchored(CropAnchorOptions(imageCropMode, imageCropAnchor, cropAlias, furtherOptions, mediaWithCrops, propertyAlias, null).Length > 0).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
+            var url = mediaWithCrops.GetCropUrl(width, height, propertyAlias, cropAlias, quality, imageCropMode, imageCropAnchor, preferFocalPoint, useCropDimensions, cacheBuster, ProcessFurtherOptions(_slimsyOptions.AppendSourceDimensions, _slimsyOptions.AutoOrient, imageCropMode, furtherOptions, mediaWithCrops, imageCropAnchor, cropAlias, propertyAlias), urlMode).StripFocalPointWhenAnchored(IsCropContext(imageCropMode, cropAlias)).AdditionalProcess(_slimsyOptions.ForceRefresh, _slimsyOptions.EncodeCommas);
             return htmlEncode ? new HtmlString(HttpUtility.HtmlEncode(url)) : new HtmlString(url);
         }
         #endregion

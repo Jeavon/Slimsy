@@ -199,7 +199,7 @@ namespace Slimsy.Extensions
         #endregion
 
         /// <summary>
-        /// When Slimsy added an explicit crop anchor (rmode=crop&amp;ranchor=...) to the url remove the focal point (rxy) Umbraco core adds,
+        /// When a crop call carries an explicit non-center anchor (rmode=crop&amp;ranchor=..., ours or the caller's) remove the focal point (rxy) Umbraco core adds,
         /// ImageSharp prefers rxy over ranchor so it would otherwise override the anchor
         /// </summary>
         internal static string? StripFocalPointWhenAnchored(this string? src, bool anchored)
@@ -229,8 +229,10 @@ namespace Slimsy.Extensions
                 return equals >= 0 ? parameter[..equals] : parameter;
             }
 
+            // an anchor only overrides the focal point when it is not center
             var cropsWithAnchor = parameters.Any(p => string.Equals(p, "rmode=crop", StringComparison.OrdinalIgnoreCase))
-                && parameters.Any(p => string.Equals(Key(p), "ranchor", StringComparison.OrdinalIgnoreCase));
+                && parameters.Any(p => string.Equals(Key(p), "ranchor", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(p, "ranchor=center", StringComparison.OrdinalIgnoreCase));
 
             if (!cropsWithAnchor)
             {
