@@ -427,6 +427,25 @@ namespace Slimsy.Tests
         }
 
         [Fact]
+        public void GetCropUrl_UrlWithoutCropperValue_LeavesAnchorToCore()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl("/media/test/image.jpg", 400, 300, imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft).ToString()!);
+
+            // core's no-cropper branch writes rmode/ranchor itself, Slimsy adding them too would duplicate the keys
+            Assert.DoesNotContain("rmode=crop&ranchor=topleft", url);
+        }
+
+        [Fact]
+        public void GetCropUrl_UrlWithCropperJson_CropWithAnchor_EmitsAnchor()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl("/media/test/image.jpg", 400, 300, imageCropperValue: "{\"src\":\"/media/test/image.jpg\"}", imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft).ToString()!);
+
+            Assert.Equal("topleft", Param(url, "ranchor"));
+        }
+
+        [Fact]
         public void GetCropUrl_CallerSuppliedRanchor_IsNotDuplicated()
         {
             var service = CreateService(DefaultOptions());

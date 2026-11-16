@@ -509,6 +509,7 @@ namespace Slimsy.Services
         /// Umbraco core's GetCropUrl silently drops the anchor when the image has an image cropper value and the mode is Crop (or null),
         /// so ImageSharp would always crop from the centre. Emit the equivalent ImageSharp options ourselves.
         /// An explicit anchor wins over the media focal point (the rxy core adds is stripped from the final url, see StripFocalPointWhenAnchored).
+        /// Only emitted when the media has an image cropper value, as that is the only case core drops the anchor.
         /// Not emitted for Center/no anchor, crop aliases (the crop coordinates decide),
         /// for any mode other than Crop (core handles those) or when the caller already supplied rmode/ranchor.
         /// </summary>
@@ -523,6 +524,13 @@ namespace Slimsy.Services
             }
 
             if (HasQueryKey(furtherOptions, "ranchor") || HasQueryKey(furtherOptions, "rmode"))
+            {
+                return string.Empty;
+            }
+
+            // without a cropper value core takes its other branch and writes mode and anchor itself, adding ours would duplicate the keys
+            cropperValue ??= mediaItem?.Value<ImageCropperValue>(propertyAlias);
+            if (cropperValue == null)
             {
                 return string.Empty;
             }
