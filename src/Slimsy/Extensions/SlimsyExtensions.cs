@@ -204,12 +204,43 @@ namespace Slimsy.Extensions
         /// </summary>
         internal static string? StripFocalPointWhenAnchored(this string? src)
         {
-            if (src == null || !src.Contains("rmode=crop", StringComparison.OrdinalIgnoreCase) || !src.Contains("ranchor=", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrEmpty(src))
             {
                 return src;
             }
 
-            return System.Text.RegularExpressions.Regex.Replace(src, @"([?&])rxy=[^&]*(&|$)", m => m.Groups[2].Value == "&" ? m.Groups[1].Value : string.Empty).TrimEnd('?', '&');
+            // split into path, query and fragment so only whole query parameters are inspected or removed
+            var fragmentIndex = src.IndexOf('#');
+            var fragment = fragmentIndex >= 0 ? src[fragmentIndex..] : string.Empty;
+            var withoutFragment = fragmentIndex >= 0 ? src[..fragmentIndex] : src;
+
+            var queryIndex = withoutFragment.IndexOf('?');
+            if (queryIndex < 0)
+            {
+                return src;
+            }
+
+            var path = withoutFragment[..queryIndex];
+            var parameters = withoutFragment[(queryIndex + 1)..].Split('&');
+
+            string Key(string parameter)
+            {
+                var equals = parameter.IndexOf('=');
+                return equals >= 0 ? parameter[..equals] : parameter;
+            }
+
+            var cropsWithAnchor = parameters.Any(p => string.Equals(p, "rmode=crop", StringComparison.OrdinalIgnoreCase))
+                && parameters.Any(p => string.Equals(Key(p), "ranchor", StringComparison.OrdinalIgnoreCase));
+
+            if (!cropsWithAnchor)
+            {
+                return src;
+            }
+
+            var kept = parameters.Where(p => !string.Equals(Key(p), "rxy", StringComparison.OrdinalIgnoreCase)).ToArray();
+            var query = string.Join("&", kept);
+
+            return (query.Length > 0 ? $"{path}?{query}" : path) + fragment;
         }
 
         internal static string? AdditionalProcess(this string? Src, string? forceRefresh, bool encodeCommas)

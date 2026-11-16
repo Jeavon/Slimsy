@@ -522,13 +522,16 @@ namespace Slimsy.Services
                 return string.Empty;
             }
 
-            if (furtherOptions != null && (furtherOptions.Contains("ranchor=", StringComparison.OrdinalIgnoreCase) || furtherOptions.Contains("rmode=", StringComparison.OrdinalIgnoreCase)))
+            if (HasQueryKey(furtherOptions, "ranchor") || HasQueryKey(furtherOptions, "rmode"))
             {
                 return string.Empty;
             }
 
             return $"&rmode=crop&ranchor={imageCropAnchor.Value.ToString().ToLowerInvariant()}";
         }
+
+        private static bool HasQueryKey(string? options, string key) =>
+            options != null && options.TrimStart('?', '&').Split('&').Any(p => string.Equals(p.Split('=')[0], key, StringComparison.OrdinalIgnoreCase));
 
         private static ImageCropperValue? ParseCropperValue(string? json)
         {

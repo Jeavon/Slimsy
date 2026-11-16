@@ -390,6 +390,9 @@ namespace Slimsy.Tests
         [InlineData("/a.jpg?width=4&rxy=0.2,0.3&rmode=crop&ranchor=top", "/a.jpg?width=4&rmode=crop&ranchor=top")]
         [InlineData("/a.jpg?width=4&rmode=crop&ranchor=top&rxy=0.2,0.3", "/a.jpg?width=4&rmode=crop&ranchor=top")]
         [InlineData("/a.jpg?width=4&rxy=0.2,0.3", "/a.jpg?width=4&rxy=0.2,0.3")]
+        [InlineData("/a.jpg?rmode=pad&note=rmode=crop&ranchor=top&rxy=0.2,0.3", "/a.jpg?rmode=pad&note=rmode=crop&ranchor=top&rxy=0.2,0.3")]
+        [InlineData("/a.jpg?rmode=crop&ranchor=top&rxy=0.2,0.3#preview", "/a.jpg?rmode=crop&ranchor=top#preview")]
+        [InlineData("/a.jpg?rmode=crop&ranchor=top&myrxy=1&rxy=0.2,0.3", "/a.jpg?rmode=crop&ranchor=top&myrxy=1")]
         public void StripFocalPointWhenAnchored_RemovesRxyOnlyWhenAnchored(string input, string expected)
         {
             Assert.Equal(expected, input.StripFocalPointWhenAnchored());
@@ -411,6 +414,16 @@ namespace Slimsy.Tests
 
             // Slimsy adds nothing for non-Crop modes, Umbraco core owns those
             Assert.DoesNotContain("rmode=crop", url);
+        }
+
+        [Fact]
+        public void GetCropUrl_UnrelatedOptionContainingRanchor_DoesNotSuppressAnchor()
+        {
+            var service = CreateService(DefaultOptions());
+            var url = System.Net.WebUtility.HtmlDecode(service.GetCropUrl(CreateMedia(), 400, 300, imageCropMode: ImageCropMode.Crop, imageCropAnchor: ImageCropAnchor.TopLeft, furtherOptions: "&custom_ranchor=bottom").ToString()!);
+
+            Assert.Equal("topleft", Param(url, "ranchor"));
+            Assert.Equal("crop", Param(url, "rmode"));
         }
 
         [Fact]
