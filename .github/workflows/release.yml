@@ -174,6 +174,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [setup, build, e2e]
     timeout-minutes: 5
+    permissions:
+      contents: read     # Required to check out the repo (a job-level block resets unlisted scopes to none)
+      id-token: write    # Required for NuGet trusted publishing (OIDC)
+      packages: write    # Required for pushing to GitHub Packages
     env:
       MYGET_API_KEY: ${{ secrets.MYGET_API_KEY }}
     steps:
@@ -217,9 +221,16 @@ jobs:
         dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/api/v2/package --skip-duplicate
         dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.snupkg" --api-key ${{ env.MYGET_API_KEY }} --source https://www.myget.org/F/umbraco-packages/symbols/api/v2/package --skip-duplicate
 
+    - name: NuGet Trusted Publishing Login
+      if: ${{ needs.setup.outputs.new_release_published == 'true' && github.event.inputs.publish_to_nuget == 'true' && startsWith(github.ref, 'refs/heads/main-') && !contains(needs.setup.outputs.semver, '-') }}
+      uses: NuGet/login@v1
+      id: nuget-login
+      with:
+        user: ${{ vars.NUGET_TRUSTED_PUBLISHING_USER }}
+
     - name: Push to Nuget.org
       if: ${{ needs.setup.outputs.new_release_published == 'true' && github.event.inputs.publish_to_nuget == 'true' && startsWith(github.ref, 'refs/heads/main-') && !contains(needs.setup.outputs.semver, '-') }}
-      run: dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push "nuget-packages/Our.Umbraco.Slimsy.*.nupkg" --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Write Summary
       if: ${{ needs.setup.outputs.new_release_published == 'true' }}
