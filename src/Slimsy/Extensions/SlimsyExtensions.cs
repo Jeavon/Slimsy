@@ -198,6 +198,53 @@ namespace Slimsy.Extensions
         }
         #endregion
 
+        /// <summary>
+        /// When a crop call carries an explicit non-center anchor (rmode=crop&amp;ranchor=..., ours or the caller's) remove the focal point (rxy) Umbraco core adds,
+        /// ImageSharp prefers rxy over ranchor so it would otherwise override the anchor
+        /// </summary>
+        internal static string? StripFocalPointWhenAnchored(this string? src, bool anchored)
+        {
+            if (!anchored || string.IsNullOrEmpty(src))
+            {
+                return src;
+            }
+
+            // split into path, query and fragment so only whole query parameters are inspected or removed
+            var fragmentIndex = src.IndexOf('#');
+            var fragment = fragmentIndex >= 0 ? src[fragmentIndex..] : string.Empty;
+            var withoutFragment = fragmentIndex >= 0 ? src[..fragmentIndex] : src;
+
+            var queryIndex = withoutFragment.IndexOf('?');
+            if (queryIndex < 0)
+            {
+                return src;
+            }
+
+            var path = withoutFragment[..queryIndex];
+            var parameters = withoutFragment[(queryIndex + 1)..].Split('&');
+
+            string Key(string parameter)
+            {
+                var equals = parameter.IndexOf('=');
+                return equals >= 0 ? parameter[..equals] : parameter;
+            }
+
+            // an anchor only overrides the focal point when it is not center
+            var cropsWithAnchor = parameters.Any(p => string.Equals(p, "rmode=crop", StringComparison.OrdinalIgnoreCase))
+                && parameters.Any(p => string.Equals(Key(p), "ranchor", StringComparison.OrdinalIgnoreCase)
+                    && !string.Equals(p, "ranchor=center", StringComparison.OrdinalIgnoreCase));
+
+            if (!cropsWithAnchor)
+            {
+                return src;
+            }
+
+            var kept = parameters.Where(p => !string.Equals(Key(p), "rxy", StringComparison.OrdinalIgnoreCase)).ToArray();
+            var query = string.Join("&", kept);
+
+            return (query.Length > 0 ? $"{path}?{query}" : path) + fragment;
+        }
+
         internal static string? AdditionalProcess(this string? Src, string? forceRefresh, bool encodeCommas)
         {
 

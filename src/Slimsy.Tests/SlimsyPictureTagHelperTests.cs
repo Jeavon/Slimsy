@@ -1,3 +1,4 @@
+using Umbraco.Cms.Core.Models;
 using Slimsy.Enums;
 
 using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
@@ -374,6 +375,56 @@ namespace Slimsy.Tests
             helper.Height = 300;
 
             Assert.DoesNotContain("fetchpriority", Img(Render(helper)));
+        }
+
+        #endregion
+
+        #region Crop anchor (rmode / ranchor)
+
+        private static IEnumerable<string> AllUrls(string html) =>
+            System.Net.WebUtility.HtmlDecode(html).Split(new[] { ' ', '"', ',' }, StringSplitOptions.RemoveEmptyEntries).Where(t => t.StartsWith("/media/"));
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Crop_WithAnchor_EveryUrlCarriesRmodeAndRanchor(bool explicitMode)
+        {
+            var helper = Create();
+            helper.Width = 400;
+            helper.Height = 300;
+            if (explicitMode) helper.ImageCropMode = ImageCropMode.Crop;
+            helper.ImageCropAnchor = ImageCropAnchor.TopLeft;
+
+            var urls = AllUrls(Render(helper)).ToList();
+
+            Assert.NotEmpty(urls);
+            Assert.All(urls, u => Assert.Contains("rmode=crop&ranchor=topleft", u));
+        }
+
+        [Fact]
+        public void Crop_WithAnchor_NonLazyAlsoCarriesAnchor()
+        {
+            var helper = Create();
+            helper.Width = 400;
+            helper.Height = 300;
+            helper.ImageCropAnchor = ImageCropAnchor.BottomRight;
+            helper.Loading = Slimsy.Enums.Loading.Eager;
+
+            Assert.All(AllUrls(Render(helper)), u => Assert.Contains("ranchor=bottomright", u));
+        }
+
+        [Fact]
+        public void Crop_DefaultAnchor_NoRmodeOrRanchor()
+        {
+            var helper = Create();
+            helper.Width = 400;
+            helper.Height = 300;
+
+            Assert.All(AllUrls(Render(helper)), u =>
+            {
+                Assert.DoesNotContain("ranchor", u);
+                Assert.DoesNotContain("rmode", u);
+            });
         }
 
         #endregion
